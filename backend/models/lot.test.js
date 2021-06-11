@@ -3,7 +3,7 @@
 const db = require("../db.js");
 process.cwd()
 const { BadRequestError, NotFoundError } = require("../expressError");
-const Company = require("./company.js");
+const Lot = require("./lot.js");
 const {
   commonBeforeAll,
   commonBeforeEach,
@@ -20,37 +20,38 @@ afterAll(commonAfterAll);
 /************************************** create */
 
 describe("create", function () {
-  const newCompany = {
-    handle: "new",
+  
+  const newLot = {
     name: "New",
-    description: "New Description",
-    numEmployees: 1,
-    logoUrl: "http://new.img",
+    description: "New Lot",
+    location: 1,
+    quantity: 1,
+    price: 20.99,
   };
 
   test("works", async function () {
-    let company = await Company.create(newCompany);
-    expect(company).toEqual(newCompany);
+    let company = await Lot.create(Lotnew);
+    expect(company).toEqual(newLot);
 
     const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
-           FROM companies
-           WHERE handle = 'new'`);
+          `SELECT name, description, location, quantity, price
+           FROM lots
+           WHERE name = 'New'`);
     expect(result.rows).toEqual([
       {
-        handle: "new",
         name: "New",
-        description: "New Description",
-        num_employees: 1,
-        logo_url: "http://new.img",
+        description: "New Lot",
+        location: 1,
+        quantity: 1,
+        price: 20.99,
       },
     ]);
   });
 
   test("bad request with dupe", async function () {
     try {
-      await Company.create(newCompany);
-      await Company.create(newCompany);
+      await Lot.create(newLot);
+      await Lot.create(newLot);
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -62,8 +63,8 @@ describe("create", function () {
 
 describe("findAll", function () {
   test("works: all", async function () {
-    let companies = await Company.findAll();
-    expect(companies).toEqual([
+    let lots = await Lot.findAll();
+    expect(lots).toEqual([
       {
         handle: "c1",
         name: "C1",
@@ -89,8 +90,8 @@ describe("findAll", function () {
   });
 
   test("works: by min employees", async function () {
-    let companies = await Company.findAll({ minEmployees: 2 });
-    expect(companies).toEqual([
+    let lots = await Lot.findAll({ minEmployees: 2 });
+    expect(lots).toEqual([
       {
         handle: "c2",
         name: "C2",
@@ -109,8 +110,8 @@ describe("findAll", function () {
   });
 
   test("works: by max employees", async function () {
-    let companies = await Company.findAll({ maxEmployees: 2 });
-    expect(companies).toEqual([
+    let lots = await Lot.findAll({ maxEmployees: 2 });
+    expect(lots).toEqual([
       {
         handle: "c1",
         name: "C1",
@@ -129,9 +130,9 @@ describe("findAll", function () {
   });
 
   test("works: by min-max employees", async function () {
-    let companies = await Company.findAll(
+    let lots = await Lot.findAll(
         { minEmployees: 1, maxEmployees: 1 });
-    expect(companies).toEqual([
+    expect(lots).toEqual([
       {
         handle: "c1",
         name: "C1",
@@ -143,8 +144,8 @@ describe("findAll", function () {
   });
 
   test("works: by name", async function () {
-    let companies = await Company.findAll({ name: "1" });
-    expect(companies).toEqual([
+    let lots = await Lot.findAll({ name: "1" });
+    expect(lots).toEqual([
       {
         handle: "c1",
         name: "C1",
@@ -156,13 +157,13 @@ describe("findAll", function () {
   });
 
   test("works: empty list on nothing found", async function () {
-    let companies = await Company.findAll({ name: "nope" });
-    expect(companies).toEqual([]);
+    let lots = await Lot.findAll({ name: "nope" });
+    expect(lots).toEqual([]);
   });
 
   test("bad request if invalid min > max", async function () {
     try {
-      await Company.findAll({ minEmployees: 10, maxEmployees: 1 });
+      await Lot.findAll({ minEmployees: 10, maxEmployees: 1 });
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -174,7 +175,7 @@ describe("findAll", function () {
 
 describe("get", function () {
   test("works", async function () {
-    let company = await Company.get("c1");
+    let company = await Lot.get("c1");
     expect(company).toEqual({
       handle: "c1",
       name: "C1",
@@ -192,7 +193,7 @@ describe("get", function () {
 
   test("not found if no such company", async function () {
     try {
-      await Company.get("nope");
+      await Lot.get("nope");
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -211,7 +212,7 @@ describe("update", function () {
   };
 
   test("works", async function () {
-    let company = await Company.update("c1", updateData);
+    let company = await Lot.update("c1", updateData);
     expect(company).toEqual({
       handle: "c1",
       ...updateData,
@@ -219,7 +220,7 @@ describe("update", function () {
 
     const result = await db.query(
           `SELECT handle, name, description, num_employees, logo_url
-           FROM companies
+           FROM lots
            WHERE handle = 'c1'`);
     expect(result.rows).toEqual([{
       handle: "c1",
@@ -238,7 +239,7 @@ describe("update", function () {
       logoUrl: null,
     };
 
-    let company = await Company.update("c1", updateDataSetNulls);
+    let company = await Lot.update("c1", updateDataSetNulls);
     expect(company).toEqual({
       handle: "c1",
       ...updateDataSetNulls,
@@ -246,7 +247,7 @@ describe("update", function () {
 
     const result = await db.query(
           `SELECT handle, name, description, num_employees, logo_url
-           FROM companies
+           FROM lots
            WHERE handle = 'c1'`);
     expect(result.rows).toEqual([{
       handle: "c1",
@@ -259,7 +260,7 @@ describe("update", function () {
 
   test("not found if no such company", async function () {
     try {
-      await Company.update("nope", updateData);
+      await Lot.update("nope", updateData);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -268,7 +269,7 @@ describe("update", function () {
 
   test("bad request with no data", async function () {
     try {
-      await Company.update("c1", {});
+      await Lot.update("c1", {});
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -280,15 +281,15 @@ describe("update", function () {
 
 describe("remove", function () {
   test("works", async function () {
-    await Company.remove("c1");
+    await Lot.remove("c1");
     const res = await db.query(
-        "SELECT handle FROM companies WHERE handle='c1'");
+        "SELECT handle FROM lots WHERE handle='c1'");
     expect(res.rows.length).toEqual(0);
   });
 
   test("not found if no such company", async function () {
     try {
-      await Company.remove("nope");
+      await Lot.remove("nope");
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
