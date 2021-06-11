@@ -1,23 +1,24 @@
-CREATE TABLE parent_loc (
-  id SERIAL PRIMARY KEY,
-  name TEXT UNIQUE NOT NULL,
-  description TEXT NOT NULL
-);
 CREATE TABLE location (
   id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  notes TEXT
+);
+
+CREATE TABLE parent_loc (
   parent_loc INTEGER
-    REFERENCES parent_loc
-  name TEXT UNIQUE NOT NULL,
-  description TEXT NOT NULL
+    REFERENCES location.id,
+  loc_id INTEGER
+    REFERENCES location.id,
+  PRIMARY KEY (parent_loc, loc_id)
 );
 
 CREATE TABLE lot (
   id SERIAL PRIMARY KEY
   name TEXT UNIQUE NOT NULL,
-  location REFERENCES
+  location REFERENCES location,
   quantity INTEGER CHECK (quantity >= 0 OR quantity = NULL),
   description TEXT NOT NULL,
-  price INTEGER
+  price MONEY
 );
 
 CREATE TABLE production(
@@ -47,7 +48,7 @@ CREATE TABLE lot_cat (
   PRIMARY KEY (lot_id, cat_id)
 );
 
-CREATE TABLE users (
+CREATE TABLE user (
   username VARCHAR(25) PRIMARY KEY,
   password TEXT NOT NULL,
   first_name TEXT NOT NULL,

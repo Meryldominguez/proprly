@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://our.lot.com/lotUpdate.schema.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "description": {
+      "type": "string"
+    },
+    "location": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "quantity": {
+      "anyOf": [
+        {"type": "integer", "minimum": 0},
+        {"type": "null"}
+      ]
+    },
+    "price": {
+      "anyOf": [
+        {"type": "number","exclusiveMinimum": 0},
+        {"type": "null"}
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

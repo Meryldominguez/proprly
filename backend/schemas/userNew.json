@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 25
+    },
+    "password": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 25
+    },
+    "firstName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "lastName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "email": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 60,
+      "format": "email"
+    },
+    "phone":{
+      "type":"string",
+      "pattern": "^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$"
+    },
+    "isAdmin": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "username",
+    "firstName",
+    "lastName",
+    "password",
+    "email"
+  ]
+}

@@ -18,23 +18,34 @@ VALUES ('testuser',
         TRUE)
 ;
 
-INSERT INTO parent_loc (name, description)
+
+INSERT INTO location (name ,description)
 VALUES ("warehouse","123 easy st."),
         ("Opera Center","456 main st."),
         ("rehearsal studios","567 main st.")
+        ('Bay 3', 'Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.'),
+        ('Bay 4', 'Nulla facilisi.'),
+        ('Room 202', null),
+        ('Room 201', 'Maecenas pulvinar lobortis est. Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.'),
+        ('Theater A', null),
+        ('Theater B', null),
+        ('Bay 5.', 'Duis bibendum.'),
+        ('Room 100', 'Duis ac nibh.'),
+        ('Bay 1', 'In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat. Nulla nisl. Nunc nisl.'),
+        ('Bay 2', null)
 ;
 
-INSERT INTO location (parent_loc, name ,description)
-VALUES (1, 'Bay 3', 'Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.'),
-        (1, 'Bay 4', 'Nulla facilisi.'),
-        (2, 'Room 202', null),
-        (2, 'Room 201', 'Maecenas pulvinar lobortis est. Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.'),
-        (3, 'Theater A', null),
-        (3, 'Theater B', null),
-        (1, 'Bay 5.', 'Duis bibendum.'),
-        (2, 'Room 100', 'Duis ac nibh.'),
-        (1, 'Bay 1', 'In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat. Nulla nisl. Nunc nisl.'),
-        (1, 'Bay 2', null)
+INSERT INTO parent_loc (parent_loc, loc_id)
+VALUES (1,4),
+        (1,5),
+        (1,6),
+        (1,7),
+        (2,8),
+        (2,9),
+        (3,10),
+        (3,11),
+        (3,12),
+        (3,13),
 ;
 
 INSERT INTO production (name,
@@ -62,46 +73,46 @@ VALUES ('Secured motivating groupware', '2009-05-30 20:25:32', '2021-12-06 13:43
 
 INSERT INTO lots (name, location, quantity, description, price)
 VALUES ('paper', 5, null, "Loose paper sheets", null),
-        ('laptop', 3, 1, null, null),
+        ('laptop', null, null),
         ('Rotary pone', 4, null, null, null),
         ('Chair', 6, 4, 'Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl.', '$5.34'),
-        ('Table', 10, 1, 'Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque. Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla.', '$9.95'),
-        ('Candelabra', 3, 1, 'Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus.', '$7.71'),
-        ('Books', 1, null, "old, new assorted", null),
-        ('Room divider', 9, 3, 'Proin eu mi. Nulla ac enim.', '$8.19'),
-        ("Doctor's bag", 9, 1, 'Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus.', '$2.27'),
+        ('Table', 10, 'Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque. Quisque porta volutpat erat. Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla.', '$9.95'),
+        ('Candelabra', 'Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus.', '$7.71'),
+        ('Books', null, "old, new assorted", null),
+        ('Room divider', 9, 'Proin eu mi. Nulla ac enim.', '$8.19'),
+        ("Doctor's bag", 9, 'Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula. Suspendisse ornare consequat lectus.', '$2.27'),
         ('Canes', 5, 4, 'In quis justo. Maecenas rhoncus aliquam lacus. Morbi quis tortor id nulla ultrices aliquet.', '$9.56'),
-        ('Playing Cards', 8, 3, null, null),
-        ('School desk', 1, 7, 'Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque.', '$8.46'),
-        ('Coat Rack', 6, 2, 'Nam dui.', '$7.09'),
-        ('Quills', 2, null, null, null),
+        ('Playing Cards', 8, null, null),
+        ('School desk', 7, 'Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque.', '$8.46'),
+        ('Coat Rack', 6, 'Nam dui.', '$7.09'),
+        ('Quills', null, null, null),
         ('Silk florals, Pink', 9, null, null, null),
         ('Crystal punch cups', 7, 6, 'Vestibulum quam sapien, varius ut, blandit non, interdum in, ante. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae, Duis faucibus accumsan odio. Curabitur convallis. Duis consequat dui nec nisi volutpat eleifend.', '$6.10'),
-        ('Crystal punch bowl', 9, 2, 'Cras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque.', '$5.89'),
-        ('Tufted Armchair', 9, 1, 'Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam.', '$2.75')
+        ('Crystal punch bowl', 9, 'Cras non velit nec nisi vulputate nonummy. Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque.', '$5.89'),
+        ('Tufted Armchair', 9, 'Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam.', '$2.75')
 ;
 
 INSERT INTO props (lot_id, prod_id, quantity)
-VALUES (11, 8, 6),
-        (14, 13, null),
+VALUES (18, 6),
+        (14, 1null),
         (10, 8, 8),
-        (15, 13, null),
+        (15, 1null),
         (15, 4, 7),
-        (3, 6, 7),
+        (6, 7),
         (5, 16, null),
-        (1, 11, 3),
-        (10, 12, null),
-        (1, 7, 4),
-        (2, 5, null),
-        (10, 11, 6),
-        (3, 3, null),
-        (3, 16, 6),
-        (16, 13, null),
-        (4, 2, null),
-        (17, 11, null),
+        (13),
+        (10, 1null),
+        (7, 4),
+        (5, null),
+        (10, 16),
+        (null),
+        (16, 6),
+        (16, 1null),
+        (4, null),
+        (17, 1null),
         (9, 6, 5),
         (7, 10, 3),
-        (18, 13, 6)
+        (18, 16)
 ;
 
 INSERT INTO category (title)
