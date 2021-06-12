@@ -21,7 +21,7 @@ const router = new express.Router();
  *
  * lot should be { name, description, numEmployees, logoUrl }
  *
- * Returns { handle, name, description, numEmployees, logoUrl }
+ * Returns { id, name, description, numEmployees, logoUrl }
  *
  * Authorization required: admin
  */
@@ -41,7 +41,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
 });
 
 /** GET /  =>
- *   { companies: [ { handle, name, description, numEmployees, logoUrl }, ...] }
+ *   { companies: [ { id, name, description, numEmployees, logoUrl }, ...] }
  *
  * Can filter on provided search filters:
  * - minEmployees
@@ -70,35 +70,35 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-/** GET /[handle]  =>  { lot }
+/** GET /[id]  =>  { lot }
  *
- *  lot is { handle, name, description, numEmployees, logoUrl, jobs }
+ *  lot is { id, name, description, numEmployees, logoUrl, jobs }
  *   where jobs is [{ id, title, salary, equity }, ...]
  *
  * Authorization required: none
  */
 
-router.get("/:handle", async function (req, res, next) {
+router.get("/:id", async function (req, res, next) {
   try {
-    const lot = await lot.get(req.params.handle);
+    const lot = await lot.get(req.params.id);
     return res.json({ lot });
   } catch (err) {
     return next(err);
   }
 });
 
-/** PATCH /[handle] { fld1, fld2, ... } => { lot }
+/** PATCH /[id] { fld1, fld2, ... } => { lot }
  *
  * Patches lot data.
  *
  * fields can be: { name, description, numEmployees, logo_url }
  *
- * Returns { handle, name, description, numEmployees, logo_url }
+ * Returns { id, name, description, numEmployees, logo_url }
  *
  * Authorization required: admin
  */
 
-router.patch("/:handle", ensureAdmin, async function (req, res, next) {
+router.patch("/:id", ensureAdmin, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, lotUpdateSchema);
     if (!validator.valid) {
@@ -106,22 +106,22 @@ router.patch("/:handle", ensureAdmin, async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const lot = await lot.update(req.params.handle, req.body);
+    const lot = await lot.update(req.params.id, req.body);
     return res.json({ lot });
   } catch (err) {
     return next(err);
   }
 });
 
-/** DELETE /[handle]  =>  { deleted: handle }
+/** DELETE /[id]  =>  { deleted: id }
  *
  * Authorization: admin
  */
 
-router.delete("/:handle", ensureAdmin, async function (req, res, next) {
+router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
-    await lot.remove(req.params.handle);
-    return res.json({ deleted: req.params.handle });
+    await lot.remove(req.params.id);
+    return res.json({ deleted: req.params.id });
   } catch (err) {
     return next(err);
   }
