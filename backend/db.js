@@ -1,4 +1,4 @@
-/** Database setup for jobly. */
+/** Database setup for proprly. */
 
 const { Client } = require("pg");
 const { getDatabaseUri } = require("./config");

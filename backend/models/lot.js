@@ -36,6 +36,43 @@ class Lot {
     return lot;
   }
 
+  /** Find all lots (optional filter on searchFilters).
+   *
+   * searchFilters (all optional):
+   * - location
+   * - name (will find case-insensitive, partial matches)
+   *
+   * Returns [{ id, name, description, numEmployees, logoUrl }, ...]
+   * */
+
+   static async findAll(searchTerm = "") {
+
+    let query = `SELECT id, name,l.name as locName,quantity,price,notes
+                 FROM lot
+                 JOIN location AS l ON l.id = lot.location`
+                 ; 
+    let whereExpressions = [];
+    let queryValues = [];
+
+
+    // For each possible search term, add to whereExpressions and queryValues so
+    // we can generate the right SQL
+
+    if (searchTerm) {
+      queryValues.push(`%${searchTerm}%`);
+      whereExpressions.push(`name ILIKE $${queryValues.length}`)
+      whereExpressions.push(`description ILIKE $${queryValues.length}`)
+      whereExpressions.push(`l.name ILIKE $${queryValues.length}`)
+    }
+
+
+    // Finalize query and return results
+
+    query += " ORDER BY name";
+    const lotsRes = await db.query(query, queryValues);
+    return lotsRes.rows;
+  }
+
   /** Given a lot id, return data about lot.
    *
    * Returns { id, name, location, quantity, price, description, productions=[...the productions that have used this lot] }
@@ -127,42 +164,6 @@ class Lot {
     const lot = result.rows[0];
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
-  }
-
-  /** Find all lots (optional filter on searchFilters).
-   *
-   * searchFilters (all optional):
-   * - location
-   * - name (will find case-insensitive, partial matches)
-   *
-   * Returns [{ id, name, description, numEmployees, logoUrl }, ...]
-   * */
-
-   static async findAll(searchTerm = "") {
-
-    let query = `SELECT name,l.name,quantity,price,notes
-                 FROM lot
-                 JOIN location AS l ON location.id = lot.location`
-                 ; 
-    let whereExpressions = [];
-    let queryValues = [];
-
-
-    // For each possible search term, add to whereExpressions and queryValues so
-    // we can generate the right SQL
-
-    if (searchTerm) {
-      queryValues.push(`%${searchTerm}%`);
-      whereExpressions.push(`name ILIKE $${queryValues.length}`)
-      whereExpressions.push(`description ILIKE $${queryValues.length}`)
-    }
-
-
-    // Finalize query and return results
-
-    query += " ORDER BY name";
-    const lotsRes = await db.query(query, queryValues);
-    return lotsRes.rows;
   }
 }
 

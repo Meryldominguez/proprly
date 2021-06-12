@@ -71,7 +71,7 @@ VALUES ('Secured motivating groupware', '2009-05-30 20:25:32', '2021-12-06 13:43
         ('Multi-channelled 4th generation methodology', '2012-05-15 19:54:10', '2020-07-26 18:38:44', true, 'cum sociis natoque penatibus et magnis dis parturient montes nascetur ridiculus mus etiam vel augue vestibulum rutrum rutrum neque aenean auctor gravida sem praesent id massa id nisl venenatis lacinia aenean sit amet justo morbi ut odio cras mi pede malesuada in imperdiet et commodo vulputate justo')
 ;
 
-INSERT INTO lots (name, location, quantity, description, price)
+INSERT INTO lot (name, location, quantity, description, price)
 VALUES ('paper', 5, null, "Loose paper sheets", null),
         ('laptop', null, null),
         ('Rotary pone', 4, null, null, null),
@@ -92,24 +92,24 @@ VALUES ('paper', 5, null, "Loose paper sheets", null),
         ('Tufted Armchair', 9, 'Maecenas leo odio, condimentum id, luctus nec, molestie sed, justo. Pellentesque viverra pede ac diam.', '$2.75')
 ;
 
-INSERT INTO props (lot_id, prod_id, quantity)
+INSERT INTO prop (lot_id, prod_id, quantity)
 VALUES (18, 6),
-        (14, 1null),
+        (14, 1, null),
         (10, 8, 8),
         (15, 1null),
         (15, 4, 7),
         (6, 7),
         (5, 16, null),
         (13),
-        (10, 1null),
+        (10, 1,null),
         (7, 4),
         (5, null),
         (10, 16),
         (null),
         (16, 6),
-        (16, 1null),
+        (16, 1,null),
         (4, null),
-        (17, 1null),
+        (17, 1,null),
         (9, 6, 5),
         (7, 10, 3),
         (18, 16)
