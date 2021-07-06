@@ -4,9 +4,10 @@ CREATE TABLE location (
   notes TEXT
 );
 
-CREATE TABLE sub_loc (
+CREATE TABLE parent_loc (
   parent_loc INTEGER
-    REFERENCES location,
+    REFERENCES location
+    ON DELETE CASCADE,
   loc_id INTEGER
     REFERENCES location
     ON DELETE CASCADE,
@@ -15,9 +16,10 @@ CREATE TABLE sub_loc (
 
 CREATE TABLE lot (
   id SERIAL PRIMARY KEY,
-  name TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
   loc_id INTEGER
-    REFERENCES location,
+    REFERENCES location
+    ON DELETE CASCADE,
   quantity INTEGER 
     CHECK (quantity >= 0 OR quantity = NULL),
   description TEXT NOT NULL,
@@ -26,8 +28,8 @@ CREATE TABLE lot (
 
 CREATE TABLE production (
   id SERIAL PRIMARY KEY,
-  name TEXT UNIQUE NOT NULL,
-  date_start DATE ,
+  title TEXT NOT NULL,
+  date_start DATE,
   date_end DATE,
   active BOOLEAN NOT NULL DEFAULT TRUE,
   notes TEXT NOT NULL
@@ -37,7 +39,7 @@ CREATE TABLE prop (
     REFERENCES lot,
   prod_id INTEGER
     REFERENCES production,
-  PRIMARY KEY (lot_id, prod_id),
+  PRIMARY KEY ( prod_id,lot_id),
   quantity INTEGER 
     CHECK (quantity >= 0 OR quantity = NULL),
   notes TEXT 

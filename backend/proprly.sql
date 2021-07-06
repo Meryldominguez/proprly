@@ -6,7 +6,7 @@ CREATE DATABASE proprly;
 \connect proprly
 
 \i proprly-schema.sql
--- \i proprly-seed.sql
+\i proprly-seed.sql
 
 \echo 'Delete and recreate proprly_test db?'
 \prompt 'Return for yes or control-C to cancel > ' yes
