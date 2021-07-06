@@ -11,6 +11,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM users");
   await db.query("DELETE FROM location");
   await db.query("DELETE FROM category");
+  await db.query("DELETE FROM production");
 
   await db.query(`
     INSERT INTO location(name, notes)
@@ -28,46 +29,59 @@ async function commonBeforeAll() {
       SELECT id FROM location
         WHERE name = 'Second Location'`)
   
-  // await db.query(`
-  //   INSERT INTO parent_loc (parent_loc,loc_id)
-  //   VALUES ($1,$2),
-  //          ($1,$3)
-  //          `,
-  //          [parentLocId,locId1,locId2]);
+  await db.query(`
+    INSERT INTO parent_loc (parent_loc,loc_id)
+    VALUES ($1,$2),
+           ($1,$3)`,
+           [parentLocId,locId1,locId2]);
 
   await db.query(`
-    INSERT INTO lot( name, location, description, quantity, price)
+    INSERT INTO lot( name, loc_id, description, quantity, price)
     VALUES ('item1', $1, 'Desc1', 1, 10.99),
            ('item2', $1, 'Desc2', null, 5.50),
            ('item3', $2, 'Desc3', 3, 400.00)`,
            [locId1,locId2]);
 
-  // const resultsJobs = await db.query(`
-  //   INSERT INTO jobs (title, salary, equity, company_handle)
-  //   VALUES ('Job1', 100, '0.1', 'c1'),
-  //          ('Job2', 200, '0.2', 'c1'),
-  //          ('Job3', 300, '0', 'c1'),
-  //          ('Job4', NULL, NULL, 'c1')
-  //   RETURNING id`);
-  // testJobIds.splice(0, 0, ...resultsJobs.rows.map(r => r.id));
+  await db.query(`
+    INSERT INTO production (title, date_start, date_end, active, notes)
+    VALUES ('Carmen', '2019-09-01', '2019-10-15', FALSE,'co-production carmen notes'),
+           ('Magic Flute', '2021-05-03', null, TRUE, 'flute notes'),
+           ('La traviata', null ,'2006-12-01', FALSE, 'co-production traviata notes'),
+           ('Steve Jobs', NULL, NULL, TRUE, 'upcoming planning for steve jobs')`);
+
+  let {rows:[{id:lot1Id},{id:lot2Id},{id:lot3Id}]} = await db.query(`
+    SELECT id FROM lot`);
+  let {rows:[{id:prod1Id},{id:prod2Id},{id:prod3Id},{id:prod4Id}]} = await db.query(`
+    SELECT id FROM production`);
 
   // await db.query(`
-  //       INSERT INTO users(username,
-  //                         password,
-  //                         first_name,
-  //                         last_name,
-  //                         phone,
-  //                         email,
-  //                         is_admin)
-  //       VALUES ('u1', $1, 'U1F', 'U1L', null, 'u1@email.com', false),
-  //              ('u2', $2, 'U2F', 'U2L', '1800-123-4567', 'u2@email.com', false),
-  //              ('a1', $3, 'A1F', 'A1L', '1800-123-4567, 'a1@email.com', true)
-  //       RETURNING username`,
-  //     [
-  //       await bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
-  //       await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
-  //       await bcrypt.hash("adminpassword", BCRYPT_WORK_FACTOR),
-  //     ]);
+  //   INSERT INTO props ( prod_id, lot_id, quantity, notes)
+  //   VALUES ($1,$5, 1, null),
+  //          ($1,$6, null, null),
+  //          ($1,$7, 2, "need this"),
+  //          ($2,$6, null, "using half the box"),
+  //          ($3,$6, null, "20 singular items" ),
+  //          ($4,$7, 1, null),
+  //          ($4,$6, null, "maybe")`,
+  //          [prod1Id,prod2Id,prod3Id,prod4Id,lot1Id,lot2Id,lot3Id]);
+
+  await db.query(`
+        INSERT INTO users(username,
+                          password,
+                          first_name,
+                          last_name,
+                          phone,
+                          email,
+                          is_admin)
+        VALUES ('u1', $1, 'U1F', 'U1L', null, 'u1@email.com', FALSE),
+               ('u2', $2, 'U2F', 'U2L', '1800-123-4567', 'u2@email.com', FALSE),
+               ('a1', $3, 'A1F', 'A1L', '1800-123-4567', 'a1@email.com', TRUE)
+        RETURNING username`,
+      [
+        await bcrypt.hash("password1", BCRYPT_WORK_FACTOR),
+        await bcrypt.hash("password2", BCRYPT_WORK_FACTOR),
+        await bcrypt.hash("adminpassword", BCRYPT_WORK_FACTOR),
+      ]);
 }
 
 async function commonBeforeEach() {

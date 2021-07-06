@@ -16,23 +16,30 @@ class Lot {
    * Throws BadRequestError if lot already in database.
    * */
 
-  static async create({ name, loc_id, quantity = null, price = null, notes = null}) {
+  static async create({ name, loc_id, quantity, price, description}) {
+    const duplicateCheck = await db.query(
+      `SELECT name, loc_id
+       FROM lot
+       WHERE name = $1 AND loc_id = $2`,
+    [name, loc_id]);
+
+    if (duplicateCheck.rows[0])
+      throw new BadRequestError(`Duplicate item: ${name} already exists, in the same location. `);
 
     const result = await db.query(
           `INSERT INTO lot
-           (name, loc_id, quantity, price, notes)
+           (name, loc_id, quantity, price, description)
            VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, name, loc_id, quantity, price, notes`,
+           RETURNING id, name, loc_id, quantity, price, description`,
         [
           name,
           loc_id,
           quantity,
           price,
-          notes
+          description
         ],
     );
     const lot = result.rows[0];
-
     return lot;
   }
 
@@ -42,14 +49,15 @@ class Lot {
    * - location
    * - name (will find case-insensitive, partial matches)
    *
-   * Returns [{ id, name, description, numEmployees, logoUrl }, ...]
+   * Returns [{ id, name, location, description, quantity, price }, ...]
    * */
 
-   static async findAll(searchTerm = "") {
+   static async findAll(params={}) {
 
-    let query = `SELECT id, name,l.name as locName,quantity,price,notes
+    let query = `SELECT lot.id, lot.name,location.name as location, lot.quantity, lot.price, lot.description
                  FROM lot
-                 JOIN location AS l ON l.id = lot.location`
+                 JOIN location ON location.id = lot.loc_id
+                 `
                  ; 
     let whereExpressions = [];
     let queryValues = [];
@@ -58,17 +66,17 @@ class Lot {
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
 
-    if (searchTerm) {
-      queryValues.push(`%${searchTerm}%`);
-      whereExpressions.push(`name ILIKE $${queryValues.length}`)
-      whereExpressions.push(`description ILIKE $${queryValues.length}`)
-      whereExpressions.push(`l.name ILIKE $${queryValues.length}`)
+    if (params.searchTerm) {
+      queryValues.push(`%${params.searchTerm}%`);
+      whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
+      whereExpressions.push(`lot.description ILIKE $${queryValues.length}`)
+      whereExpressions.push(`location.name ILIKE $${queryValues.length} \n`)
+      query += "WHERE " + whereExpressions.join(" OR ")
+      query += " ORDER BY lot.name";
     }
 
 
     // Finalize query and return results
-
-    query += " ORDER BY name";
     const lotsRes = await db.query(query, queryValues);
     return lotsRes.rows;
   }
@@ -81,32 +89,31 @@ class Lot {
    **/
 
    static async get(id) {
+    if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
     const lotRes = await db.query(
           `SELECT id,
                   name,
-                  location, 
+                  loc_id, 
                   quantity, 
                   price, 
                   description
            FROM lot
            WHERE id = $1`,
         [id]);
-
     const lot = lotRes.rows[0];
-
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
 
-    const prodRes = await db.query(
-          `SELECT id, name,date_start,date_end, active, notes
-           FROM production,
-           JOIN prop ON production.id = prop.prod_id
-           WHERE prop.lot_id = $1
-           ORDER BY prop.date_start`,
-        [id],
-    );
+    // const prodRes = await db.query(
+    //       `SELECT id, name,date_start,date_end, active, notes
+    //        FROM production,
+    //        JOIN prop ON production.id = prop.prod_id
+    //        WHERE prop.lot_id = $1
+    //        ORDER BY prop.date_start`,
+    //     [id],
+    // );
 
     
-    lot.productions = prodRes.rows || [];
+    // lot.productions = prodRes.rows || [];
 
     return lot;
   }
@@ -126,11 +133,7 @@ class Lot {
   static async update(id, data) {
     const { setCols, values } = sqlForPartialUpdate(
         data,
-        {
-          dateStart: "date_start",
-          dateEnd: "date_end",
-          
-        });
+        {});
     const idVarIdx = "$" + (values.length + 1);
 
     const querySql = `UPDATE lot 
@@ -139,8 +142,8 @@ class Lot {
                       RETURNING id, 
                                 name, 
                                 description, 
-                                date_start AS dateStart,
-                                date_end AS dateEnd`;
+                                quantity,
+                                price`;
     const result = await db.query(querySql, [...values, id]);
     const lot = result.rows[0];
 
@@ -155,6 +158,8 @@ class Lot {
    **/
 
   static async remove(id) {
+    if (typeof id != 'number') throw new BadRequestError(`${id} is not an integer`)
+
     const result = await db.query(
           `DELETE
            FROM lot
@@ -164,6 +169,7 @@ class Lot {
     const lot = result.rows[0];
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
+    return lot
   }
 }
 
