@@ -45,7 +45,6 @@ describe("create", function () {
 describe("findAll", function () {
   test("works: no filter", async function () {
     let jobs = await Production.findAll();
-    console.log("!!!!!!", jobs[0].dateStart,typeof jobs[0].dateStart)
 
     expect(jobs).toEqual(expect.arrayContaining([
       {

@@ -47,6 +47,30 @@ describe("create",function () {
     }
     );
   });
+  test("fails with bad data", async function () {
+    try {
+      await Location.create("");
+      fail();
+    } catch (err){
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+  test("fails with null", async function () {
+    try {
+      await Location.create({notes:"bad data"});
+      fail();
+    } catch (err){
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+  test("fails with name as empty string", async function () {
+    try {
+      await Location.create({name:""});
+      fail();
+    } catch (err){
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
 
 });
 
@@ -91,79 +115,84 @@ describe("get", function () {
 
 /************************************** update */
 
-// describe("update", function () {
-//   const updateData = {
-//     name: "New",
-//     description: "New Description",
-//     numEmployees: 10,
-//     logoUrl: "http://new.img",
-//   };
+describe("update", function () {
+  const updateData = {
+    name: "Edited",
+    notes: "New Description"
+  };
 
-//   test("works", async function () {
-//     let company = await Location.update("item1", updateData);
-//     expect(company).toEqual({
-//       handle: "item1",
-//       ...updateData,
-//     });
+  test("works", async function () {
+    const {rows} = await db.query(
+      `SELECT id, name, notes
+       FROM location
+       WHERE name = 'First Location'`);
 
-//     const result = await db.query(
-//           `SELECT handle, name, description, num_employees, logo_url
-//            FROM lot
-//            WHERE handle = 'item1'`);
-//     expect(result.rows).toEqual([{
-//       handle: "item1",
-//       name: "New",
-//       description: "New Description",
-//       num_employees: 10,
-//       logo_url: "http://new.img",
-//     }]);
-//   });
+    let updatedLocation = await Location.update(rows[0].id, updateData);
+    expect(updatedLocation).toEqual({
+      id: expect.any(Number),
+      ...updateData,
+    });
 
-//   test("works: null fields", async function () {
-//     const updateDataSetNulls = {
-//       name: "New",
-//       description: "New Description",
-//       numEmployees: null,
-//       logoUrl: null,
-//     };
+    const result = await db.query(
+          `SELECT id, name, notes
+           FROM location
+           WHERE name = 'Edited'`);
+    expect(result.rows).toEqual([{
+      ...updateData,
+      id: expect.any(Number)
+    }]);
+  });
 
-//     let company = await Location.update("item1", updateDataSetNulls);
-//     expect(company).toEqual({
-//       handle: "item1",
-//       ...updateDataSetNulls,
-//     });
+  test("works: null fields", async function () {
+    const {rows} = await db.query(
+      `SELECT id, name, notes
+       FROM location
+       WHERE name = 'Parent Location'`);
 
-//     const result = await db.query(
-//           `SELECT handle, name, description, num_employees, logo_url
-//            FROM lot
-//            WHERE handle = 'item1'`);
-//     expect(result.rows).toEqual([{
-//       handle: "item1",
-//       name: "New",
-//       description: "New Description",
-//       num_employees: null,
-//       logo_url: null,
-//     }]);
-//   });
+    const updateDataSetNulls = {
+      notes: "New Parent Description",
+    };
 
-//   test("not found if no such lot", async function () {
-//     try {
-//       await Location.update("nope", updateData);
-//       fail();
-//     } catch (err) {
-//       expect(err instanceof NotFoundError).toBeTruthy();
-//     }
-//   });
+    let company = await Location.update(rows[0].id, updateDataSetNulls);
+    expect(company).toEqual({
+      id: expect.any(Number),
+      name: "Parent Location",
+      ...updateDataSetNulls,
+    });
 
-//   test("bad request with no data", async function () {
-//     try {
-//       await Location.update("item1", {});
-//       fail();
-//     } catch (err) {
-//       expect(err instanceof BadRequestError).toBeTruthy();
-//     }
-//   });
-// });
+    const result = await db.query(
+      `SELECT id, name, notes
+       FROM location
+       WHERE name = 'Parent Location'`);
+    expect(result.rows).toEqual([{
+      id: expect.any(Number),
+      name: "Parent Location",
+      notes: "New Parent Description"
+    }]);
+  });
+
+  test("not found if no such lot", async function () {
+    try {
+      await Location.update(-3, updateData);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+
+  test("bad request with no data", async function () {
+    try {
+      const {rows} = await db.query(
+        `SELECT id, name, notes
+         FROM location
+         WHERE name = 'Parent Location'`);
+      await Location.update(rows[0].id, {});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
 
 /************************************** remove */
 

@@ -16,7 +16,7 @@ class Location {
    * Throws BadRequestError if location already in database.
    * */
   static async create({ name, notes=null}) {
-
+    if (!name || name === "") throw new BadRequestError(`Please include a name for the location`)
     const result = await db.query(
           `INSERT INTO location
            (name, notes)
@@ -53,6 +53,7 @@ class Location {
     //     [id]);
     // const loc = lotRes.rows;
     //https://www.sql-workbench.eu/comparison/recursive_queries.html
+    
     let locationQuery = await db.query(
       `SELECT id, name, notes
         FROM location
