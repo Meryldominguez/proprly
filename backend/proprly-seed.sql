@@ -19,34 +19,22 @@ VALUES ('testuser',
 ;
 
 
-INSERT INTO location (name , notes)
-VALUES ('warehouse','123 easy st.'),
-        ('Opera Center','456 main st.'),
-        ('rehearsal studios','567 main st.'),
-        ('Bay 3', 'Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.'),
-        ('Bay 4', 'Nulla facilisi.'),
-        ('Room 202', null),
-        ('Room 201', 'Maecenas pulvinar lobortis est. Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.'),
-        ('Theater A', null),
-        ('Theater B', null),
-        ('Bay 5.', 'Duis bibendum.'),
-        ('Room 100', 'Duis ac nibh.'),
-        ('Bay 1', 'In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat. Nulla nisl. Nunc nisl.'),
-        ('Bay 2', null)
+INSERT INTO location (name , notes, parent_id)
+VALUES ('warehouse','123 easy st.', null),
+        ('Opera Center','456 main st.', null),
+        ('rehearsal studios','567 main st.', null),
+        ('Bay 3', 'Fusce congue, diam id ornare imperdiet, sapien urna pretium nisl, ut volutpat sapien arcu sed augue. Aliquam erat volutpat.', 1),
+        ('Bay 4', 'Nulla facilisi.',1),
+        ('Room 202', null, 1),
+        ('Room 201', 'Maecenas pulvinar lobortis est. Phasellus sit amet erat. Nulla tempus. Vivamus in felis eu sapien cursus vestibulum.',1),
+        ('Theater A', null,2),
+        ('Theater B', null,2),
+        ('Bay 5.', 'Duis bibendum.',4),
+        ('Room 100', 'Duis ac nibh.',4),
+        ('Bay 1', 'In est risus, auctor sed, tristique in, tempus sit amet, sem. Fusce consequat. Nulla nisl. Nunc nisl.',5),
+        ('Bay 2', null,10)
 ;
 
-INSERT INTO parent_loc (parent_loc, loc_id)
-VALUES (1,4),
-        (1,5),
-        (1,6),
-        (1,7),
-        (2,8),
-        (2,9),
-        (4,10),
-        (4,11),
-        (5,12),
-        (3,13)
-;
 
 INSERT INTO production (title,
                        date_start,

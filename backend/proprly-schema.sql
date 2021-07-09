@@ -1,17 +1,9 @@
 CREATE TABLE location (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
-  notes TEXT
-);
-
-CREATE TABLE parent_loc (
-  parent_loc INTEGER
+  notes TEXT,
+  parent_id INTEGER
     REFERENCES location
-    ON DELETE CASCADE,
-  loc_id INTEGER
-    REFERENCES location
-    ON DELETE CASCADE,
-  PRIMARY KEY (parent_loc, loc_id)
 );
 
 CREATE TABLE lot (

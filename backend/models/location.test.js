@@ -89,7 +89,7 @@ describe("get", function () {
         id: expect.any(Number),
         name: "Parent Location",
         notes: "The parent location",
-        childLocations: expect.any(Array)
+        items: expect.any(Array)
       }
     )
     expect(location.childLocations.length).toEqual(2)
