@@ -56,26 +56,16 @@ CREATE TABLE users (
   is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE TABLE category (
+CREATE TABLE tag (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL
 );
 
-CREATE TABLE parent_cat (
-  parent_id INTEGER
-    REFERENCES category 
-    ON DELETE CASCADE,
-  cat_id INTEGER
-    REFERENCES category 
-    ON DELETE CASCADE,
-  PRIMARY KEY (parent_id, cat_id)
-);
-
-CREATE TABLE lot_cat (
+CREATE TABLE lot_tag (
   lot_id INTEGER
     REFERENCES lot,
-  cat_id INTEGER
-    REFERENCES category,
-  PRIMARY KEY (lot_id, cat_id)
+  tag_id INTEGER
+    REFERENCES tag,
+  PRIMARY KEY (lot_id, tag_id)
 );
 

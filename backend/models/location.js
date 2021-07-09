@@ -33,6 +33,12 @@ class Location {
   }
 
 
+  /** Returns full nested list of locations and nested child locations
+   *
+   **/
+
+   static async list() {
+  }
   /** Given a location id, return data about location.
    *
    * Returns { id, name, notes, parentLocations=[{id, name, notes}] }

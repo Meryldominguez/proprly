@@ -3,7 +3,7 @@
 const db = require("../db.js");
 process.cwd()
 const { BadRequestError, NotFoundError } = require("../expressError");
-const Location = require("./location.js");
+const Tag = require("./tag.js");
 const {
   commonBeforeAll,
   commonBeforeEach,
@@ -21,35 +21,32 @@ afterAll(commonAfterAll);
 
 describe("create",function () {
   
-  const newLoc = {
-    name: "New",
-    notes: "New Location",
+  const newCat = {
+    title: "New Tag"
   };
 
   test("works", async function () {
-    let loc = await Location.create(newLoc);
+    let tag = await Tag.create(newCat);
     
-    expect(loc).toEqual({
-      name: "New",
-      notes: "New Location",
+    expect(tag).toEqual({
+      title: "New Tag",
       id: expect.any(Number),
     });
 
     const result = await db.query(
-          `SELECT id, name, notes
-           FROM location
-           WHERE name = 'New'`);
+          `SELECT id, title
+           FROM tag
+           WHERE title ='New Tag'`);
     expect(result.rows[0]).toEqual(
       {
-      name: "New",
-      notes: "New Location",
+      title: "New Tag",
       id: expect.any(Number),
     }
     );
   });
   test("fails with bad data", async function () {
     try {
-      await Location.create("");
+      await Tag.create("");
       fail();
     } catch (err){
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -57,15 +54,15 @@ describe("create",function () {
   });
   test("fails with null", async function () {
     try {
-      await Location.create({notes:"bad data"});
+      await Tag.create({});
       fail();
     } catch (err){
       expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
-  test("fails with name as empty string", async function () {
+  test("fails with title as empty string", async function () {
     try {
-      await Location.create({name:""});
+      await Tag.create({title:""});
       fail();
     } catch (err){
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -79,25 +76,22 @@ describe("create",function () {
 describe("get", function () {
   test("works", async function () {
     const result = await db.query(
-      `SELECT id, name, notes
-       FROM location
-       WHERE name = 'Parent Location'`);
+      `SELECT id, title
+       FROM tag
+       WHERE title = 'Hand Props'`);
       
-    let location = await Location.get(result.rows[0].id);
-    expect(location).toEqual(
+    let tag = await Tag.get(result.rows[0].id);
+    expect(tag).toEqual(
       {
         id: expect.any(Number),
-        name: "Parent Location",
-        notes: "The parent location",
-        childLocations: expect.any(Array)
+        title: "Hand Props",
       }
     )
-    expect(location.childLocations.length).toEqual(2)
   });
 
   test("not found if no such lot", async function () {
     try {
-      await Location.get(-200);
+      await Tag.get(-200);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -105,7 +99,15 @@ describe("get", function () {
   });
   test("not found if string passed as id", async function () {
     try {
-      await Location.get("X");
+      await Tag.get("X");
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+  test("not found if passed null", async function () {
+    try {
+      await Tag.get();
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -117,63 +119,34 @@ describe("get", function () {
 
 describe("update", function () {
   const updateData = {
-    name: "Edited",
-    notes: "New Description"
+    title: "New Description"
   };
 
   test("works", async function () {
     const {rows} = await db.query(
-      `SELECT id, name, notes
-       FROM location
-       WHERE name = 'First Location'`);
+      `SELECT id, title, title
+       FROM tag
+       WHERE title = 'Hand Props'`);
 
-    let updatedLocation = await Location.update(rows[0].id, updateData);
-    expect(updatedLocation).toEqual({
+    let updatedTag = await Tag.update(rows[0].id, updateData);
+    expect(updatedTag).toEqual({
       id: expect.any(Number),
       ...updateData,
     });
 
     const result = await db.query(
-          `SELECT id, name, notes
-           FROM location
-           WHERE name = 'Edited'`);
+          `SELECT id, title, title
+           FROM tag
+           WHERE title = 'New Description'`);
     expect(result.rows).toEqual([{
       ...updateData,
       id: expect.any(Number)
     }]);
   });
 
-  test("works: null fields", async function () {
-    const {rows} = await db.query(
-      `SELECT id, name, notes
-       FROM location
-       WHERE name = 'Parent Location'`);
-
-    const updateDataSetNulls = {
-      notes: "New Parent Description",
-    };
-
-    let company = await Location.update(rows[0].id, updateDataSetNulls);
-    expect(company).toEqual({
-      id: expect.any(Number),
-      name: "Parent Location",
-      ...updateDataSetNulls,
-    });
-
-    const result = await db.query(
-      `SELECT id, name, notes
-       FROM location
-       WHERE name = 'Parent Location'`);
-    expect(result.rows).toEqual([{
-      id: expect.any(Number),
-      name: "Parent Location",
-      notes: "New Parent Description"
-    }]);
-  });
-
   test("not found if no such lot", async function () {
     try {
-      await Location.update(-3, updateData);
+      await Tag.update(-3, updateData);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -183,10 +156,10 @@ describe("update", function () {
   test("bad request with no data", async function () {
     try {
       const {rows} = await db.query(
-        `SELECT id, name, notes
-         FROM location
-         WHERE name = 'Parent Location'`);
-      await Location.update(rows[0].id, {});
+        `SELECT id, title
+         FROM tag
+         WHERE title = 'Hand Props'`);
+      await Tag.update(rows[0].id, {});
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -196,26 +169,26 @@ describe("update", function () {
 
 /************************************** remove */
 
-describe("remove Location", function () {
+describe("remove Tag", function () {
   test("works", async function () {
     const test = await db.query(
       `SELECT *
-      FROM location
-      WHERE name='First Location'`,
+      FROM tag
+      WHERE title='Hand Props'`,
 
     );
 
-    let locations = await Location.get(test.rows[0].id);
-    await Location.remove(locations.id);
+    let result = await Tag.get(test.rows[0].id);
+    await Tag.remove(result.id);
 
     const res = await db.query(
-        "SELECT * FROM location WHERE name='First Location'");
+        "SELECT * FROM tag WHERE title='First Tag'");
     expect(res.rows.length).toEqual(0);
   });
 
   test("not found if no such lot", async function () {
     try {
-      await Location.remove(-200);
+      await Tag.remove(-200);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
@@ -223,7 +196,7 @@ describe("remove Location", function () {
   });
   test("not found if string passed as id", async function () {
     try {
-      await Location.remove("X");
+      await Tag.remove("X");
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();

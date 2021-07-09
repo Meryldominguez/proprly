@@ -117,7 +117,7 @@ VALUES (18, 6, null),
         (18, 16, null)
 ;
 
-INSERT INTO category (title)
+INSERT INTO tag (title)
 VALUES ('Set Dressing'),
         ('Hand Props'),
         ('Set Props'),

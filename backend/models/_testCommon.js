@@ -10,7 +10,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM lot");
   await db.query("DELETE FROM users");
   await db.query("DELETE FROM location");
-  await db.query("DELETE FROM category");
+  await db.query("DELETE FROM tag");
   await db.query("DELETE FROM production");
 
   await db.query(`
@@ -34,6 +34,14 @@ async function commonBeforeAll() {
     VALUES ($1,$2),
            ($1,$3)`,
            [parentLocId,locId1,locId2]);
+
+  await db.query(`
+    INSERT INTO tag(title)
+    VALUES ('Set Dressing'),
+           ('Hand Props'),
+           ('Fabric'),
+           ('Furniture')
+           `);
 
   await db.query(`
     INSERT INTO lot( name, loc_id, description, quantity, price)
