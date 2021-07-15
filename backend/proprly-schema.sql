@@ -3,7 +3,7 @@ CREATE TABLE location (
   name TEXT NOT NULL,
   notes TEXT,
   parent_id INTEGER
-    REFERENCES location
+    REFERENCES location ON DELETE CASCADE
 );
 
 CREATE TABLE lot (
@@ -28,9 +28,9 @@ CREATE TABLE production (
 );
 CREATE TABLE prop (
   lot_id INTEGER
-    REFERENCES lot,
+    REFERENCES lot ON DELETE CASCADE,
   prod_id INTEGER
-    REFERENCES production,
+    REFERENCES production ON DELETE CASCADE,
   PRIMARY KEY ( prod_id,lot_id),
   quantity INTEGER 
     CHECK (quantity >= 0 OR quantity = NULL),

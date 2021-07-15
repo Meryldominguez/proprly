@@ -92,7 +92,7 @@ describe("get", function () {
         items: expect.any(Array)
       }
     )
-    expect(location.childLocations.length).toEqual(2)
+    expect(location.items.length).toEqual(3)
   });
 
   test("not found if no such lot", async function () {

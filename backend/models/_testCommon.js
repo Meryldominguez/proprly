@@ -13,27 +13,21 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM tag");
   await db.query("DELETE FROM production");
 
-  await db.query(`
-    INSERT INTO location(name, notes)
-    VALUES ('Parent Location','The parent location'),
-           ('First Location','The first location'),
-           ('Second Location','The second location')
+  const {rows:[testParentLoc]} = await db.query(`
+    INSERT INTO location(name, notes, parent_id)
+    VALUES ('Parent Location','The parent location', null)
+    RETURNING id, name, notes, parent_id
            `);
-    const {rows:[{id:parentLocId}]} = await db.query(`
-      SELECT id FROM location
-        WHERE name = 'Parent Location'`)
-    const {rows:[{id:locId1}]} = await db.query(`
-      SELECT id FROM location
-        WHERE name = 'First Location'`)
-    const {rows:[{id:locId2}]} = await db.query(`
-      SELECT id FROM location
-        WHERE name = 'Second Location'`)
-  
-  await db.query(`
-    INSERT INTO parent_loc (parent_loc,loc_id)
-    VALUES ($1,$2),
-           ($1,$3)`,
-           [parentLocId,locId1,locId2]);
+  const {rows:[testFirstLoc]} = await db.query(`
+    INSERT INTO location(name, notes, parent_id)
+    VALUES ('First Location','The first location', $1)
+    RETURNING id, name, notes, parent_id
+           `,[testParentLoc.id]);
+  const {rows:[testSecondLoc]} = await db.query(`
+    INSERT INTO location(name, notes, parent_id)
+    VALUES ('Second Location','The second location', $1)
+    RETURNING id, name, notes, parent_id
+           `,[testParentLoc.id]);
 
   await db.query(`
     INSERT INTO tag(title)
@@ -43,35 +37,41 @@ async function commonBeforeAll() {
            ('Furniture')
            `);
 
-  await db.query(`
+  const {rows:[testFirstLot, testSecondLot, testThirdLot]}=await db.query(`
     INSERT INTO lot( name, loc_id, description, quantity, price)
     VALUES ('item1', $1, 'Desc1', 1, 10.99),
            ('item2', $1, 'Desc2', null, 5.50),
-           ('item3', $2, 'Desc3', 3, 400.00)`,
-           [locId1,locId2]);
+           ('item3', $2, 'Desc3', 3, 400.00)
+    RETURNING id, name`,
+           [testFirstLoc.id,testSecondLoc.id]);
 
-  await db.query(`
+  const {rows:[testFirstProd,testSecondProd,testThirdProd,testFourthProd]}= await db.query(`
     INSERT INTO production (title, date_start, date_end, active, notes)
     VALUES ('Carmen', '2019-09-01', '2019-10-15', FALSE,'co-production carmen notes'),
            ('Magic Flute', '2021-05-03', null, TRUE, 'flute notes'),
            ('La traviata', null ,'2006-12-01', FALSE, 'co-production traviata notes'),
-           ('Steve Jobs', NULL, NULL, TRUE, 'upcoming planning for steve jobs')`);
+           ('Steve Jobs', NULL, NULL, TRUE, 'upcoming planning for steve jobs')
+    RETURNING id, title, active, notes
+           `);
 
-  let {rows:[{id:lot1Id},{id:lot2Id},{id:lot3Id}]} = await db.query(`
-    SELECT id FROM lot`);
-  let {rows:[{id:prod1Id},{id:prod2Id},{id:prod3Id},{id:prod4Id}]} = await db.query(`
-    SELECT id FROM production`);
-
-  // await db.query(`
-  //   INSERT INTO props ( prod_id, lot_id, quantity, notes)
-  //   VALUES ($1,$5, 1, null),
-  //          ($1,$6, null, null),
-  //          ($1,$7, 2, "need this"),
-  //          ($2,$6, null, "using half the box"),
-  //          ($3,$6, null, "20 singular items" ),
-  //          ($4,$7, 1, null),
-  //          ($4,$6, null, "maybe")`,
-  //          [prod1Id,prod2Id,prod3Id,prod4Id,lot1Id,lot2Id,lot3Id]);
+  await db.query(`
+    INSERT INTO prop ( prod_id, lot_id, quantity, notes)
+    VALUES ($1,$5, 1, null),
+           ($1,$6, null, null),
+           ($1,$7, 2, 'need this'),
+           ($2,$6, null, 'using half the box'),
+           ($3,$6, null, '20 singular items' ),
+           ($4,$7, 1, null),
+           ($4,$6, null, 'maybe')`,
+           [
+             testFirstProd.id,
+             testSecondProd.id,
+             testThirdProd.id,
+             testFourthProd.id,
+             testFirstLot.id,
+             testSecondLot.id,
+             testThirdLot.id
+            ]);
 
   await db.query(`
         INSERT INTO users(username,

@@ -83,6 +83,8 @@ class Location {
 
     if (!locationQuery.rows[0]) throw new NotFoundError(`No location: ${id}`);
     let loc = locationQuery.rows[0]
+
+    let lotQuery
     
     return loc;
   }
@@ -116,30 +118,6 @@ class Location {
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
 
     return lot;
-  }
-
-  /** Add a parent_loc entry
-   * 
-   * @param {parentId} id for location
-   * @param {id} id for another location to be child
-   * @returns {}
-   * 
-   * if parentId is in Location.list(id)-> BadRequestError
-   * if id is in
-   */
-   static async addChild(parentId,id){
-    const idCheck = await db.query(
-      `SELECT id
-        FROM parent_loc
-        WHERE loc_id = $1`,
-        [id]
-    )
-    if(idCheck.rows[0])throw new BadRequestError(`${id} already has a parent`)
-
-    const parentCheck = await Location.list(parentId)
-
-
-
   }
 
   /** Delete given lot from database; returns id.
