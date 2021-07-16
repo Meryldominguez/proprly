@@ -84,6 +84,7 @@ describe("get", function () {
        WHERE name = 'Parent Location'`);
       
     let location = await Location.get(result.rows[0].id);
+    
     expect(location).toEqual(
       {
         id: expect.any(Number),
@@ -204,9 +205,7 @@ describe("remove Location", function () {
       WHERE name='First Location'`,
 
     );
-
-    let locations = await Location.get(test.rows[0].id);
-    await Location.remove(locations.id);
+    await Location.remove(test.rows[0].id);
 
     const res = await db.query(
         "SELECT * FROM location WHERE name='First Location'");

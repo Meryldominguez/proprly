@@ -33,14 +33,13 @@ class Location {
   }
 
 
-  /** Returns full nested list of locations and nested child locations
-   * 
-   * if no id param is passed, all locations are returned in a tree
+  /** Returns array of locations and child locations
+   * if no id param is passed, all locations are returned
    **/
 
-   static async list(id=null) {
-    const startId = id ? `WHERE parent.id=${id}`: ""
-    const locationTree = await db.query(
+  static async getChildren(id=null) {
+    
+    const result = await db.query(
       `WITH RECURSIVE findchildren AS ( 
         SELECT 
             child.parent_id AS "locationId", 
@@ -49,7 +48,7 @@ class Location {
             child.name AS "childName"
             FROM location as child
         JOIN location AS parent ON child.parent_id=parent.id
-        $1
+        ${id ? `WHERE parent.id=${id}`: ""}
 
         UNION ALL
 
@@ -61,8 +60,22 @@ class Location {
 
       SELECT * FROM findchildren
       GROUP BY "locationId","locationName", "childId", "childName"
-      ORDER BY "locationId", "childId";`,
-      [startId])
+      ORDER BY "locationId", "childId";`);
+
+      /** Played with recursive nested option
+       * 
+       * {id:1, name:"warehouse" children:[]}
+        const parseLocTree = (result = {}, rows) => {
+        if (!rows.length) return result
+        let newRows = []
+        if (!result.id) result.id =rows[0].locationId
+        if (!result.name) result.name =rows[0].locationName
+
+        rows.forEach(row => result[row.locationId]? rows[0].locationId)
+        }
+       * 
+       */
+    return result.rows
   }
 
   /** Given a location id, return location and items listed under it or its child locations.
@@ -73,19 +86,29 @@ class Location {
    **/
    static async get(id) {
     if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
-
-    let locationQuery = await db.query(
+    
+    let {rows:[loc]} = await db.query(
       `SELECT id, name, notes
         FROM location
         WHERE id=$1
         `,
     [id]);
+    if (!loc) throw new NotFoundError(`No location: ${id}`);
 
-    if (!locationQuery.rows[0]) throw new NotFoundError(`No location: ${id}`);
-    let loc = locationQuery.rows[0]
+    const childArrray = await Location.getChildren(loc.id)
+    const idSet = new Set ()
+    childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
+    const idArray=Array.from(idSet)
 
-    let lotQuery
-    
+    let lotQuery = await db.query(
+      `SELECT lot.id, lot.name, quantity, description, price, loc_id, location.name as "location"
+        FROM lot
+        JOIN location on loc_id = location.id
+        WHERE ${idArray.map((item, idx) =>`location.id = $${idx+1}` ).join(" OR ")}
+        `,
+    [...idArray]);
+
+    loc.items = lotQuery.rows
     return loc;
   }
 
