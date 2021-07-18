@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const db = require("../db.js");
 const { BCRYPT_WORK_FACTOR } = require("../config");
 
-const testJobIds = [];
 
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
@@ -29,15 +28,18 @@ async function commonBeforeAll() {
     RETURNING id, name, notes, parent_id
            `,[testParentLoc.id]);
 
-  await db.query(`
+  const{rows:[tag1,tag2,tag3,tag4]}= await db.query(`
     INSERT INTO tag(title)
     VALUES ('Set Dressing'),
            ('Hand Props'),
            ('Fabric'),
-           ('Furniture')
-           `);
+           ('Furniture'),
+           ('Florals')
+    RETURNING id,title
+            `);
+  
 
-  const {rows:[testFirstLot, testSecondLot, testThirdLot]}=await db.query(`
+  const {rows:[testLot1, testLot2, testLot3]}=await db.query(`
     INSERT INTO lot( name, loc_id, description, quantity, price)
     VALUES ('item1', $1, 'Desc1', 1, 10.99),
            ('item2', $1, 'Desc2', null, 5.50),
@@ -45,6 +47,27 @@ async function commonBeforeAll() {
     RETURNING id, name`,
            [testFirstLoc.id,testSecondLoc.id]);
 
+  await db.query(`
+    INSERT INTO lot_tag(tag_id,lot_id)
+    VALUES ($1,$5),
+            ($1,$7),
+            ($2,$5),
+            ($2,$6),
+            ($4,$5),
+            ($4,$6),
+            ($4,$7),
+            ($3,$7),
+            ($3,$5)
+          `,[
+            tag1.id,
+            tag2.id,
+            tag3.id,
+            tag4.id,
+            testLot1.id,
+            testLot2.id,
+            testLot3.id
+          ]);
+      
   const {rows:[testFirstProd,testSecondProd,testThirdProd,testFourthProd]}= await db.query(`
     INSERT INTO production (title, date_start, date_end, active, notes)
     VALUES ('Carmen', '2019-09-01', '2019-10-15', FALSE,'co-production carmen notes'),
@@ -68,9 +91,9 @@ async function commonBeforeAll() {
              testSecondProd.id,
              testThirdProd.id,
              testFourthProd.id,
-             testFirstLot.id,
-             testSecondLot.id,
-             testThirdLot.id
+             testLot1.id,
+             testLot2.id,
+             testLot3.id
             ]);
 
   await db.query(`
@@ -110,5 +133,4 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testJobIds,
 };
