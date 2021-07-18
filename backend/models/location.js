@@ -7,7 +7,7 @@ const { sqlForPartialUpdate } = require("../helpers/sql");
 /** Related functions for locations. */
 
 class Location {
-  /** Create a location (from data), update db, return new lot data.
+  /** Create a location (from data), update db, return new loc data.
    *
    * data should be { name, notes }
    *
@@ -80,7 +80,7 @@ class Location {
 
   /** Given a location id, return location and items listed under it or its child locations.
    *
-   * Returns { id, name, notes, items=[lot, lot, lot...] }
+   * Returns { id, name, notes, items=[loc, loc, loc...] }
    *
    * Throws NotFoundError if not found.
    **/
@@ -100,33 +100,43 @@ class Location {
     childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
     const idArray=Array.from(idSet)
 
-    let lotQuery = await db.query(
-      `SELECT lot.id, lot.name, quantity, description, price, loc_id, location.name as "location"
-        FROM lot
+    let locQuery = await db.query(
+      `SELECT loc.id, loc.name, quantity, description, price, loc_id, location.name as "location"
+        FROM loc
         JOIN location on loc_id = location.id
         WHERE ${idArray.map((item, idx) =>`location.id = $${idx+1}` ).join(" OR ")}
         `,
     [...idArray]);
 
-    loc.items = lotQuery.rows
+    loc.items = locQuery.rows
     return loc;
   }
 
-  /** Update lot data with `data`.
+  /** Update location data with `data`.
    *
    * This is a "partial update" --- it's fine if data doesn't contain all the
    * fields; this only changes provided ones.
+   * 
+   * A check is included to prevent locations being named the children of its current children
    *
-   * Data can include: {name, description, numEmployees, logoUrl}
+   * Data can include: {name,notes, parent_id}
    *
    * Returns {id, name, description, numEmployees, logoUrl}
    *
    * Throws NotFoundError if not found.
    */
   static async update(id, data) {
+
+    if (data.parentId) {
+      const childArrray = await Location.getChildren(loc.id)
+      const idSet = new Set ()
+      childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
+      
+      if (idSet.has(data.parentId)) throw BadRequestError(`New parent location cannot be a current child of the location`)
+    }
     const { setCols, values } = sqlForPartialUpdate(
         data,
-        {});
+        {parentId: "parent_id"});
     const idVarIdx = "$" + (values.length + 1);
 
     const querySql = `UPDATE location 
@@ -134,18 +144,19 @@ class Location {
                       WHERE id = ${idVarIdx} 
                       RETURNING id, 
                                 name, 
-                                notes`;
+                                notes,
+                                parent_id as 'parentId'`;
     const result = await db.query(querySql, [...values, id]);
-    const lot = result.rows[0];
+    const loc = result.rows[0];
 
-    if (!lot) throw new NotFoundError(`No lot: ${id}`);
+    if (!loc) throw new NotFoundError(`No location: ${id}`);
 
-    return lot;
+    return loc;
   }
 
-  /** Delete given lot from database; returns id.
+  /** Delete given location from database; returns id.
    *
-   * Throws NotFoundError if lot not found.
+   * Throws NotFoundError if loc not found.
    **/
 
   static async remove(id) {
@@ -157,10 +168,10 @@ class Location {
            WHERE id = $1
            RETURNING id`,
         [id]);
-    const lot = result.rows[0];
+    const loc = result.rows[0];
 
-    if (!lot) throw new NotFoundError(`No lot: ${id}`);
-    return lot
+    if (!loc) throw new NotFoundError(`No loc: ${id}`);
+    return loc
   }
 }
 
