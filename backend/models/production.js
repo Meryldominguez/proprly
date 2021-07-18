@@ -40,11 +40,11 @@ class Production {
   /** Find all productions (optional filter on searchFilters).
    *
    * searchFilters (all optional):
-   * - minSalary
-   * - hasEquity (true returns only productions with equity > 0, other values ignored)
-   * - title (will find case-insensitive, partial matches)
+   * - isActive
+   * - Search
+   * - year, an array of year options
    *
-   * Returns [{ id, title, salary, equity, companyHandle, companyName }, ...]
+   * Returns [{ id, title, dateStart, dateEnd, active, notes }, ...]
    * */
 
   static async findAll({ isActive, search, year=[]} = {}) {
@@ -173,9 +173,9 @@ class Production {
     return prod;
   }
 
-  /** Delete given prod from database; returns undefined.
+  /** Delete given production from database; returns undefined.
    *
-   * Throws NotFoundError if company not found.
+   * Throws NotFoundError if production not found.
    **/
 
   static async remove(id) {

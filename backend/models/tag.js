@@ -29,16 +29,10 @@ class Tag {
     
     return result.rows[0];
   }
- /** Returns full nested list of tags and nested child tags
-   *
-   **/
-
-  static async list() {
-}
 
   /** Given a tag id, return data about tag.
    *
-   * Returns { id, title }
+   * Returns { id, title, lots:[] }
    *
    * Throws NotFoundError if not found.
    **/
