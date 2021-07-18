@@ -1,7 +1,6 @@
 "use strict";
 
 const db = require("../db.js");
-process.cwd()
 const { BadRequestError, NotFoundError } = require("../expressError");
 const Lot = require("./lot.js");
 const {
@@ -19,41 +18,59 @@ afterAll(commonAfterAll);
 
 /************************************** create */
 
-describe("create", function () {
+describe("create",function () {
   
   const newLot = {
     name: "New",
     description: "New Lot",
-    location: 1,
     quantity: 1,
     price: 20.99,
   };
 
   test("works", async function () {
-    let company = await Lot.create(Lotnew);
-    expect(company).toEqual(newLot);
+    let {rows:[loc]} = await db.query(
+      `SELECT * FROM location
+        WHERE name = 'First Location'`)
+    newLot.loc_id=loc.id
+
+    let lot = await Lot.create(newLot);
+    expect(lot).toEqual({
+      name: "New",
+      description: "New Lot",
+      quantity: 1,
+      loc_id:loc.id,
+      price : "$20.99",
+      id: expect.any(Number),
+    });
 
     const result = await db.query(
-          `SELECT name, description, location, quantity, price
-           FROM lots
+          `SELECT id, name, description, loc_id, quantity, price
+           FROM lot
            WHERE name = 'New'`);
     expect(result.rows).toEqual([
       {
+        id: expect.any(Number),
         name: "New",
         description: "New Lot",
-        location: 1,
+        loc_id: loc.id,
         quantity: 1,
-        price: 20.99,
+        price: "$20.99",
       },
     ]);
   });
 
   test("bad request with dupe", async function () {
     try {
+      let {rows:[loc]} = await db.query(
+        `SELECT * FROM location
+          WHERE name = 'First Location'`)
+      newLot.loc_id=loc.id
+
       await Lot.create(newLot);
       await Lot.create(newLot);
       fail();
     } catch (err) {
+ 
       expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
@@ -66,210 +83,94 @@ describe("findAll", function () {
     let lots = await Lot.findAll();
     expect(lots).toEqual([
       {
-        handle: "c1",
-        name: "C1",
+        id: expect.any(Number),
+        name: "item1",
+        location: "First Location",
         description: "Desc1",
-        numEmployees: 1,
-        logoUrl: "http://c1.img",
+        quantity: 1,
+        price:"$10.99"
       },
       {
-        handle: "c2",
-        name: "C2",
+        id: expect.any(Number),
+        name: "item2",
+        location: "First Location",
         description: "Desc2",
-        numEmployees: 2,
-        logoUrl: "http://c2.img",
+        quantity:null,
+        price:"$5.50"
       },
       {
-        handle: "c3",
-        name: "C3",
+        id: expect.any(Number),
+        name: "item3",
+        location: "Second Location",
         description: "Desc3",
-        numEmployees: 3,
-        logoUrl: "http://c3.img",
+        quantity: 3,
+        price:"$400.00"
       },
+
     ]);
   });
 
-  test("works: by min employees", async function () {
-    let lots = await Lot.findAll({ minEmployees: 2 });
-    expect(lots).toEqual([
-      {
-        handle: "c2",
-        name: "C2",
-        description: "Desc2",
-        numEmployees: 2,
-        logoUrl: "http://c2.img",
-      },
-      {
-        handle: "c3",
-        name: "C3",
-        description: "Desc3",
-        numEmployees: 3,
-        logoUrl: "http://c3.img",
-      },
-    ]);
-  });
 
-  test("works: by max employees", async function () {
-    let lots = await Lot.findAll({ maxEmployees: 2 });
+  test("works: search by name", async function () {
+    let lots = await Lot.findAll({searchTerm:"1"});
+    expect(lots.length).toEqual(1)
     expect(lots).toEqual([
       {
-        handle: "c1",
-        name: "C1",
+        id: expect.any(Number),
+        name: "item1",
+        location: "First Location",
         description: "Desc1",
-        numEmployees: 1,
-        logoUrl: "http://c1.img",
-      },
-      {
-        handle: "c2",
-        name: "C2",
-        description: "Desc2",
-        numEmployees: 2,
-        logoUrl: "http://c2.img",
+        quantity: 1,
+        price:"$10.99"
       },
     ]);
   });
-
-  test("works: by min-max employees", async function () {
-    let lots = await Lot.findAll(
-        { minEmployees: 1, maxEmployees: 1 });
-    expect(lots).toEqual([
-      {
-        handle: "c1",
-        name: "C1",
-        description: "Desc1",
-        numEmployees: 1,
-        logoUrl: "http://c1.img",
-      },
-    ]);
+  test("works: search by description", async function () {
+    let lots = await Lot.findAll({searchTerm:"desc"});
+    expect(lots.length).toEqual(3)
   });
 
-  test("works: by name", async function () {
-    let lots = await Lot.findAll({ name: "1" });
-    expect(lots).toEqual([
-      {
-        handle: "c1",
-        name: "C1",
-        description: "Desc1",
-        numEmployees: 1,
-        logoUrl: "http://c1.img",
-      },
-    ]);
+  test("works: search by location", async function () {
+    let lots = await Lot.findAll({searchTerm:"first"});
+    expect(lots.length).toEqual(2)
   });
 
   test("works: empty list on nothing found", async function () {
-    let lots = await Lot.findAll({ name: "nope" });
+    let lots = await Lot.findAll({searchTerm:"nope"});
     expect(lots).toEqual([]);
   });
 
-  test("bad request if invalid min > max", async function () {
-    try {
-      await Lot.findAll({ minEmployees: 10, maxEmployees: 1 });
-      fail();
-    } catch (err) {
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
-  });
 });
 
 /************************************** get */
 
 describe("get", function () {
   test("works", async function () {
-    let company = await Lot.get("c1");
-    expect(company).toEqual({
-      handle: "c1",
-      name: "C1",
-      description: "Desc1",
-      numEmployees: 1,
-      logoUrl: "http://c1.img",
-      jobs: [
-        { id: testJobIds[0], title: "Job1", salary: 100, equity: "0.1" },
-        { id: testJobIds[1], title: "Job2", salary: 200, equity: "0.2" },
-        { id: testJobIds[2], title: "Job3", salary: 300, equity: "0" },
-        { id: testJobIds[3], title: "Job4", salary: null, equity: null },
-      ],
-    });
+    let lots = await Lot.findAll({searchTerm:"1"});
+    let lot = await Lot.get(lots[0].id);
+    expect(lot).toEqual(
+      {
+        id: expect.any(Number),
+        name: "item1",
+        loc_id: expect.any(Number),
+        description: "Desc1",
+        quantity: 1,
+        price:"$10.99"
+      },
+    )
   });
 
-  test("not found if no such company", async function () {
+  test("not found if no such lot", async function () {
     try {
-      await Lot.get("nope");
+      await Lot.get(-200);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
     }
   });
-});
-
-/************************************** update */
-
-describe("update", function () {
-  const updateData = {
-    name: "New",
-    description: "New Description",
-    numEmployees: 10,
-    logoUrl: "http://new.img",
-  };
-
-  test("works", async function () {
-    let company = await Lot.update("c1", updateData);
-    expect(company).toEqual({
-      handle: "c1",
-      ...updateData,
-    });
-
-    const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
-           FROM lots
-           WHERE handle = 'c1'`);
-    expect(result.rows).toEqual([{
-      handle: "c1",
-      name: "New",
-      description: "New Description",
-      num_employees: 10,
-      logo_url: "http://new.img",
-    }]);
-  });
-
-  test("works: null fields", async function () {
-    const updateDataSetNulls = {
-      name: "New",
-      description: "New Description",
-      numEmployees: null,
-      logoUrl: null,
-    };
-
-    let company = await Lot.update("c1", updateDataSetNulls);
-    expect(company).toEqual({
-      handle: "c1",
-      ...updateDataSetNulls,
-    });
-
-    const result = await db.query(
-          `SELECT handle, name, description, num_employees, logo_url
-           FROM lots
-           WHERE handle = 'c1'`);
-    expect(result.rows).toEqual([{
-      handle: "c1",
-      name: "New",
-      description: "New Description",
-      num_employees: null,
-      logo_url: null,
-    }]);
-  });
-
-  test("not found if no such company", async function () {
+  test("not found if string passed as id", async function () {
     try {
-      await Lot.update("nope", updateData);
-      fail();
-    } catch (err) {
-      expect(err instanceof NotFoundError).toBeTruthy();
-    }
-  });
-
-  test("bad request with no data", async function () {
-    try {
-      await Lot.update("c1", {});
+      await Lot.get("X");
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -277,22 +178,108 @@ describe("update", function () {
   });
 });
 
+/************************************** update */
+
+// describe("update", function () {
+//   const updateData = {
+//     name: "New",
+//     description: "New Description",
+//     numEmployees: 10,
+//     logoUrl: "http://new.img",
+//   };
+
+//   test("works", async function () {
+//     let company = await Lot.update("item1", updateData);
+//     expect(company).toEqual({
+//       handle: "item1",
+//       ...updateData,
+//     });
+
+//     const result = await db.query(
+//           `SELECT handle, name, description, num_employees, logo_url
+//            FROM lot
+//            WHERE handle = 'item1'`);
+//     expect(result.rows).toEqual([{
+//       handle: "item1",
+//       name: "New",
+//       description: "New Description",
+//       num_employees: 10,
+//       logo_url: "http://new.img",
+//     }]);
+//   });
+
+//   test("works: null fields", async function () {
+//     const updateDataSetNulls = {
+//       name: "New",
+//       description: "New Description",
+//       numEmployees: null,
+//       logoUrl: null,
+//     };
+
+//     let company = await Lot.update("item1", updateDataSetNulls);
+//     expect(company).toEqual({
+//       handle: "item1",
+//       ...updateDataSetNulls,
+//     });
+
+//     const result = await db.query(
+//           `SELECT handle, name, description, num_employees, logo_url
+//            FROM lot
+//            WHERE handle = 'item1'`);
+//     expect(result.rows).toEqual([{
+//       handle: "item1",
+//       name: "New",
+//       description: "New Description",
+//       num_employees: null,
+//       logo_url: null,
+//     }]);
+//   });
+
+//   test("not found if no such lot", async function () {
+//     try {
+//       await Lot.update("nope", updateData);
+//       fail();
+//     } catch (err) {
+//       expect(err instanceof NotFoundError).toBeTruthy();
+//     }
+//   });
+
+//   test("bad request with no data", async function () {
+//     try {
+//       await Lot.update("item1", {});
+//       fail();
+//     } catch (err) {
+//       expect(err instanceof BadRequestError).toBeTruthy();
+//     }
+//   });
+// });
+
 /************************************** remove */
 
-describe("remove", function () {
+describe("remove Lot", function () {
   test("works", async function () {
-    await Lot.remove("c1");
+    let lots = await Lot.findAll({searchTerm:"item1"} );
+    await Lot.remove(lots[0].id);
+
     const res = await db.query(
-        "SELECT handle FROM lots WHERE handle='c1'");
+        "SELECT id FROM lot WHERE name='item1'");
     expect(res.rows.length).toEqual(0);
   });
 
-  test("not found if no such company", async function () {
+  test("not found if no such lot", async function () {
     try {
-      await Lot.remove("nope");
+      await Lot.remove(-200);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+  test("not found if string passed as id", async function () {
+    try {
+      await Lot.remove("X");
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
 });

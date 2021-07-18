@@ -72,7 +72,7 @@ class User {
     const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
     const result = await db.query(
-          `INSERT INTO user
+          `INSERT INTO users
            (username,
             password,
             first_name,
@@ -110,7 +110,7 @@ class User {
                   email,
                   phone,
                   is_admin AS "isAdmin"
-           FROM user
+           FROM users
            ORDER BY username`,
     );
 
@@ -120,7 +120,6 @@ class User {
   /** Given a username, return data about user.
    *
    * Returns { username, first_name, last_name, is_admin, jobs }
-   *   where jobs is { id, title, company_handle, company_name, state }
    *
    * Throws NotFoundError if user not found.
    **/
@@ -131,8 +130,9 @@ class User {
                   first_name AS "firstName",
                   last_name AS "lastName",
                   email,
+                  phone,
                   is_admin AS "isAdmin"
-           FROM user
+           FROM users
            WHERE username = $1`,
         [username],
     );
@@ -175,7 +175,7 @@ class User {
         });
     const usernameVarIdx = "$" + (values.length + 1);
 
-    const querySql = `UPDATE user
+    const querySql = `UPDATE users
                       SET ${setCols} 
                       WHERE username = ${usernameVarIdx} 
                       RETURNING username,
@@ -198,7 +198,7 @@ class User {
   static async remove(username) {
     let result = await db.query(
           `DELETE
-           FROM user
+           FROM users
            WHERE username = $1
            RETURNING username`,
         [username],
