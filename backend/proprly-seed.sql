@@ -113,6 +113,22 @@ VALUES ('Set Dressing'),
         ('Personal Props'),
         ('Set Trim')
 ;
+INSERT INTO lot_tag (lot_id,tag_id)
+VALUES (4,1),
+        (5,1),
+        (6,1),
+        (8,1),
+        (12,1),
+        (13,1),
+        (18,1),
+        (2,2),
+        (2,1),
+        (3,1),
+        (3,2),
+        (15,4)
+;
+
+
 
 
 
