@@ -40,18 +40,30 @@ class Tag {
    static async get(id) {
     if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
     
-    //https://www.sql-workbench.eu/comparison/recursive_queries.html
-    
-    let tagQuery = await db.query(
+    let {rows:[tag]} = await db.query(
       `SELECT id, title
         FROM tag
         WHERE id=$1
         `,
     [id]);
 
-    if (!tagQuery.rows[0]) throw new NotFoundError(`No tag: ${id}`);
+    if (!tag) throw new NotFoundError(`No tag: ${id}`);
     
-    return tagQuery.rows[0];
+    let {rows} = await db.query(
+      `SELECT l.id, 
+          l.name, 
+          l.description,
+          loc.id AS "locId", 
+          loc.name AS location
+        FROM lot_tag
+        JOIN lot AS l ON lot_id=l.id
+        JOIN location AS loc ON l.loc_id=loc.id
+        WHERE tag_id=$1
+        `,
+    [id]);
+    tag.lots = rows
+
+    return tag;
   }
 
   /** Update tag data with `data`.

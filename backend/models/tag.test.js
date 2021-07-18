@@ -8,8 +8,7 @@ const {
   commonBeforeAll,
   commonBeforeEach,
   commonAfterEach,
-  commonAfterAll,
-  testJobIds,
+  commonAfterAll
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -85,8 +84,10 @@ describe("get", function () {
       {
         id: expect.any(Number),
         title: "Hand Props",
+        lots: expect.any(Array)
       }
     )
+    expect(tag.lots.length).toBe(2)
   });
 
   test("not found if no such lot", async function () {
