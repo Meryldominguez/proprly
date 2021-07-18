@@ -55,9 +55,9 @@ CREATE TABLE tag (
 
 CREATE TABLE lot_tag (
   lot_id INTEGER
-    REFERENCES lot,
+    REFERENCES lot ON DELETE CASCADE,
   tag_id INTEGER
-    REFERENCES tag,
+    REFERENCES tag ON DELETE CASCADE,
   PRIMARY KEY (lot_id, tag_id)
 );
 
