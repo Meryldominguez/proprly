@@ -118,11 +118,11 @@ class Location {
     if (Object.keys(data).length === 0) throw new BadRequestError("No update data sumbitted")
 
     if (data.parentId) {
-      const childArrray = await Location.getChildren(loc.id)
+      const childArrray = await Location.getChildren(id)
       const idSet = new Set()
       childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
       
-      if (idSet.has(data.parentId)) throw BadRequestError(`New parent location cannot be a current child of the location`)
+      if (idSet.has(data.parentId)) throw new BadRequestError(`New parent location cannot be a current child of the location`)
     }
     const { setCols, values } = sqlForPartialUpdate(
         data,

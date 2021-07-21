@@ -202,6 +202,24 @@ describe("update", function () {
       notes: "New Parent Description"
     }]);
   });
+  
+  test("fails: cannot make parent/child loop", async function(){
+    try {
+      const {rows:[{id}]} = await db.query(
+        `SELECT id
+         FROM location
+         WHERE name = 'Parent Location'`);
+      const {rows:[child]} = await db.query(
+        `SELECT id
+         FROM location
+         WHERE name = 'First Location'`);
+      console.log(id, child.id)
+      await Location.update(id, {parentId:child.id});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
 
   test("not found if no such lot", async function () {
     try {
