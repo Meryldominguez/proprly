@@ -314,6 +314,27 @@ describe("remove Lot", function () {
     expect(res.rows.length).toEqual(0);
   });
 
+  test("works with cascade", async function () {
+    let lots = await Lot.findAll({searchTerm:"item2"} );
+    await Lot.remove(lots[0].id);
+
+    const {rows:lotCount} = await db.query(
+      "SELECT * FROM lot");
+    expect(lotCount.length).toBe(2)
+
+    const {rows:locCount} = await db.query(
+      "SELECT * FROM location");
+    expect(lotCount.length).toBe(3)
+
+    const {rows:propCount} = await db.query(
+      "SELECT * FROM prop");
+    expect(propCount.length).toBe(3)
+
+    const {rows:tagCount} = await db.query(
+      "SELECT * FROM tag");
+    expect(tagCount.length).toBe(5)
+  });
+
   test("not found if no such lot", async function () {
     try {
       await Lot.remove(-200);
