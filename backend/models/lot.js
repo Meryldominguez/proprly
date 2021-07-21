@@ -141,9 +141,12 @@ class Lot {
    */
 
   static async update(id, data) {
+    if (Object.keys(data).length === 0 ) throw new BadRequestError("No update data sumbitted")
+    if (typeof data !== "object" || data === null ) throw new BadRequestError("data is invalid")
+
     const { setCols, values } = sqlForPartialUpdate(
         data,
-        {});
+        {locId:"loc_id"});
     const idVarIdx = "$" + (values.length + 1);
 
     const querySql = `UPDATE lot 
@@ -153,7 +156,8 @@ class Lot {
                                 name, 
                                 description, 
                                 quantity,
-                                price`;
+                                price,
+                                loc_id as "locId"`;
     const result = await db.query(querySql, [...values, id]);
     const lot = result.rows[0];
 

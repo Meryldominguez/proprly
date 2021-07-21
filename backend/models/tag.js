@@ -79,6 +79,8 @@ class Tag {
    */
 
   static async update(id, data) {
+    if (Object.keys(data).length === 0) throw new BadRequestError("No update data sumbitted")
+
     const { setCols, values } = sqlForPartialUpdate(
         data,
         {});

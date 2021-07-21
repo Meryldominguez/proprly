@@ -162,6 +162,8 @@ class User {
    */
 
   static async update(username, data) {
+    if (Object.keys(data).length === 0) throw new BadRequestError("No update data sumbitted")
+
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
