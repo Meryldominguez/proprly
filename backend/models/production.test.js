@@ -105,28 +105,6 @@ describe("findAll", function () {
     );
   });
 
-  // test("works: by year", async function () {
-  //   let jobs = await Production.findAll({ year:[2006, 2019] });
-  //   expect(jobs).toEqual([
-  //     {
-  //       id: testJobIds[0],
-  //       title: "Job1",
-  //       salary: 100,
-  //       equity: "0.1",
-  //       companyHandle: "c1",
-  //       companyName: "C1",
-  //     },
-  //     {
-  //       id: testJobIds[1],
-  //       title: "Job2",
-  //       salary: 200,
-  //       equity: "0.2",
-  //       companyHandle: "c1",
-  //       companyName: "C1",
-  //     },
-  //   ]);
-  // });
-
 
   test("works: by search", async function () {
     let jobs = await Production.findAll({ search: "co-prod notes" });
@@ -159,7 +137,10 @@ describe("get", function () {
   test("works", async function () {
     let [prod] = await Production.findAll();
     let result = await Production.get(prod.id);
-    expect(result).toEqual(prod);
+    expect(result).toEqual({
+      ...prod,
+      props: expect.any(Array)
+    });
   });
 
   test("not found if no such job", async function () {
@@ -185,14 +166,14 @@ describe("update", function () {
 
   test("works", async function () {
     let [carmen] = await Production.findAll({ search: "carmen" });
-    let job = await Production.update(carmen.id, updateData);
-    expect(job).toEqual({
+    let prod = await Production.update(carmen.id, updateData);
+    expect(prod).toEqual({
       id: expect.any(Number),
       title: "Carmen (Bizet)",
       dateStart: expect.any(Object),
       dateEnd: null,
       active: true,
-      notes: "updated"
+      notes: "updated",
     });
   });
 
@@ -209,7 +190,8 @@ describe("update", function () {
 
   test("bad request with no data", async function () {
     try {
-      await Production.update(testJobIds[0], {});
+      let [carmen] = await Production.findAll({ search: "carmen" });
+      await Production.update(carmen.id, {});
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
@@ -224,7 +206,7 @@ describe("remove", function () {
     let [prod] = await Production.findAll();
     await Production.remove(prod.id);
     const res = await db.query(
-        "SELECT id FROM production WHERE id=$1", [testJobIds[0]]);
+        "SELECT id FROM production WHERE id=$1", [prod.id]);
     expect(res.rows.length).toEqual(0);
   });
 
