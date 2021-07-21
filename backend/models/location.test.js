@@ -237,7 +237,6 @@ describe("update", function () {
         `SELECT id
          FROM location
          WHERE name = 'First Location'`);
-      console.log(id, child.id)
       await Location.update(id, {parentId:child.id});
       fail();
     } catch (err) {
@@ -283,6 +282,33 @@ describe("remove Location", function () {
     const res = await db.query(
         "SELECT * FROM location WHERE name='First Location'");
     expect(res.rows.length).toEqual(0);
+  });
+
+  test("works and cascade  delete works", async function () {
+    const test = await db.query(
+      `SELECT *
+      FROM location
+      WHERE name='First Location'`,
+
+    );
+    await Location.remove(test.rows[0].id);
+    const res = await db.query(
+        "SELECT * FROM location WHERE name='First Location'");
+    expect(res.rows.length).toEqual(0);
+
+
+    const {rows:lotCount} = await db.query(
+      "SELECT * FROM lot");
+    expect(lotCount.length).toBe(1)
+
+    const {rows:propCount} = await db.query(
+      "SELECT * FROM prop");
+    expect(propCount.length).toBe(2)
+
+    const {rows:tagCount} = await db.query(
+      "SELECT * FROM tag");
+    expect(tagCount.length).toBe(5)
+
   });
 
   test("not found if no such lot", async function () {
