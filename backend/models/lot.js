@@ -3,6 +3,7 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const Prop = require("./prop");
 
 /** Related functions for lots. */
 
@@ -90,7 +91,7 @@ class Lot {
 
    static async get(id) {
     if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
-    const lotRes = await db.query(
+    const {rows:[lot]} = await db.query(
           `SELECT id,
                   name,
                   loc_id, 
@@ -100,21 +101,14 @@ class Lot {
            FROM lot
            WHERE id = $1`,
         [id]);
-    const lot = lotRes.rows[0];
+
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
 
-    // const prodRes = await db.query(
-    //       `SELECT id, name,date_start,date_end, active, notes
-    //        FROM production,
-    //        JOIN prop ON production.id = prop.prod_id
-    //        WHERE prop.lot_id = $1
-    //        ORDER BY prop.date_start`,
-    //     [id],
-    // );
-
+    if (lot['quantity'] !== null) {
+      const usedProps = await Prop.getLotProps(id)
+      lot.available = lot.quantity-(usedProps.length)
+    }
     
-    // lot.productions = prodRes.rows || [];
-
     return lot;
   }
 

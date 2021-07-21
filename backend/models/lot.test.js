@@ -145,16 +145,42 @@ describe("findAll", function () {
 
 describe("get", function () {
   test("works", async function () {
-    let lots = await Lot.findAll({searchTerm:"1"});
-    let lot = await Lot.get(lots[0].id);
-    expect(lot).toEqual(
+    let [lot1] = await Lot.findAll({searchTerm:"1"});
+    lot1 = await Lot.get(lot1.id);
+    expect(lot1).toEqual(
       {
         id: expect.any(Number),
         name: "item1",
         loc_id: expect.any(Number),
         description: "Desc1",
+        available: 1,
         quantity: 1,
         price:"$10.99"
+      },
+    )
+    let [lot2] = await Lot.findAll({searchTerm:"2"});
+    lot2 = await Lot.get(lot2.id);
+    expect(lot2).toEqual(
+      {
+        id: expect.any(Number),
+        name: "item2",
+        loc_id: expect.any(Number),
+        description: "Desc2",
+        quantity: null,
+        price:"$5.50"
+      },
+    )
+    let [lot3]= await Lot.findAll({searchTerm:"3"});
+    lot3 = await Lot.get(lot3.id);
+    expect(lot3).toEqual(
+      {
+        id: expect.any(Number),
+        name: "item3",
+        loc_id: expect.any(Number),
+        available:2,
+        description: "Desc3",
+        quantity: 3,
+        price:"$400.00"
       },
     )
   });

@@ -22,9 +22,12 @@
   "devDependencies": {
     "supertest": "^5.0.0-0"
   },
-  "jest":{
+  "jest": {
     "collectCoverage": true,
-    "coverageReporters": ["json", "html"]
+    "coverageReporters": [
+      "json",
+      "html"
+    ]
   },
   "author": "meryldominguez",
   "license": "ISC"
