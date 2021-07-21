@@ -209,7 +209,30 @@ describe("remove", function () {
         "SELECT id FROM production WHERE id=$1", [prod.id]);
     expect(res.rows.length).toEqual(0);
   });
+  test("works with cascade", async function () {
+    let [prod] = await Production.findAll();
+    await Production.remove(prod.id);
 
+    const res = await db.query(
+        "SELECT id FROM production WHERE id=$1", [prod.id]);
+    expect(res.rows.length).toEqual(0);
+
+    const {rows:lotCount} = await db.query(
+      "SELECT * FROM lot");
+    expect(lotCount.length).toBe(3)
+
+    const {rows:locCount} = await db.query(
+      "SELECT * FROM location");
+    expect(locCount.length).toBe(3)
+
+    const {rows:propCount} = await db.query(
+      "SELECT * FROM prop");
+    expect(propCount.length).toBe(4)
+
+    const {rows:tagCount} = await db.query(
+      "SELECT * FROM tag");
+    expect(tagCount.length).toBe(5)
+  });
   test("not found if no such job", async function () {
     try {
       await Production.remove(0);
