@@ -237,7 +237,6 @@ describe("update", function () {
         `SELECT id
          FROM location
          WHERE name = 'First Location'`);
-      console.log(id, child.id)
       await Location.update(id, {parentId:child.id});
       fail();
     } catch (err) {
@@ -285,7 +284,7 @@ describe("remove Location", function () {
     expect(res.rows.length).toEqual(0);
   });
 
-  test("works and cascade delete works", async function () {
+  test("works and cascade  delete works", async function () {
     const test = await db.query(
       `SELECT *
       FROM location
@@ -298,11 +297,17 @@ describe("remove Location", function () {
     expect(res.rows.length).toEqual(0);
 
 
-    const {rows:[{id:parentLocId}]} = await db.query(
-      "SELECT id FROM location WHERE name='Parent Location'");
-    const {items:lotCascade} = await Location.get(parentLocId)
-    expect(lotCascade.length).toBe(1)
+    const {rows:lotCount} = await db.query(
+      "SELECT * FROM lot");
+    expect(lotCount.length).toBe(1)
 
+    const {rows:propCount} = await db.query(
+      "SELECT * FROM prop");
+    expect(propCount.length).toBe(2)
+
+    const {rows:tagCount} = await db.query(
+      "SELECT * FROM tag");
+    expect(tagCount.length).toBe(5)
 
   });
 
