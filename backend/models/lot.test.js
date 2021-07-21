@@ -208,79 +208,99 @@ describe("get", function () {
 
 /************************************** update */
 
-// describe("update", function () {
-//   const updateData = {
-//     name: "New",
-//     description: "New Description",
-//     numEmployees: 10,
-//     logoUrl: "http://new.img",
-//   };
+describe("update", function () {
+  const updateData = {
+    name: "Updated",
+    description: "New Description",
+    quantity: 10,
+    price:"2.50",
+  };
 
-//   test("works", async function () {
-//     let company = await Lot.update("item1", updateData);
-//     expect(company).toEqual({
-//       handle: "item1",
-//       ...updateData,
-//     });
+  test("works", async function () {
+    let [{id}] = await Lot.findAll({searchTerm:"1"});
 
-//     const result = await db.query(
-//           `SELECT handle, name, description, num_employees, logo_url
-//            FROM lot
-//            WHERE handle = 'item1'`);
-//     expect(result.rows).toEqual([{
-//       handle: "item1",
-//       name: "New",
-//       description: "New Description",
-//       num_employees: 10,
-//       logo_url: "http://new.img",
-//     }]);
-//   });
+    let resp = await Lot.update(id, updateData);
+    expect(resp).toEqual({
+      id: expect.any(Number),
+      locId:expect.any(Number),
+      ...updateData,
+      price:"$2.50"
+    });
 
-//   test("works: null fields", async function () {
-//     const updateDataSetNulls = {
-//       name: "New",
-//       description: "New Description",
-//       numEmployees: null,
-//       logoUrl: null,
-//     };
+    const {rows:[updated]} = await db.query(
+          `SELECT id, name, description, quantity, price, loc_id as "locId"
+           FROM lot
+           WHERE name = 'Updated'`);
+    expect(updated).toEqual({
+      id: expect.any(Number),
+      name: "Updated",
+      locId: expect.any(Number),
+      description: "New Description",
+      quantity: 10,
+      price:"$2.50",
+    });
+  });
 
-//     let company = await Lot.update("item1", updateDataSetNulls);
-//     expect(company).toEqual({
-//       handle: "item1",
-//       ...updateDataSetNulls,
-//     });
+  test("works: null fields", async function () {
+    let [{id}] = await Lot.findAll({searchTerm:"1"});
 
-//     const result = await db.query(
-//           `SELECT handle, name, description, num_employees, logo_url
-//            FROM lot
-//            WHERE handle = 'item1'`);
-//     expect(result.rows).toEqual([{
-//       handle: "item1",
-//       name: "New",
-//       description: "New Description",
-//       num_employees: null,
-//       logo_url: null,
-//     }]);
-//   });
+    const updateDataSetNulls = {
+      name: "New",
+    };
 
-//   test("not found if no such lot", async function () {
-//     try {
-//       await Lot.update("nope", updateData);
-//       fail();
-//     } catch (err) {
-//       expect(err instanceof NotFoundError).toBeTruthy();
-//     }
-//   });
+    let company = await Lot.update(id, updateDataSetNulls);
+    expect(company).toEqual({
+      id: expect.any(Number),
+      locId:expect.any(Number),
+      price:"$10.99",
+      quantity:1,
+      description: "Desc1",
+      ...updateDataSetNulls
+    });
 
-//   test("bad request with no data", async function () {
-//     try {
-//       await Lot.update("item1", {});
-//       fail();
-//     } catch (err) {
-//       expect(err instanceof BadRequestError).toBeTruthy();
-//     }
-//   });
-// });
+    const result = await db.query(
+          `SELECT id, name, description, quantity, price, loc_id as "locId"
+          FROM lot
+          WHERE name = 'New'`);
+    expect(result.rows).toEqual([{
+      id: expect.any(Number),
+      locId:expect.any(Number),
+      name: "New",
+      price:"$10.99",
+      quantity:1,
+      description: "Desc1"
+    }]);
+  });
+
+  test("not found if no such lot", async function () {
+    try {
+      await Lot.update(100000, updateData);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+
+  test("bad request with no data", async function () {
+    try {
+      let [{id}] = await Lot.findAll({searchTerm:"1"});
+
+      await Lot.update(id, {});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+  test("bad request with bad data", async function () {
+    try {
+      let [{id}] = await Lot.findAll({searchTerm:"1"});
+      await Lot.update(id, "hello");
+      fail();
+    } catch (err) {      
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
 
 /************************************** remove */
 

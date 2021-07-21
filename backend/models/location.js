@@ -15,16 +15,17 @@ class Location {
    *
    * Throws BadRequestError if location already in database.
    * */
-  static async create({ name, notes=null}) {
+  static async create({ name, notes=null,parentId=null}) {
     if (!name || name === "") throw new BadRequestError(`Please include a name for the location`)
     const result = await db.query(
           `INSERT INTO location
-           (name, notes)
-           VALUES ($1, $2)
-           RETURNING id, name, notes`,
+           (name, notes, parent_id)
+           VALUES ($1, $2,$3)
+           RETURNING id, name, notes, parent_id AS "parentId"`,
         [
           name,
-          notes
+          notes,
+          parentId
         ],
         );
     
@@ -62,19 +63,7 @@ class Location {
       GROUP BY "locationId","locationName", "childId", "childName"
       ORDER BY "locationId", "childId";`);
 
-      /** Played with recursive nested option
-       * 
-       * {id:1, name:"warehouse" children:[]}
-        const parseLocTree = (result = {}, rows) => {
-        if (!rows.length) return result
-        let newRows = []
-        if (!result.id) result.id =rows[0].locationId
-        if (!result.name) result.name =rows[0].locationName
-
-        rows.forEach(row => result[row.locationId]? rows[0].locationId)
-        }
-       * 
-       */
+      
     return result.rows
   }
 
@@ -126,13 +115,14 @@ class Location {
    * Throws NotFoundError if not found.
    */
   static async update(id, data) {
+    if (Object.keys(data).length === 0) throw new BadRequestError("No update data sumbitted")
 
     if (data.parentId) {
-      const childArrray = await Location.getChildren(loc.id)
+      const childArrray = await Location.getChildren(id)
       const idSet = new Set()
       childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
       
-      if (idSet.has(data.parentId)) throw BadRequestError(`New parent location cannot be a current child of the location`)
+      if (idSet.has(data.parentId)) throw new BadRequestError(`New parent location cannot be a current child of the location`)
     }
     const { setCols, values } = sqlForPartialUpdate(
         data,

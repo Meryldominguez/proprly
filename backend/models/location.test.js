@@ -24,6 +24,11 @@ describe("create",function () {
     name: "New",
     notes: "New Location",
   };
+  const newLoc2 = {
+    name: "New2",
+    notes: "child Location",
+  };
+
 
   test("works", async function () {
     let loc = await Location.create(newLoc);
@@ -31,20 +36,43 @@ describe("create",function () {
     expect(loc).toEqual({
       name: "New",
       notes: "New Location",
+      parentId: null,
       id: expect.any(Number),
     });
 
-    const result = await db.query(
-          `SELECT id, name, notes
+    const {rows:[parent]} = await db.query(
+          `SELECT id, name, notes, parent_id AS "parentId"
            FROM location
            WHERE name = 'New'`);
-    expect(result.rows[0]).toEqual(
+    expect(parent).toEqual(
       {
       name: "New",
       notes: "New Location",
       id: expect.any(Number),
+      parentId:null
     }
     );
+    let childLoc = await Location.create({...newLoc2,parentId:loc.id})
+    expect(childLoc).toEqual({
+      name: "New2",
+      notes: "child Location",
+      parentId: expect.any(Number),
+      id: expect.any(Number),
+    });
+
+    const {rows:[child]} = await db.query(
+          `SELECT id, name, notes, parent_id AS "parentId"
+           FROM location
+           WHERE name = 'New2'`);
+    expect(child).toEqual(
+      {
+      name: "New2",
+      notes: "child Location",
+      id: expect.any(Number),
+      parentId: expect.any(Number)
+    }
+    );
+
   });
   test("fails with bad data", async function () {
     try {
@@ -121,7 +149,7 @@ describe("update", function () {
     notes: "New Description"
   };
 
-  test("works", async function () {
+  test("works: standard", async function () {
 
     const {rows:[childLoc]} = await db.query(
       `SELECT id, name, notes
@@ -142,6 +170,30 @@ describe("update", function () {
     expect(result.rows).toEqual([{
       ...updateData,
       parentId: expect.any(Number),
+      id: expect.any(Number)
+    }]);
+  });
+  test("works: changing parentId", async function () {
+
+    const {rows:[childLoc]} = await db.query(
+      `SELECT id, name, notes, parent_id AS "parentId"
+       FROM location
+       WHERE name = 'First Location'`);
+
+    let updatedChildLoc = await Location.update(childLoc.id, {parentId:null});
+    expect(updatedChildLoc).toEqual({
+      ...childLoc,
+      id: expect.any(Number),
+      parentId: null
+    });
+
+    const result = await db.query(
+          `SELECT id, name, notes, parent_id AS "parentId"
+           FROM location
+           WHERE name = 'First Location'`);
+    expect(result.rows).toEqual([{
+      ...childLoc,
+      parentId: null,
       id: expect.any(Number)
     }]);
   });
@@ -173,6 +225,24 @@ describe("update", function () {
       name: "Parent Location",
       notes: "New Parent Description"
     }]);
+  });
+  
+  test("fails: cannot make parent/child loop", async function(){
+    try {
+      const {rows:[{id}]} = await db.query(
+        `SELECT id
+         FROM location
+         WHERE name = 'Parent Location'`);
+      const {rows:[child]} = await db.query(
+        `SELECT id
+         FROM location
+         WHERE name = 'First Location'`);
+      console.log(id, child.id)
+      await Location.update(id, {parentId:child.id});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
   });
 
   test("not found if no such lot", async function () {
