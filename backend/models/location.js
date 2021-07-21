@@ -21,7 +21,7 @@ class Location {
           `INSERT INTO location
            (name, notes, parent_id)
            VALUES ($1, $2,$3)
-           RETURNING id, name, notes`,
+           RETURNING id, name, notes, parent_id AS "parentId"`,
         [
           name,
           notes,

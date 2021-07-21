@@ -24,6 +24,11 @@ describe("create",function () {
     name: "New",
     notes: "New Location",
   };
+  const newLoc2 = {
+    name: "New2",
+    notes: "child Location",
+  };
+
 
   test("works", async function () {
     let loc = await Location.create(newLoc);
@@ -31,20 +36,43 @@ describe("create",function () {
     expect(loc).toEqual({
       name: "New",
       notes: "New Location",
+      parentId: null,
       id: expect.any(Number),
     });
 
-    const result = await db.query(
-          `SELECT id, name, notes
+    const {rows:[parent]} = await db.query(
+          `SELECT id, name, notes, parent_id AS "parentId"
            FROM location
            WHERE name = 'New'`);
-    expect(result.rows[0]).toEqual(
+    expect(parent).toEqual(
       {
       name: "New",
       notes: "New Location",
       id: expect.any(Number),
+      parentId:null
     }
     );
+    let childLoc = await Location.create({...newLoc2,parentId:loc.id})
+    expect(childLoc).toEqual({
+      name: "New2",
+      notes: "child Location",
+      parentId: expect.any(Number),
+      id: expect.any(Number),
+    });
+
+    const {rows:[child]} = await db.query(
+          `SELECT id, name, notes, parent_id AS "parentId"
+           FROM location
+           WHERE name = 'New2'`);
+    expect(child).toEqual(
+      {
+      name: "New2",
+      notes: "child Location",
+      id: expect.any(Number),
+      parentId: expect.any(Number)
+    }
+    );
+
   });
   test("fails with bad data", async function () {
     try {
