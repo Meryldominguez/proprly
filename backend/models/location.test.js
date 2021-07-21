@@ -285,6 +285,27 @@ describe("remove Location", function () {
     expect(res.rows.length).toEqual(0);
   });
 
+  test("works and cascade delete works", async function () {
+    const test = await db.query(
+      `SELECT *
+      FROM location
+      WHERE name='First Location'`,
+
+    );
+    await Location.remove(test.rows[0].id);
+    const res = await db.query(
+        "SELECT * FROM location WHERE name='First Location'");
+    expect(res.rows.length).toEqual(0);
+
+
+    const {rows:[{id:parentLocId}]} = await db.query(
+      "SELECT id FROM location WHERE name='Parent Location'");
+    const {items:lotCascade} = await Location.get(parentLocId)
+    expect(lotCascade.length).toBe(1)
+
+
+  });
+
   test("not found if no such lot", async function () {
     try {
       await Location.remove(-200);
