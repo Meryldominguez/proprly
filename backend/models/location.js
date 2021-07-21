@@ -129,7 +129,7 @@ class Location {
 
     if (data.parentId) {
       const childArrray = await Location.getChildren(loc.id)
-      const idSet = new Set ()
+      const idSet = new Set()
       childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
       
       if (idSet.has(data.parentId)) throw BadRequestError(`New parent location cannot be a current child of the location`)

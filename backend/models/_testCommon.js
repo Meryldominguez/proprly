@@ -80,7 +80,6 @@ async function commonBeforeAll() {
   await db.query(`
     INSERT INTO prop ( prod_id, lot_id, quantity, notes)
     VALUES ($1,$5, 1, null),
-           ($1,$6, null, null),
            ($1,$7, 2, 'need this'),
            ($2,$6, null, 'using half the box'),
            ($3,$6, null, '20 singular items' ),
