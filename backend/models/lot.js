@@ -61,7 +61,7 @@ class Lot {
         "lot.quantity", 
         "lot.price", 
         "lot.description"]
-        
+
     let query = `SELECT ${selectCols.join(", ")}
                  FROM lot
                  JOIN location ON location.id = lot.loc_id
@@ -71,9 +71,9 @@ class Lot {
     let queryValues = [];
 
     //for searching by tags
-    if (params['tags']){
-
-    }
+    // if (params['tags']){
+    // }
+    
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
 
