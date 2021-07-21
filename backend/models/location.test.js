@@ -149,7 +149,7 @@ describe("update", function () {
     notes: "New Description"
   };
 
-  test("works", async function () {
+  test("works: standard", async function () {
 
     const {rows:[childLoc]} = await db.query(
       `SELECT id, name, notes
@@ -170,6 +170,30 @@ describe("update", function () {
     expect(result.rows).toEqual([{
       ...updateData,
       parentId: expect.any(Number),
+      id: expect.any(Number)
+    }]);
+  });
+  test("works: changing parentId", async function () {
+
+    const {rows:[childLoc]} = await db.query(
+      `SELECT id, name, notes, parent_id AS "parentId"
+       FROM location
+       WHERE name = 'First Location'`);
+
+    let updatedChildLoc = await Location.update(childLoc.id, {parentId:null});
+    expect(updatedChildLoc).toEqual({
+      ...childLoc,
+      id: expect.any(Number),
+      parentId: null
+    });
+
+    const result = await db.query(
+          `SELECT id, name, notes, parent_id AS "parentId"
+           FROM location
+           WHERE name = 'First Location'`);
+    expect(result.rows).toEqual([{
+      ...childLoc,
+      parentId: null,
       id: expect.any(Number)
     }]);
   });
