@@ -265,6 +265,49 @@ describe("remove Prop",  function () {
     expect(res.rows.length).toEqual(0);
   });
 
+  test("works with cascade", async function () {
+    const {rows:[lot]} = await db.query(
+      `SELECT id
+       FROM lot
+       WHERE name = 'item1'`);
+    const {rows:[prod]} = await db.query(
+    `SELECT id
+      FROM production
+      WHERE title ILIKE 'Carmen'`);
+
+    const {rows:[testProp]} = await db.query(
+      `SELECT 
+          prod_id as "prodId", 
+          lot_id as "lotId",
+          quantity, 
+          notes
+       FROM prop
+       WHERE prod_id=$1 AND lot_id=$2`,[prod.id, lot.id]);
+
+    await Prop.remove(testProp.prodId,testProp.lotId);
+
+    const res = await db.query(
+    `SELECT * FROM prop 
+      WHERE prod_id=$1 AND lot_id=$2`,[prod.id, lot.id]);
+    expect(res.rows.length).toEqual(0);
+
+    const {rows:prodCount} = await db.query(
+      "SELECT * FROM production");
+    expect(prodCount.length).toEqual(4);
+
+    const {rows:lotCount} = await db.query(
+      "SELECT * FROM lot");
+    expect(lotCount.length).toBe(3)
+
+    const {rows:locCount} = await db.query(
+      "SELECT * FROM location");
+    expect(locCount.length).toBe(3)
+
+    const {rows:tagCount} = await db.query(
+      "SELECT * FROM tag");
+    expect(tagCount.length).toBe(5)
+  });
+
   test("not found if no such lot", async function () {
     try {
       await Prop.remove(-200,2)
