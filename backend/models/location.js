@@ -100,15 +100,15 @@ class Location {
     childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
     const idArray=Array.from(idSet)
 
-    let locQuery = await db.query(
-      `SELECT loc.id, loc.name, quantity, description, price, loc_id, location.name as "location"
-        FROM loc
-        JOIN location on loc_id = location.id
+    let lotQuery = await db.query(
+      `SELECT lot.id, lot.name, quantity, description, price, loc_id, location.name as "location"
+        FROM lot
+        JOIN location on lot.loc_id = location.id
         WHERE ${idArray.map((item, idx) =>`location.id = $${idx+1}` ).join(" OR ")}
         `,
     [...idArray]);
 
-    loc.items = locQuery.rows
+    loc.items = lotQuery.rows
     return loc;
   }
 
@@ -145,7 +145,8 @@ class Location {
                       RETURNING id, 
                                 name, 
                                 notes,
-                                parent_id as 'parentId'`;
+                                parent_id as "parentId"`;
+
     const result = await db.query(querySql, [...values, id]);
     const loc = result.rows[0];
 

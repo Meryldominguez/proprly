@@ -77,19 +77,19 @@ describe("create",function () {
 
 describe("get", function () {
   test("works", async function () {
-    const result = await db.query(
+    const {rows:[loc]} = await db.query(
       `SELECT id, name, notes
        FROM location
        WHERE name = 'Parent Location'`);
       
-    let location = await Location.get(result.rows[0].id);
+    let location = await Location.get(loc.id);
     
     expect(location).toEqual(
       {
         id: expect.any(Number),
         name: "Parent Location",
         notes: "The parent location",
-        items: expect.any(Array)
+        items: expect.any(Array),
       }
     )
     expect(location.items.length).toEqual(3)
@@ -122,30 +122,33 @@ describe("update", function () {
   };
 
   test("works", async function () {
-    const {rows} = await db.query(
+
+    const {rows:[childLoc]} = await db.query(
       `SELECT id, name, notes
        FROM location
        WHERE name = 'First Location'`);
 
-    let updatedLocation = await Location.update(rows[0].id, updateData);
-    expect(updatedLocation).toEqual({
-      id: expect.any(Number),
+    let updatedChildLoc = await Location.update(childLoc.id, updateData);
+    expect(updatedChildLoc).toEqual({
       ...updateData,
+      id: expect.any(Number),
+      parentId: expect.any(Number)
     });
 
     const result = await db.query(
-          `SELECT id, name, notes
+          `SELECT id, name, notes, parent_id AS "parentId"
            FROM location
            WHERE name = 'Edited'`);
     expect(result.rows).toEqual([{
       ...updateData,
+      parentId: expect.any(Number),
       id: expect.any(Number)
     }]);
   });
 
   test("works: null fields", async function () {
-    const {rows} = await db.query(
-      `SELECT id, name, notes
+    const {rows:[{id}]} = await db.query(
+      `SELECT id
        FROM location
        WHERE name = 'Parent Location'`);
 
@@ -153,10 +156,11 @@ describe("update", function () {
       notes: "New Parent Description",
     };
 
-    let company = await Location.update(rows[0].id, updateDataSetNulls);
-    expect(company).toEqual({
+    let location = await Location.update(id, updateDataSetNulls);
+    expect(location).toEqual({
       id: expect.any(Number),
       name: "Parent Location",
+      parentId: null,
       ...updateDataSetNulls,
     });
 
@@ -182,11 +186,11 @@ describe("update", function () {
 
   test("bad request with no data", async function () {
     try {
-      const {rows} = await db.query(
+      const {rows:[{id}]} = await db.query(
         `SELECT id, name, notes
          FROM location
          WHERE name = 'Parent Location'`);
-      await Location.update(rows[0].id, {});
+      await Location.update(id, {});
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
