@@ -155,7 +155,8 @@ describe("get", function () {
         description: "Desc1",
         available: 1,
         quantity: 1,
-        price:"$10.99"
+        price:"$10.99",
+        tags:expect.any(Array)
       },
     )
     let [lot2] = await Lot.findAll({searchTerm:"2"});
@@ -167,7 +168,8 @@ describe("get", function () {
         loc_id: expect.any(Number),
         description: "Desc2",
         quantity: null,
-        price:"$5.50"
+        price:"$5.50",
+        tags:expect.any(Array)
       },
     )
     let [lot3]= await Lot.findAll({searchTerm:"3"});
@@ -180,7 +182,8 @@ describe("get", function () {
         available:2,
         description: "Desc3",
         quantity: 3,
-        price:"$400.00"
+        price:"$400.00",
+        tags:expect.any(Array)
       },
     )
   });

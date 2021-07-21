@@ -54,8 +54,15 @@ class Lot {
    * */
 
    static async findAll(params={}) {
-
-    let query = `SELECT lot.id, lot.name,location.name as location, lot.quantity, lot.price, lot.description
+    let selectCols=[
+        "lot.id", 
+        "lot.name",
+        "location.name as location", 
+        "lot.quantity", 
+        "lot.price", 
+        "lot.description"]
+        
+    let query = `SELECT ${selectCols.join(", ")}
                  FROM lot
                  JOIN location ON location.id = lot.loc_id
                  `
@@ -63,11 +70,14 @@ class Lot {
     let whereExpressions = [];
     let queryValues = [];
 
+    //for searching by tags
+    if (params['tags']){
 
+    }
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
 
-    if (params.searchTerm) {
+    if (params['searchTerm']) {
       queryValues.push(`%${params.searchTerm}%`);
       whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
       whereExpressions.push(`lot.description ILIKE $${queryValues.length}`)
@@ -108,7 +118,13 @@ class Lot {
       const usedProps = await Prop.getLotProps(id)
       lot.available = lot.quantity-(usedProps.length)
     }
-    
+    const {rows} = await db.query(
+        `SELECT t.title
+          FROM lot_tag
+          JOIN tag AS t ON t.id=tag_id
+          WHERE lot_id=$1
+        `,[id])
+    lot.tags=rows
     return lot;
   }
 
