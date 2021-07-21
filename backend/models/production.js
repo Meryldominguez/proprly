@@ -1,8 +1,9 @@
 "use strict";
 
 const db = require("../db");
-const { NotFoundError} = require("../expressError");
+const { NotFoundError, BadRequestError} = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const Prop = require("./prop")
 
 
 /** Related functions for companies. */
@@ -107,6 +108,7 @@ class Production {
    **/
 
   static async get(id) {
+
     const prodRes = await db.query(
           `SELECT id,
                 title,
@@ -120,17 +122,9 @@ class Production {
     const prod = prodRes.rows[0];
 
     if (!prod) throw new NotFoundError(`No prod: ${id}`);
-
-    // const propsRes = await db.query(
-    //       `SELECT handle,
-    //               description,
-    //               num_employees AS "numEmployees",
-    //               logo_url AS "logoUrl"
-    //        FROM companies
-    //        WHERE handle = $1`, [prod.companyHandle]);
-
-    // delete prod.companyHandle;
-    // prod.props = companiesRes.rows[0];
+    
+    const props = await Prop.getProdProps(id)
+    prod.props = props
 
     return prod;
   }
@@ -148,6 +142,7 @@ class Production {
    */
 
   static async update(id, data) {
+    if (Object.keys(data).length === 0) throw new BadRequestError("No update data sumbitted")
     const { setCols, values } = sqlForPartialUpdate(
         data,
         {

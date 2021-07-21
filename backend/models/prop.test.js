@@ -182,6 +182,59 @@ describe("update", function () {
   });
 });
 
+/************************************** getProdProps */
+
+describe("returns props for production", function() {
+  
+  test("works", async function(){
+    const {rows:[prod]} = await db.query(
+      `SELECT id
+        FROM production
+        WHERE title ILIKE 'Carmen'`);
+    const result = await Prop.getProdProps(prod.id)
+    expect(result.length).toBe(2)
+
+  })
+  test("fails if invalid id", async function () {
+    try {
+      await Prop.getProdProps(-200)
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+  
+  test("fails if id doesnt exist in db", async function () {
+    try {
+      await Prop.getProdProps(1000000)
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+
+
+})
+
+
+/************************************** getLotProps */
+describe("returns active props for lot", function() {
+  test("works", async function(){
+    const {rows:[item1]} = await db.query(
+      `SELECT id
+        FROM lot
+        WHERE name = 'item1'`);
+    const res1 = await Prop.getLotProps(item1.id)
+    expect(res1.length).toBe(0)
+
+    const {rows:[item2]} = await db.query(
+      `SELECT id
+        FROM lot
+        WHERE name = 'item2'`);
+    const res2 = await Prop.getLotProps(item2.id)
+    expect(res2.length).toBe(2)
+  })
+})
 /************************************** remove */
 
 describe("remove Prop",  function () {

@@ -137,7 +137,10 @@ describe("get", function () {
   test("works", async function () {
     let [prod] = await Production.findAll();
     let result = await Production.get(prod.id);
-    expect(result).toEqual(prod);
+    expect(result).toEqual({
+      ...prod,
+      props: expect.any(Array)
+    });
   });
 
   test("not found if no such job", async function () {
@@ -171,7 +174,6 @@ describe("update", function () {
       dateEnd: null,
       active: true,
       notes: "updated",
-      props: expect.any(Array)
     });
   });
 
@@ -188,6 +190,7 @@ describe("update", function () {
 
   test("bad request with no data", async function () {
     try {
+      let [carmen] = await Production.findAll({ search: "carmen" });
       await Production.update(carmen.id, {});
       fail();
     } catch (err) {
