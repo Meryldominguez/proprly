@@ -8,7 +8,7 @@ const { ensureAdmin } = require("../middleware/auth");
 const Lot = require("../models/lot");
 
 const lotNewSchema = require("../schemas/lotNew.json");
-// const lotUpdateSchema = require("../schemas/lotUpdate.json");
+const lotUpdateSchema = require("../schemas/lotUpdate.json");
 // const lotSearchSchema = require("../schemas/lotSearch.json");
 
 const router = new express.Router();
@@ -48,7 +48,7 @@ router.post("/", async function (req, res, next) {
  * - maxEmployees
  * - nameLike (will find case-insensitive, partial matches)
  *
- * Authorization required: none
+ * Authorization required: logged in
  */
 
 router.get("/", async function (req, res, next) {
@@ -71,7 +71,7 @@ router.get("/", async function (req, res, next) {
  *  lot is { id, name, description, numEmployees, logoUrl, jobs }
  *   where jobs is [{ id, title, salary, equity }, ...]
  *
- * Authorization required: none
+ * Authorization required: logged in
  */
 
 router.get("/:id", async function (req, res, next) {
@@ -91,22 +91,22 @@ router.get("/:id", async function (req, res, next) {
  *
  * Returns { id, name, description, numEmployees, logo_url }
  *
- * Authorization required: admin
+ * Authorization required: logged in
  */
 
-router.patch("/:id", ensureAdmin, async function (req, res, next) {
-  // try {
-  //   const validator = jsonschema.validate(req.body, lotUpdateSchema);
-  //   if (!validator.valid) {
-  //     const errs = validator.errors.map(e => e.stack);
-  //     throw new BadRequestError(errs);
-  //   }
+router.patch("/:id", async function (req, res, next) {
+  try {
+    const validator = jsonschema.validate(req.body, lotUpdateSchema);
+    if (!validator.valid) {
+      const errs = validator.errors.map(e => e.stack);
+      throw new BadRequestError(errs);
+    }
 
-  //   const lot = await lot.update(req.params.id, req.body);
-  //   return res.json({ lot });
-  // } catch (err) {
-  //   return next(err);
-  // }
+    const lot = await Lot.update(Number(req.params.id), req.body);
+    return res.json({ lot });
+  } catch (err) {
+    return next(err);
+  }
 });
 
 /** DELETE /[id]  =>  { deleted: id }
@@ -117,6 +117,7 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
     const {id} = await Lot.remove(Number(req.params.id));
+    
     return res.json({ deleted: id });
   } catch (err) {
     return next(err);

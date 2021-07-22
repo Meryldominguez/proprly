@@ -119,7 +119,7 @@ class Lot {
       lot.available = lot.quantity-(usedProps.length)
     }
     const {rows} = await db.query(
-        `SELECT t.title
+        `SELECT t.id, t.title
           FROM lot_tag
           JOIN tag AS t ON t.id=tag_id
           WHERE lot_id=$1

@@ -39,7 +39,6 @@ async function commonBeforeAll() {
     RETURNING id,title
             `);
   
-
   const {rows:[testLot1, testLot2, testLot3]}=await db.query(`
     INSERT INTO lot( name, loc_id, description, quantity, price)
     VALUES ('item1', $1, 'Desc1', 1, 10.99),

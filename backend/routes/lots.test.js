@@ -107,7 +107,7 @@ describe("GET /lots", function () {
     expect(resp.status).toEqual(200)
   });
 
-  test("works for non-admin users", async function () {
+  test("works for user", async function () {
     const resp = await request(app)
         .get("/lots")
         .set("authorization", `Bearer ${u1Token}`);
@@ -156,7 +156,7 @@ describe("GET /lots/:id", function () {
     });
   });
 
-  test("works for other users", async function () {
+  test("works for user", async function () {
     const {rows:[lot1]} = await db.query(
       `SELECT * FROM lot
         WHERE name = 'Lot1'`)
@@ -183,104 +183,100 @@ describe("GET /lots/:id", function () {
   });
 });
 
-// /************************************** PATCH /lots/:id */
+/************************************** PATCH /lots/:id */
 
-// describe("PATCH /lots/:id", () => {
-//   test("works for admins", async function () {
-//     const resp = await request(app)
-//         .patch(`/lots/u1`)
-//         .send({
-//           firstName: "New",
-//         })
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.body).toEqual({
-//       user: {
-//         username: "u1",
-//         firstName: "New",
-//         lastName: "U1L",
-//         email: "user1@user.com",
-//         isAdmin: false,
-//       },
-//     });
-//   });
+describe("PATCH /lots/:id", () => {
+  test("works for admins", async function () {
+    const {rows:[lot1]} = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot1'`)
 
-//   test("works for same user", async function () {
-//     const resp = await request(app)
-//         .patch(`/lots/u1`)
-//         .send({
-//           firstName: "New",
-//         })
-//         .set("authorization", `Bearer ${u1Token}`);
-//     expect(resp.body).toEqual({
-//       user: {
-//         username: "u1",
-//         firstName: "New",
-//         lastName: "U1L",
-//         email: "user1@user.com",
-//         isAdmin: false,
-//       },
-//     });
-//   });
+    const resp = await request(app)
+        .patch(`/lots/${lot1.id}`)
+        .send({
+          name: "New",
+        })
+        .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.body).toEqual({
+      lot: {
+        id: expect.any(Number),
+        name: "New",
+        description: "New Lot1",
+        quantity: 3,
+        locId: expect.any(Number),
+        price : "$20.99"
+      }
+    });
+  });
 
-//   test("unauth if not same user", async function () {
-//     const resp = await request(app)
-//         .patch(`/lots/u1`)
-//         .send({
-//           firstName: "New",
-//         })
-//         .set("authorization", `Bearer ${u2Token}`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("works for user", async function () {
+    const {rows:[lot1]} = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot1'`)
 
-//   test("unauth for anon", async function () {
-//     const resp = await request(app)
-//         .patch(`/lots/u1`)
-//         .send({
-//           firstName: "New",
-//         });
-//     expect(resp.statusCode).toEqual(401);
-//   });
+    const resp = await request(app)
+        .patch(`/lots/${lot1.id}`)
+        .send({
+          name: "New",
+        })
+        .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.body).toEqual({
+      lot: {
+        id: expect.any(Number),
+        name: "New",
+        description: "New Lot1",
+        quantity: 3,
+        locId: expect.any(Number),
+        price : "$20.99"
+      }
+    });
+  });
 
-//   test("not found if no such user", async function () {
-//     const resp = await request(app)
-//         .patch(`/lots/nope`)
-//         .send({
-//           firstName: "Nope",
-//         })
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
+  test("unauth for anon", async function () {
+    const {rows:[lot1]} = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot1'`)
 
-//   test("bad request if invalid data", async function () {
-//     const resp = await request(app)
-//         .patch(`/lots/u1`)
-//         .send({
-//           firstName: 42,
-//         })
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(400);
-//   });
+    const resp = await request(app)
+        .patch(`/lots/${lot1.id}`)
+        .send({
+          name: "New"
+        })
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("works: can set new password", async function () {
-//     const resp = await request(app)
-//         .patch(`/lots/u1`)
-//         .send({
-//           password: "new-password",
-//         })
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.body).toEqual({
-//       user: {
-//         username: "u1",
-//         firstName: "U1F",
-//         lastName: "U1L",
-//         email: "user1@user.com",
-//         isAdmin: false,
-//       },
-//     });
-//     const isSuccessful = await User.authenticate("u1", "new-password");
-//     expect(isSuccessful).toBeTruthy();
-//   });
-// });
+  test("not found if no such lot", async function () {
+    const resp = await request(app)
+        .patch(`/lots/1000000`)
+        .send({
+          name: "Nope",
+        })
+        .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(404);
+
+    const resp2 = await request(app)
+        .patch(`/lots/1000000`)
+        .send({
+          name: "Nope",
+        })
+        .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(404);
+  });
+
+  test("bad request if invalid data", async function () {
+    const {rows:[lot1]} = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot1'`)
+    const resp = await request(app)
+        .patch(`/lots/${lot1.id}`)
+        .send({
+          name: 42,
+        })
+        .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(400);
+  });
+
+});
 
 /************************************** DELETE /lots/:id */
 
@@ -317,55 +313,3 @@ describe("DELETE /lots/:id", function () {
     expect(resp.statusCode).toEqual(401);
   });
 });
-
-// /************************************** POST /lots/:id/jobs/:id */
-
-// describe("POST /lots/:id/jobs/:id", function () {
-//   test("works for admin", async function () {
-//     const resp = await request(app)
-//         .post(`/lots/u1/jobs/${testJobIds[1]}`)
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.body).toEqual({ applied: testJobIds[1] });
-//   });
-
-//   test("works for same user", async function () {
-//     const resp = await request(app)
-//         .post(`/lots/u1/jobs/${testJobIds[1]}`)
-//         .set("authorization", `Bearer ${u1Token}`);
-//     expect(resp.body).toEqual({ applied: testJobIds[1] });
-//   });
-
-//   test("unauth for others", async function () {
-//     const resp = await request(app)
-//         .post(`/lots/u1/jobs/${testJobIds[1]}`)
-//         .set("authorization", `Bearer ${u2Token}`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
-
-//   test("unauth for anon", async function () {
-//     const resp = await request(app)
-//         .post(`/lots/u1/jobs/${testJobIds[1]}`);
-//     expect(resp.statusCode).toEqual(401);
-//   });
-
-//   test("not found for no such username", async function () {
-//     const resp = await request(app)
-//         .post(`/lots/nope/jobs/${testJobIds[1]}`)
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
-
-//   test("not found for no such job", async function () {
-//     const resp = await request(app)
-//         .post(`/lots/u1/jobs/0`)
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
-
-//   test("bad request invalid job id", async function () {
-//     const resp = await request(app)
-//         .post(`/lots/u1/jobs/0`)
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(404);
-//   });
-// });
