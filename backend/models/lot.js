@@ -57,16 +57,18 @@ class Lot {
     let selectCols=[
         "lot.id", 
         "lot.name",
+        `location.id as "locId"`,
         "location.name as location", 
         "lot.quantity", 
         "lot.price", 
         "lot.description"]
 
     let query = `SELECT ${selectCols.join(", ")}
-                 FROM lot
-                 JOIN location ON location.id = lot.loc_id
-                 `
-                 ; 
+    FROM lot
+    JOIN location ON location.id = lot.loc_id
+    JOIN lot_tag AS x ON x.lot_id=lot.id
+    JOIN tag ON x.tag_id=tag.id
+    `; 
     let whereExpressions = [];
     let queryValues = [];
 
@@ -76,19 +78,33 @@ class Lot {
     
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
+    // SELECT lot.id, lot.name, location.id as "locId", location.name as location, lot.quantity, lot.price, lot.description
+    //     FROM lot
+    //     JOIN location ON location.id = lot.loc_id
+    //     JOIN lot_tag AS x ON x.lot_id=lot.id
+    //     JOIN tag ON x.tag_id=tag.id
+    //     WHERE lot.name ILIKE '%silk%' OR lot.description ILIKE '%silk%' OR location.name ILIKE '%silk%'  OR tag.title ILIKE '%silk%' 
+    // GROUP BY lot.id, location.id
+    // ORDER BY lot.name
 
     if (params['searchTerm']) {
       queryValues.push(`%${params.searchTerm}%`);
       whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
       whereExpressions.push(`lot.description ILIKE $${queryValues.length}`)
-      whereExpressions.push(`location.name ILIKE $${queryValues.length} \n`)
+      whereExpressions.push(`location.name ILIKE $${queryValues.length} `)
+      whereExpressions.push(`tag.title ILIKE $${queryValues.length} \n`)
       query += "WHERE " + whereExpressions.join(" OR ")
-      query += " ORDER BY lot.name";
     }
-
-
+      query += "GROUP BY lot.id, location.id\n";
+      query += "ORDER BY lot.name";
+      
     // Finalize query and return results
-    const lotsRes = await db.query(query, queryValues);
+
+   if (queryValues.length>0){
+     const lotsRes = await db.query(query, queryValues)
+     return lotsRes.rows
+   }
+    const lotsRes = await db.query(query)
     return lotsRes.rows;
   }
 
