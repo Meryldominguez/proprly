@@ -4,7 +4,7 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
+const { ensureAdmin } = require("../middleware/auth");
 const Lot = require("../models/lot");
 
 const lotNewSchema = require("../schemas/lotNew.json");
@@ -52,22 +52,18 @@ router.post("/", async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  // const q = req.query;
-  // // arrive as strings from querystring, but we want as ints
-  // if (q.minEmployees !== undefined) q.minEmployees = +q.minEmployees;
-  // if (q.maxEmployees !== undefined) q.maxEmployees = +q.maxEmployees;
-
-  // try {
-  //   const validator = jsonschema.validate(q, lotSearchSchema);
-  //   if (!validator.valid) {
-  //     const errs = validator.errors.map(e => e.stack);
-  //     throw new BadRequestError(errs);
-  //   }
-  //   const lots = await Lot.findAll(q);
-  //   return res.json({ lots });
-  // } catch (err) {
-  //   return next(err);
-  // }
+  const q = req.query
+  try {
+    // const validator = jsonschema.validate(q, lotSearchSchema);
+    // if (!validator.valid) {
+    //   const errs = validator.errors.map(e => e.stack);
+    //   throw new BadRequestError(errs);
+    // }
+    const lots = await Lot.findAll(q);
+    return res.json({ lots });
+  } catch (err) {
+    return next(err);
+  }
 });
 
 /** GET /[id]  =>  { lot }
@@ -80,7 +76,7 @@ router.get("/", async function (req, res, next) {
 
 router.get("/:id", async function (req, res, next) {
   try {
-    const lot = await Lot.get(req.params.id);
+    const lot = await Lot.get(Number(req.params.id));
     return res.json({ lot });
   } catch (err) {
     return next(err);
@@ -119,12 +115,12 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
  */
 
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
-  // try {
-  //   await lot.remove(req.params.id);
-  //   return res.json({ deleted: req.params.id });
-  // } catch (err) {
-  //   return next(err);
-  // }
+  try {
+    const {id} = await Lot.remove(Number(req.params.id));
+    return res.json({ deleted: id });
+  } catch (err) {
+    return next(err);
+  }
 });
 
 

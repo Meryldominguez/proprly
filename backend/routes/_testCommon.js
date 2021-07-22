@@ -51,7 +51,7 @@ async function commonBeforeAll() {
         name: "Lot1",
         description: "New Lot1",
         quantity: 3,
-        loc_id: bay1.id,
+        locId: bay1.id,
         price : "$20.99"
       });
   const lot2 = await Lot.create(
@@ -59,7 +59,7 @@ async function commonBeforeAll() {
         name: "Lot2",
         description: "New Lot2",
         quantity: 50,
-        loc_id: bay1.id,
+        locId: bay1.id,
         price : null
       });
   const lot3 = await Lot.create(
@@ -67,7 +67,7 @@ async function commonBeforeAll() {
         name: "Lot3",
         description: "New Lot3",
         quantity: 1,
-        loc_id: bay1.id,
+        locId: bay1.id,
         price : "$50"
       });
   const lot4 = await Lot.create(
@@ -75,7 +75,7 @@ async function commonBeforeAll() {
         name: "Lot4",
         description: "New Lot4",
         quantity: 10,
-        loc_id: bay2.id,
+        locId: bay2.id,
         price : "$10.99"
       });
   const lot5 = await Lot.create(
@@ -83,7 +83,7 @@ async function commonBeforeAll() {
         name: "Lot5",
         description: "New Lot5",
         quantity: 50,
-        loc_id: bay2.id,
+        locId: bay2.id,
         price : null
       });
   const lot6 = await Lot.create(
@@ -91,7 +91,7 @@ async function commonBeforeAll() {
         name: "Lot6",
         description: "New Lot6",
         quantity: 300,
-        loc_id: bay2.id,
+        locId: bay2.id,
         price : "$2"
       });
   const lot7 = await Lot.create(
@@ -99,7 +99,7 @@ async function commonBeforeAll() {
         name: "Lot7",
         description: "New Lot7",
         quantity: null,
-        loc_id: bay2.id,
+        locId: bay2.id,
         price : "$30"
       });
   const lot8 = await Lot.create(
@@ -107,7 +107,7 @@ async function commonBeforeAll() {
         name: "Lot8",
         description: "New Lot8",
         quantity: null,
-        loc_id: studio.id,
+        locId: studio.id,
         price : null
       });
   

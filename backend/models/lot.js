@@ -104,7 +104,7 @@ class Lot {
     const {rows:[lot]} = await db.query(
           `SELECT id,
                   name,
-                  loc_id, 
+                  loc_id as "locId", 
                   quantity, 
                   price, 
                   description
