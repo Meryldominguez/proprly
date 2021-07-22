@@ -7,8 +7,8 @@ const cors = require("cors");
 
 const { NotFoundError } = require("./expressError");
 
-const { authenticateJWT } = require("./middleware/auth");
-const lotRoutes = require("./routes/lot");
+const { authenticateJWT, ensureLoggedIn } = require("./middleware/auth");
+const lotRoutes = require("./routes/lots");
 const usersRoutes = require("./routes/users");
 
 const morgan = require("morgan");
@@ -19,8 +19,9 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
+app.use(ensureLoggedIn);
 
-app.use("/lot", lotRoutes);
+app.use("/lots", lotRoutes);
 app.use("/users", usersRoutes);
 
 

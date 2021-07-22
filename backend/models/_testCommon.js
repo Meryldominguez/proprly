@@ -11,6 +11,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM location");
   await db.query("DELETE FROM tag");
   await db.query("DELETE FROM production");
+  await db.query("DELETE FROM prop");
 
   const {rows:[testParentLoc]} = await db.query(`
     INSERT INTO location(name, notes, parent_id)

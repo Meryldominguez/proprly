@@ -2,50 +2,117 @@
 
 const db = require("../db.js");
 const User = require("../models/user");
-const Company = require("../models/company");
-const Job = require("../models/job");
+const Lot = require("../models/lot");
+const Location = require("../models/Location");
 const { createToken } = require("../helpers/tokens");
 
-const testJobIds = [];
 
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
+  await db.query("DELETE FROM lot");
   await db.query("DELETE FROM users");
-  // noinspection SqlWithoutWhere
-  await db.query("DELETE FROM companies");
+  await db.query("DELETE FROM location");
+  await db.query("DELETE FROM tag");
+  await db.query("DELETE FROM production");
+  await db.query("DELETE FROM prop");
 
-  await Company.create(
-      {
-        handle: "c1",
-        name: "C1",
-        numEmployees: 1,
-        description: "Desc1",
-        logoUrl: "http://c1.img",
-      });
-  await Company.create(
-      {
-        handle: "c2",
-        name: "C2",
-        numEmployees: 2,
-        description: "Desc2",
-        logoUrl: "http://c2.img",
-      });
-  await Company.create(
-      {
-        handle: "c3",
-        name: "C3",
-        numEmployees: 3,
-        description: "Desc3",
-        logoUrl: "http://c3.img",
-      });
+  const warehouse = await Location.create(
+    {
+      name: "Warehouse",
+      notes: "warehouse address, number of coordinator",
+      parendId: null
+    }
+  )
+  const studio = await Location.create(
+    {
+      name: "Rehearsal studio",
+      notes: "studio address, number of coordinator",
+      parendId: null
+    }
+  )
 
-  testJobIds[0] = (await Job.create(
-      { title: "J1", salary: 1, equity: "0.1", companyHandle: "c1" })).id;
-  testJobIds[1] = (await Job.create(
-      { title: "J2", salary: 2, equity: "0.2", companyHandle: "c1" })).id;
-  testJobIds[2] = (await Job.create(
-      { title: "J3", salary: 3, /* equity null */ companyHandle: "c1" })).id;
+  const bay1 = await Location.create(
+    {
+      name: "Bay 1",
+      notes: null,
+      parendId: warehouse.id
+    }
+  )
+  const bay2 =await Location.create(
+    {
+      name: "Bay 2",
+      notes: null,
+      parendId: warehouse.id
+    }
+  )
+  
+  const lot1 = await Lot.create(
+      {
+        name: "Lot1",
+        description: "New Lot1",
+        quantity: 3,
+        loc_id: bay1.id,
+        price : "$20.99"
+      });
+  const lot2 = await Lot.create(
+      {
+        name: "Lot2",
+        description: "New Lot2",
+        quantity: 50,
+        loc_id: bay1.id,
+        price : null
+      });
+  const lot3 = await Lot.create(
+      {
+        name: "Lot3",
+        description: "New Lot3",
+        quantity: 1,
+        loc_id: bay1.id,
+        price : "$50"
+      });
+  const lot4 = await Lot.create(
+      {
+        name: "Lot4",
+        description: "New Lot4",
+        quantity: 10,
+        loc_id: bay2.id,
+        price : "$10.99"
+      });
+  const lot5 = await Lot.create(
+      {
+        name: "Lot5",
+        description: "New Lot5",
+        quantity: 50,
+        loc_id: bay2.id,
+        price : null
+      });
+  const lot6 = await Lot.create(
+      {
+        name: "Lot6",
+        description: "New Lot6",
+        quantity: 300,
+        loc_id: bay2.id,
+        price : "$2"
+      });
+  const lot7 = await Lot.create(
+      {
+        name: "Lot7",
+        description: "New Lot7",
+        quantity: null,
+        loc_id: bay2.id,
+        price : "$30"
+      });
+  const lot8 = await Lot.create(
+      {
+        name: "Lot8",
+        description: "New Lot8",
+        quantity: null,
+        loc_id: studio.id,
+        price : null
+      });
+  
 
+  
   await User.register({
     username: "u1",
     firstName: "U1F",
@@ -70,8 +137,15 @@ async function commonBeforeAll() {
     password: "password3",
     isAdmin: false,
   });
-
-  await User.applyToJob("u1", testJobIds[0]);
+  await User.register({
+    username: "a1",
+    firstName: "A1F",
+    lastName: "A1L",
+    email: "admin@user.com",
+    password: "adminpassword1",
+    isAdmin: true
+  });
+  
 }
 
 async function commonBeforeEach() {
@@ -97,8 +171,7 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testJobIds,
   u1Token,
   u2Token,
-  adminToken,
+  adminToken
 };

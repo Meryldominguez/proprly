@@ -17,12 +17,12 @@ class Lot {
    * Throws BadRequestError if lot already in database.
    * */
 
-  static async create({ name, loc_id, quantity, price, description}) {
+  static async create({ name, locId, quantity, price, description}) {
     const duplicateCheck = await db.query(
       `SELECT name, loc_id
        FROM lot
        WHERE name = $1 AND loc_id = $2`,
-    [name, loc_id]);
+    [name, locId]);
 
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate item: ${name} already exists, in the same location. `);
@@ -31,10 +31,10 @@ class Lot {
           `INSERT INTO lot
            (name, loc_id, quantity, price, description)
            VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, name, loc_id, quantity, price, description`,
+           RETURNING id, name, loc_id as "locId", quantity, price, description`,
         [
           name,
-          loc_id,
+          locId,
           quantity,
           price,
           description

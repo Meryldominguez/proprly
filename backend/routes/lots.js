@@ -1,15 +1,15 @@
-/** Routes for companies. */
+/** Routes for lots. */
 
 const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureAdmin } = require("../middleware/auth");
+const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const Lot = require("../models/lot");
 
 const lotNewSchema = require("../schemas/lotNew.json");
-const lotUpdateSchema = require("../schemas/lotUpdate.json");
-const lotSearchSchema = require("../schemas/lotSearch.json");
+// const lotUpdateSchema = require("../schemas/lotUpdate.json");
+// const lotSearchSchema = require("../schemas/lotSearch.json");
 
 const router = new express.Router();
 
@@ -23,9 +23,9 @@ const router = new express.Router();
  *
  * Returns { id, name, description, numEmployees, logoUrl }
  *
- * Authorization required: admin
+ * Authorization required: logged in
  */
-router.post("/", ensureAdmin, async function (req, res, next) {
+router.post("/", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, lotNewSchema);
     if (!validator.valid) {
@@ -41,7 +41,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
 });
 
 /** GET /  =>
- *   { companies: [ { id, name, description, numEmployees, logoUrl }, ...] }
+ *   { lot: [ { id, name, description, numEmployees, logoUrl }, ...] }
  *
  * Can filter on provided search filters:
  * - minEmployees
@@ -52,22 +52,22 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  const q = req.query;
-  // arrive as strings from querystring, but we want as ints
-  if (q.minEmployees !== undefined) q.minEmployees = +q.minEmployees;
-  if (q.maxEmployees !== undefined) q.maxEmployees = +q.maxEmployees;
+  // const q = req.query;
+  // // arrive as strings from querystring, but we want as ints
+  // if (q.minEmployees !== undefined) q.minEmployees = +q.minEmployees;
+  // if (q.maxEmployees !== undefined) q.maxEmployees = +q.maxEmployees;
 
-  try {
-    const validator = jsonschema.validate(q, lotSearchSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
-    const companies = await lot.findAll(q);
-    return res.json({ companies });
-  } catch (err) {
-    return next(err);
-  }
+  // try {
+  //   const validator = jsonschema.validate(q, lotSearchSchema);
+  //   if (!validator.valid) {
+  //     const errs = validator.errors.map(e => e.stack);
+  //     throw new BadRequestError(errs);
+  //   }
+  //   const lots = await Lot.findAll(q);
+  //   return res.json({ lots });
+  // } catch (err) {
+  //   return next(err);
+  // }
 });
 
 /** GET /[id]  =>  { lot }
@@ -80,7 +80,7 @@ router.get("/", async function (req, res, next) {
 
 router.get("/:id", async function (req, res, next) {
   try {
-    const lot = await lot.get(req.params.id);
+    const lot = await Lot.get(req.params.id);
     return res.json({ lot });
   } catch (err) {
     return next(err);
@@ -99,18 +99,18 @@ router.get("/:id", async function (req, res, next) {
  */
 
 router.patch("/:id", ensureAdmin, async function (req, res, next) {
-  try {
-    const validator = jsonschema.validate(req.body, lotUpdateSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
+  // try {
+  //   const validator = jsonschema.validate(req.body, lotUpdateSchema);
+  //   if (!validator.valid) {
+  //     const errs = validator.errors.map(e => e.stack);
+  //     throw new BadRequestError(errs);
+  //   }
 
-    const lot = await lot.update(req.params.id, req.body);
-    return res.json({ lot });
-  } catch (err) {
-    return next(err);
-  }
+  //   const lot = await lot.update(req.params.id, req.body);
+  //   return res.json({ lot });
+  // } catch (err) {
+  //   return next(err);
+  // }
 });
 
 /** DELETE /[id]  =>  { deleted: id }
@@ -119,12 +119,12 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
  */
 
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
-  try {
-    await lot.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
-  } catch (err) {
-    return next(err);
-  }
+  // try {
+  //   await lot.remove(req.params.id);
+  //   return res.json({ deleted: req.params.id });
+  // } catch (err) {
+  //   return next(err);
+  // }
 });
 
 
