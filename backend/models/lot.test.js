@@ -137,6 +137,10 @@ describe("findAll", function () {
     let lots = await Lot.findAll({searchTerm:"first"});
     expect(lots.length).toEqual(2)
   });
+  test("works: search by tag", async function () {
+    let lots = await Lot.findAll({searchTerm:"set"});
+    expect(lots.length).toEqual(2)
+  });
 
   test("works: empty list on nothing found", async function () {
     let lots = await Lot.findAll({searchTerm:"nope"});
