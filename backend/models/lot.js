@@ -96,7 +96,7 @@ class Lot {
      const lotsRes = await db.query(query, queryValues)
      return lotsRes.rows
    }
-    console.log("outside2", query)
+    console.log("outside2")
     const lotsRes = await db.query(query)
    
     return lotsRes.rows;

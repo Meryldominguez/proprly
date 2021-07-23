@@ -20,7 +20,6 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
-// app.use(ensureLoggedIn);
 
 app.use("/lots", lotsRoutes);
 app.use("/users", usersRoutes);

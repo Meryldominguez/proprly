@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon server.js",
     "test": "npm jest -i"
   },
   "dependencies": {
@@ -13,13 +14,13 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "jest": "^27.0.4",
     "jsonschema": "^1.2.6",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "pg": "^8.3.0"
   },
   "devDependencies": {
+    "jest": "^27.0.4",
     "supertest": "^5.0.0-0"
   },
   "jest": {
