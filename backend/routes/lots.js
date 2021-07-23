@@ -13,7 +13,6 @@ const lotUpdateSchema = require("../schemas/lotUpdate.json");
 
 const router = new express.Router();
 
-router.use(ensureLoggedIn)
 
 /**For later
  * https://stackoverflow.com/questions/40423376/json-schema-validator-custom-message
@@ -27,7 +26,7 @@ router.use(ensureLoggedIn)
  *
  * Authorization required: logged in
  */
-router.post("/", async function (req, res, next) {
+router.post("/",ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, lotNewSchema);
     if (!validator.valid) {
@@ -53,21 +52,18 @@ router.post("/", async function (req, res, next) {
  * Authorization required: logged in
  */
 
-router.get("/", async function (req, res, next) {
+router.get("/",ensureLoggedIn, async function (req, res, next) {
   const searchTerm = req.query.q
-  console.log()
   try {
-    // const validator = jsonschema.validate(q, lotSearchSchema);
-    // if (!validator.valid) {
-    //   const errs = validator.errors.map(e => e.stack);
-    //   throw new BadRequestError(errs);
-    // }
     if(searchTerm){
-      console.log("inside1")
+      const validator = jsonschema.validate(q, lotSearchSchema);
+      if (!validator.valid) {
+        const errs = validator.errors.map(e => e.stack);
+        throw new BadRequestError(errs);
+      }
       const lots = await Lot.findAll({searchTerm});
       return res.json({ lots });
     }
-    console.log("outside1")
     const lots = await Lot.findAll();
     return res.json({ lots });
     
@@ -86,7 +82,7 @@ router.get("/", async function (req, res, next) {
  * Authorization required: logged in
  */
 
-router.get("/:id", async function (req, res, next) {
+router.get("/:id",ensureLoggedIn, async function (req, res, next) {
   try {
     const lot = await Lot.get(Number(req.params.id));
     return res.json({ lot });
@@ -106,7 +102,7 @@ router.get("/:id", async function (req, res, next) {
  * Authorization required: logged in
  */
 
-router.patch("/:id", async function (req, res, next) {
+router.patch("/:id",ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, lotUpdateSchema);
     if (!validator.valid) {

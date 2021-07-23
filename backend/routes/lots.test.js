@@ -103,22 +103,22 @@ describe("GET /lots", function () {
     expect(resp.statusCode).toEqual(200);
   });
 
-//   test("unauth for anon", async function () {
-//     const resp = await request(app)
-//         .get("/lots");
-//     expect(resp.statusCode).toEqual(401);
-//   });
+  test("unauth for anon", async function () {
+    const resp = await request(app)
+        .get("/lots");
+    expect(resp.statusCode).toEqual(401);
+  });
 
-//   test("fails: test next() handler", async function () {
-//     // there's no normal failure event which will cause this route to fail ---
-//     // thus making it hard to test that the error-handler works with it. This
-//     // should cause an error, all right :)
-//     await db.query("DROP TABLE lot CASCADE;");
-//     const resp = await request(app)
-//         .get("/lots")
-//         .set("authorization", `Bearer ${adminToken}`);
-//     expect(resp.statusCode).toEqual(500);
-//   });
+  test("fails: test next() handler", async function () {
+    // there's no normal failure event which will cause this route to fail ---
+    // thus making it hard to test that the error-handler works with it. This
+    // should cause an error, all right :)
+    await db.query("DROP TABLE lot CASCADE;");
+    const resp = await request(app)
+        .get("/lots")
+        .set("authorization", `Bearer ${adminToken}`);
+    expect(resp.statusCode).toEqual(500);
+  });
 });
 
 /************************************** GET /lots/:id */
@@ -280,25 +280,26 @@ describe("DELETE /lots/:id", function () {
     expect(resp.body).toEqual({ deleted: lot1.id });
   });
 
-  test("unauth for users", async function () {
-    const {rows:[lot1]} = await db.query(
-      `SELECT * FROM lot
-        WHERE name = 'Lot1'`)
+  // test("unauth for users", async function () {
 
-    const resp = await request(app)
-        .delete(`/lots/${lot1.id}`)
-        .set("authorization", `Bearer ${u2Token}`);
+  //   const {rows:[lot2]} = await db.query(
+  //     `SELECT * FROM lot
+  //       WHERE name = 'Lot2'`)
 
-    expect(resp.statusCode).toEqual(401);
-  });
+  //   const resp = await request(app)
+  //       .delete(`/lots/${lot2.id}`)
+  //       .set("authorization", `Bearer ${u2Token}`);
 
-  test("unauth for anon", async function () {
-    const {rows:[lot1]} = await db.query(
-      `SELECT * FROM lot
-        WHERE name = 'Lot1'`)
+  //   expect(resp.statusCode).toEqual(401);
+  // });
 
-    const resp = await request(app)
-        .delete(`/lots/${lot1.id}`);
-    expect(resp.statusCode).toEqual(401);
-  });
+  // test("unauth for anon", async function () {
+  //   const {rows:[lot3]} = await db.query(
+  //     `SELECT * FROM lot
+  //       WHERE name = 'Lot3'`)
+
+  //   const resp = await request(app)
+  //       .delete(`/lots/${lot3.id}`);
+  //   expect(resp.statusCode).toEqual(401);
+  // });
 });

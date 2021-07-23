@@ -54,21 +54,18 @@ class Lot {
    * */
 
    static async findAll(params={}) {
-    console.log(params)
-    let selectCols=[
-        "lot.id", 
-        "lot.name",
-        `location.id as "locId"`,
-        "location.name as location", 
-        "lot.quantity", 
-        "lot.price", 
-        "lot.description"]
 
-    let query = `SELECT ${selectCols.join(", ")}
-    FROM lot
-    JOIN location ON location.id = lot.loc_id
-    JOIN lot_tag AS x ON x.lot_id=lot.id
-    JOIN tag ON x.tag_id=tag.id
+    let query = `
+    SELECT 
+        lot.id, 
+        lot.name,
+        location.id as "locId",
+        location.name as location, 
+        lot.quantity, 
+        lot.price, 
+        lot.description
+      FROM lot
+      JOIN location ON location.id = lot.loc_id
     `; 
     let whereExpressions = [];
     let queryValues = [];
@@ -80,6 +77,9 @@ class Lot {
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
     if (params['searchTerm']) {
+      query += "JOIN lot_tag AS x ON x.lot_id=lot.id \n"
+      query += "JOIN tag ON x.tag_id=tag.id \n"
+      
       queryValues.push(`%${params.searchTerm}%`);
       whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
       whereExpressions.push(`lot.description ILIKE $${queryValues.length}`)
@@ -88,17 +88,16 @@ class Lot {
       query += "WHERE " + whereExpressions.join(" OR ")
     }
       query += "GROUP BY lot.id, location.id\n";
-      query += "ORDER BY lot.name;";
+      query += "ORDER BY lot.name";
       
     // Finalize query and return results
 
    if (queryValues.length>0){
-     console.log("inside2")
      const lotsRes = await db.query(query, queryValues)
      return lotsRes.rows
    }
-    console.log("outside2")
     const lotsRes = await db.query(query)
+    console.log(query)
    
     return lotsRes.rows;
   }
