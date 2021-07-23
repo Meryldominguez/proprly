@@ -21,18 +21,6 @@ beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
 
-// const warehouse = await db.query(
-//   `SELECT * FROM location
-//     WHERE name = "Warehouse"`)
-// const studio = await db.query(
-//   `SELECT * FROM location
-//     WHERE name = "Rehearsal studio"`)
-// const bay1 = await db.query(
-//   `SELECT * FROM location
-//     WHERE name = "Bay 1"`)
-// const bay2 = await db.query(
-//   `SELECT * FROM location
-//     WHERE name = "Bay 2"`)
 
 /************************************** POST /lots */
 
@@ -111,25 +99,26 @@ describe("GET /lots", function () {
     const resp = await request(app)
         .get("/lots")
         .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.body.lots.length).toBe(8)
     expect(resp.statusCode).toEqual(200);
   });
 
-  test("unauth for anon", async function () {
-    const resp = await request(app)
-        .get("/lots");
-    expect(resp.statusCode).toEqual(401);
-  });
+//   test("unauth for anon", async function () {
+//     const resp = await request(app)
+//         .get("/lots");
+//     expect(resp.statusCode).toEqual(401);
+//   });
 
-  test("fails: test next() handler", async function () {
-    // there's no normal failure event which will cause this route to fail ---
-    // thus making it hard to test that the error-handler works with it. This
-    // should cause an error, all right :)
-    await db.query("DROP TABLE lot CASCADE;");
-    const resp = await request(app)
-        .get("/lots")
-        .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.statusCode).toEqual(500);
-  });
+//   test("fails: test next() handler", async function () {
+//     // there's no normal failure event which will cause this route to fail ---
+//     // thus making it hard to test that the error-handler works with it. This
+//     // should cause an error, all right :)
+//     await db.query("DROP TABLE lot CASCADE;");
+//     const resp = await request(app)
+//         .get("/lots")
+//         .set("authorization", `Bearer ${adminToken}`);
+//     expect(resp.statusCode).toEqual(500);
+//   });
 });
 
 /************************************** GET /lots/:id */

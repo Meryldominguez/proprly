@@ -46,7 +46,7 @@ async function commonBeforeAll() {
     }
   )
   
-  const lot1 = await Lot.create(
+  await Lot.create(
       {
         name: "Lot1",
         description: "New Lot1",
@@ -54,7 +54,7 @@ async function commonBeforeAll() {
         locId: bay1.id,
         price : "$20.99"
       });
-  const lot2 = await Lot.create(
+  await Lot.create(
       {
         name: "Lot2",
         description: "New Lot2",
@@ -62,7 +62,7 @@ async function commonBeforeAll() {
         locId: bay1.id,
         price : null
       });
-  const lot3 = await Lot.create(
+  await Lot.create(
       {
         name: "Lot3",
         description: "New Lot3",
@@ -70,7 +70,7 @@ async function commonBeforeAll() {
         locId: bay1.id,
         price : "$50"
       });
-  const lot4 = await Lot.create(
+  await Lot.create(
       {
         name: "Lot4",
         description: "New Lot4",
@@ -78,7 +78,7 @@ async function commonBeforeAll() {
         locId: bay2.id,
         price : "$10.99"
       });
-  const lot5 = await Lot.create(
+  await Lot.create(
       {
         name: "Lot5",
         description: "New Lot5",
@@ -86,7 +86,7 @@ async function commonBeforeAll() {
         locId: bay2.id,
         price : null
       });
-  const lot6 = await Lot.create(
+  await Lot.create(
       {
         name: "Lot6",
         description: "New Lot6",
@@ -94,7 +94,7 @@ async function commonBeforeAll() {
         locId: bay2.id,
         price : "$2"
       });
-  const lot7 = await Lot.create(
+  await Lot.create(
       {
         name: "Lot7",
         description: "New Lot7",
@@ -102,7 +102,7 @@ async function commonBeforeAll() {
         locId: bay2.id,
         price : "$30"
       });
-  const lot8 = await Lot.create(
+  await Lot.create(
       {
         name: "Lot8",
         description: "New Lot8",
@@ -110,8 +110,15 @@ async function commonBeforeAll() {
         locId: studio.id,
         price : null
       });
-  
-
+    const test= await db.query(`
+      SELECT lot.id, lot.name, location.id as "locId", location.name as location, lot.quantity, lot.price, lot.description
+          FROM lot
+          JOIN location ON location.id = lot.loc_id
+          JOIN lot_tag AS x ON x.lot_id=lot.id
+          JOIN tag ON x.tag_id=tag.id
+          GROUP BY lot.id, location.id
+        ORDER BY lot.name`)
+   
   
   await User.register({
     username: "u1",
@@ -146,19 +153,19 @@ async function commonBeforeAll() {
     isAdmin: true
   });
   
-}
+};
 
 async function commonBeforeEach() {
   await db.query("BEGIN");
-}
+};
 
 async function commonAfterEach() {
   await db.query("ROLLBACK");
-}
+};
 
 async function commonAfterAll() {
   await db.end();
-}
+};
 
 
 const u1Token = createToken({ username: "u1", isAdmin: false });

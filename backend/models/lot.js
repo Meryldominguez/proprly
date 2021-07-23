@@ -78,15 +78,6 @@ class Lot {
     
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
-    // SELECT lot.id, lot.name, location.id as "locId", location.name as location, lot.quantity, lot.price, lot.description
-    //     FROM lot
-    //     JOIN location ON location.id = lot.loc_id
-    //     JOIN lot_tag AS x ON x.lot_id=lot.id
-    //     JOIN tag ON x.tag_id=tag.id
-    //     WHERE lot.name ILIKE '%silk%' OR lot.description ILIKE '%silk%' OR location.name ILIKE '%silk%'  OR tag.title ILIKE '%silk%' 
-    // GROUP BY lot.id, location.id
-    // ORDER BY lot.name
-
     if (params['searchTerm']) {
       queryValues.push(`%${params.searchTerm}%`);
       whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
@@ -96,15 +87,18 @@ class Lot {
       query += "WHERE " + whereExpressions.join(" OR ")
     }
       query += "GROUP BY lot.id, location.id\n";
-      query += "ORDER BY lot.name";
+      query += "ORDER BY lot.name;";
       
     // Finalize query and return results
 
    if (queryValues.length>0){
+     console.log("inside2")
      const lotsRes = await db.query(query, queryValues)
      return lotsRes.rows
    }
+    console.log("outside2", query)
     const lotsRes = await db.query(query)
+   
     return lotsRes.rows;
   }
 
