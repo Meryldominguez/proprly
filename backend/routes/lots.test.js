@@ -280,26 +280,25 @@ describe("DELETE /lots/:id", function () {
     expect(resp.body).toEqual({ deleted: lot1.id });
   });
 
-  // test("unauth for users", async function () {
+  test("unauth for users", async function () {
+    const {rows:[lot2]} = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot2'`)
 
-  //   const {rows:[lot2]} = await db.query(
-  //     `SELECT * FROM lot
-  //       WHERE name = 'Lot2'`)
+    const resp = await request(app)
+        .delete(`/lots/${lot2.id}`)
+        .set("authorization", `Bearer ${u2Token}`);
 
-  //   const resp = await request(app)
-  //       .delete(`/lots/${lot2.id}`)
-  //       .set("authorization", `Bearer ${u2Token}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 
-  //   expect(resp.statusCode).toEqual(401);
-  // });
+  test("unauth for anon", async function () {
+    const {rows:[lot3]} = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot3'`)
 
-  // test("unauth for anon", async function () {
-  //   const {rows:[lot3]} = await db.query(
-  //     `SELECT * FROM lot
-  //       WHERE name = 'Lot3'`)
-
-  //   const resp = await request(app)
-  //       .delete(`/lots/${lot3.id}`);
-  //   expect(resp.statusCode).toEqual(401);
-  // });
+    const resp = await request(app)
+        .delete(`/lots/${lot3.id}`);
+    expect(resp.statusCode).toEqual(401);
+  });
 });

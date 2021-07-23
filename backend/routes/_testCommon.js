@@ -8,6 +8,7 @@ const { createToken } = require("../helpers/tokens");
 
 
 async function commonBeforeAll() {
+  console.log("beforeall")
   // noinspection SqlWithoutWhere
   await db.query("DELETE FROM lot");
   await db.query("DELETE FROM users");
@@ -54,6 +55,7 @@ async function commonBeforeAll() {
         locId: bay1.id,
         price : "$20.99"
       });
+
   await Lot.create(
       {
         name: "Lot2",
@@ -110,15 +112,7 @@ async function commonBeforeAll() {
         locId: studio.id,
         price : null
       });
-    const test= await db.query(`
-      SELECT lot.id, lot.name, location.id as "locId", location.name as location, lot.quantity, lot.price, lot.description
-          FROM lot
-          JOIN location ON location.id = lot.loc_id
-          JOIN lot_tag AS x ON x.lot_id=lot.id
-          JOIN tag ON x.tag_id=tag.id
-          GROUP BY lot.id, location.id
-        ORDER BY lot.name`)
-   
+
   
   await User.register({
     username: "u1",

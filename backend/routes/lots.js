@@ -69,7 +69,6 @@ router.get("/",ensureLoggedIn, async function (req, res, next) {
     
     
   } catch (err) {
-    console.log(err)
     return next(err);
   }
 });
@@ -125,8 +124,7 @@ router.patch("/:id",ensureLoggedIn, async function (req, res, next) {
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
     const {id} = await Lot.remove(Number(req.params.id));
-    
-    return res.json({ deleted: id });
+    return res.json({ deleted:id });
   } catch (err) {
     return next(err);
   }

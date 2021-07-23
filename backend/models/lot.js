@@ -27,7 +27,7 @@ class Lot {
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate item: ${name} already exists, in the same location. `);
 
-    const result = await db.query(
+    const {rows:[lot]} = await db.query(
           `INSERT INTO lot
            (name, loc_id, quantity, price, description)
            VALUES ($1, $2, $3, $4, $5)
@@ -40,7 +40,6 @@ class Lot {
           description
         ],
     );
-    const lot = result.rows[0];
     return lot;
   }
 
@@ -97,7 +96,6 @@ class Lot {
      return lotsRes.rows
    }
     const lotsRes = await db.query(query)
-    console.log(query)
    
     return lotsRes.rows;
   }
@@ -134,6 +132,7 @@ class Lot {
           JOIN tag AS t ON t.id=tag_id
           WHERE lot_id=$1
         `,[id])
+
     lot.tags=rows
     return lot;
   }
@@ -168,8 +167,7 @@ class Lot {
                                 quantity,
                                 price,
                                 loc_id as "locId"`;
-    const result = await db.query(querySql, [...values, id]);
-    const lot = result.rows[0];
+    const {rows:[lot]} = await db.query(querySql, [...values, id]);
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
 
@@ -184,13 +182,12 @@ class Lot {
   static async remove(id) {
     if (typeof id != 'number') throw new BadRequestError(`${id} is not an integer`)
 
-    const result = await db.query(
+    const {rows:[lot]} = await db.query(
           `DELETE
            FROM lot
            WHERE id = $1
            RETURNING id`,
         [id]);
-    const lot = result.rows[0];
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
     return lot
