@@ -8,7 +8,7 @@
       "minLength": 1,
       "maxLength": 30
     },
-    "location": {
+    "locId": {
       "type": "integer",
       "exclusiveMinimum": 0
     },
@@ -31,7 +31,7 @@
   "additionalProperties": false,
   "required": [
     "name",
-    "location",
+    "locId",
     "description"
   ]
 }

@@ -11,6 +11,7 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM location");
   await db.query("DELETE FROM tag");
   await db.query("DELETE FROM production");
+  await db.query("DELETE FROM prop");
 
   const {rows:[testParentLoc]} = await db.query(`
     INSERT INTO location(name, notes, parent_id)
@@ -38,7 +39,6 @@ async function commonBeforeAll() {
     RETURNING id,title
             `);
   
-
   const {rows:[testLot1, testLot2, testLot3]}=await db.query(`
     INSERT INTO lot( name, loc_id, description, quantity, price)
     VALUES ('item1', $1, 'Desc1', 1, 10.99),

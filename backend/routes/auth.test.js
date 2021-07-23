@@ -32,45 +32,50 @@ describe('POST /auth/token', function () {
     })
   })
 
+
   test('unauth with non-existent user', async function () {
     const resp = await request(app)
-      .post('/auth/token')
-      .send({
-        username: 'no-such-user',
-        password: 'password1'
-      })
-    expect(resp.statusCode).toEqual(401)
-  })
+        .post("/auth/token")
+        .send({
+          username: "no-such-user",
+          password: "password1"
+        });
+    expect(resp.statusCode).toEqual(401);
+  });
+
 
   test('unauth with wrong password', async function () {
     const resp = await request(app)
-      .post('/auth/token')
-      .send({
-        username: 'u1',
-        password: 'nope'
-      })
-    expect(resp.statusCode).toEqual(401)
-  })
+        .post("/auth/token")
+        .send({
+          username: "u1",
+          password: "nope"
+        });
+    expect(resp.statusCode).toEqual(401);
+  });
+
 
   test('bad request with missing data', async function () {
     const resp = await request(app)
-      .post('/auth/token')
-      .send({
-        username: 'u1'
-      })
-    expect(resp.statusCode).toEqual(400)
-  })
+        .post("/auth/token")
+        .send({
+          username: "u1"
+        });
+    expect(resp.statusCode).toEqual(400);
+  });
+
 
   test('bad request with invalid data', async function () {
     const resp = await request(app)
-      .post('/auth/token')
-      .send({
-        username: 42,
-        password: 'above-is-a-number'
-      })
-    expect(resp.statusCode).toEqual(400)
-  })
-})
+        .post("/auth/token")
+        .send({
+          username: 42,
+          password: "above-is-a-number"
+        });
+    expect(resp.statusCode).toEqual(400);
+  });
+});
+
 
 /** ************************************ POST /auth/register */
 
@@ -115,3 +120,4 @@ describe('POST /auth/register', function () {
     expect(resp.statusCode).toEqual(400)
   })
 })
+

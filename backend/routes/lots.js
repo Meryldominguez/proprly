@@ -1,17 +1,18 @@
-/** Routes for companies. */
+/** Routes for lots. */
 
 const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureAdmin } = require("../middleware/auth");
+const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const Lot = require("../models/lot");
 
 const lotNewSchema = require("../schemas/lotNew.json");
 const lotUpdateSchema = require("../schemas/lotUpdate.json");
-const lotSearchSchema = require("../schemas/lotSearch.json");
+// const lotSearchSchema = require("../schemas/lotSearch.json");
 
 const router = new express.Router();
+
 
 /**For later
  * https://stackoverflow.com/questions/40423376/json-schema-validator-custom-message
@@ -23,9 +24,9 @@ const router = new express.Router();
  *
  * Returns { id, name, description, numEmployees, logoUrl }
  *
- * Authorization required: admin
+ * Authorization required: logged in
  */
-router.post("/", ensureAdmin, async function (req, res, next) {
+router.post("/",ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, lotNewSchema);
     if (!validator.valid) {
@@ -41,30 +42,32 @@ router.post("/", ensureAdmin, async function (req, res, next) {
 });
 
 /** GET /  =>
- *   { companies: [ { id, name, description, numEmployees, logoUrl }, ...] }
+ *   { lot: [ { id, name, description, numEmployees, logoUrl }, ...] }
  *
  * Can filter on provided search filters:
  * - minEmployees
  * - maxEmployees
  * - nameLike (will find case-insensitive, partial matches)
  *
- * Authorization required: none
+ * Authorization required: logged in
  */
 
-router.get("/", async function (req, res, next) {
-  const q = req.query;
-  // arrive as strings from querystring, but we want as ints
-  if (q.minEmployees !== undefined) q.minEmployees = +q.minEmployees;
-  if (q.maxEmployees !== undefined) q.maxEmployees = +q.maxEmployees;
-
+router.get("/",ensureLoggedIn, async function (req, res, next) {
+  const searchTerm = req.query.q
   try {
-    const validator = jsonschema.validate(q, lotSearchSchema);
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
+    if(searchTerm){
+      const validator = jsonschema.validate(q, lotSearchSchema);
+      if (!validator.valid) {
+        const errs = validator.errors.map(e => e.stack);
+        throw new BadRequestError(errs);
+      }
+      const lots = await Lot.findAll({searchTerm});
+      return res.json({ lots });
     }
-    const companies = await lot.findAll(q);
-    return res.json({ companies });
+    const lots = await Lot.findAll();
+    return res.json({ lots });
+    
+    
   } catch (err) {
     return next(err);
   }
@@ -75,12 +78,12 @@ router.get("/", async function (req, res, next) {
  *  lot is { id, name, description, numEmployees, logoUrl, jobs }
  *   where jobs is [{ id, title, salary, equity }, ...]
  *
- * Authorization required: none
+ * Authorization required: logged in
  */
 
-router.get("/:id", async function (req, res, next) {
+router.get("/:id",ensureLoggedIn, async function (req, res, next) {
   try {
-    const lot = await lot.get(req.params.id);
+    const lot = await Lot.get(Number(req.params.id));
     return res.json({ lot });
   } catch (err) {
     return next(err);
@@ -95,10 +98,10 @@ router.get("/:id", async function (req, res, next) {
  *
  * Returns { id, name, description, numEmployees, logo_url }
  *
- * Authorization required: admin
+ * Authorization required: logged in
  */
 
-router.patch("/:id", ensureAdmin, async function (req, res, next) {
+router.patch("/:id",ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, lotUpdateSchema);
     if (!validator.valid) {
@@ -106,7 +109,7 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const lot = await lot.update(req.params.id, req.body);
+    const lot = await Lot.update(Number(req.params.id), req.body);
     return res.json({ lot });
   } catch (err) {
     return next(err);
@@ -120,8 +123,8 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
 
 router.delete("/:id", ensureAdmin, async function (req, res, next) {
   try {
-    await lot.remove(req.params.id);
-    return res.json({ deleted: req.params.id });
+    const {id} = await Lot.remove(Number(req.params.id));
+    return res.json({ deleted:id });
   } catch (err) {
     return next(err);
   }

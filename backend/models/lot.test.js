@@ -30,14 +30,14 @@ describe("create",function () {
     let {rows:[loc]} = await db.query(
       `SELECT * FROM location
         WHERE name = 'First Location'`)
-    newLot.loc_id=loc.id
+    newLot.locId=loc.id
 
     let lot = await Lot.create(newLot);
     expect(lot).toEqual({
       name: "New",
       description: "New Lot",
       quantity: 1,
-      loc_id:loc.id,
+      locId:loc.id,
       price : "$20.99",
       id: expect.any(Number),
     });
@@ -84,6 +84,7 @@ describe("findAll", function () {
       {
         id: expect.any(Number),
         name: "item1",
+        locId: expect.any(Number),
         location: "First Location",
         description: "Desc1",
         quantity: 1,
@@ -92,6 +93,7 @@ describe("findAll", function () {
       {
         id: expect.any(Number),
         name: "item2",
+        locId: expect.any(Number),
         location: "First Location",
         description: "Desc2",
         quantity:null,
@@ -100,6 +102,7 @@ describe("findAll", function () {
       {
         id: expect.any(Number),
         name: "item3",
+        locId: expect.any(Number),
         location: "Second Location",
         description: "Desc3",
         quantity: 3,
@@ -114,7 +117,8 @@ describe("findAll", function () {
     let lots = await Lot.findAll({searchTerm:"1"});
     expect(lots.length).toEqual(1)
     expect(lots).toEqual([
-      {
+      {        
+        locId: expect.any(Number),
         id: expect.any(Number),
         name: "item1",
         location: "First Location",
@@ -131,6 +135,10 @@ describe("findAll", function () {
 
   test("works: search by location", async function () {
     let lots = await Lot.findAll({searchTerm:"first"});
+    expect(lots.length).toEqual(2)
+  });
+  test("works: search by tag", async function () {
+    let lots = await Lot.findAll({searchTerm:"set"});
     expect(lots.length).toEqual(2)
   });
 
@@ -151,7 +159,7 @@ describe("get", function () {
       {
         id: expect.any(Number),
         name: "item1",
-        loc_id: expect.any(Number),
+        locId: expect.any(Number),
         description: "Desc1",
         available: 1,
         quantity: 1,
@@ -165,7 +173,7 @@ describe("get", function () {
       {
         id: expect.any(Number),
         name: "item2",
-        loc_id: expect.any(Number),
+        locId: expect.any(Number),
         description: "Desc2",
         quantity: null,
         price:"$5.50",
@@ -178,7 +186,7 @@ describe("get", function () {
       {
         id: expect.any(Number),
         name: "item3",
-        loc_id: expect.any(Number),
+        locId: expect.any(Number),
         available:2,
         description: "Desc3",
         quantity: 3,

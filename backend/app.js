@@ -7,9 +7,10 @@ const cors = require("cors");
 
 const { NotFoundError } = require("./expressError");
 
-const { authenticateJWT } = require("./middleware/auth");
-const lotRoutes = require("./routes/lot");
+const { authenticateJWT, ensureLoggedIn } = require("./middleware/auth");
+const lotsRoutes = require("./routes/lots");
 const usersRoutes = require("./routes/users");
+const authRoutes = require("./routes/auth");
 
 const morgan = require("morgan");
 
@@ -20,9 +21,9 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
-app.use("/lot", lotRoutes);
+app.use("/lots", lotsRoutes);
 app.use("/users", usersRoutes);
-
+app.use("/auth", authRoutes);
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
@@ -32,6 +33,7 @@ app.use(function (req, res, next) {
 /** Generic error handler; anything unhandled goes here. */
 app.use(function (err, req, res, next) {
   if (process.env.NODE_ENV !== "test") console.error(err.stack);
+  
   const status = err.status || 500;
   const message = err.message;
 

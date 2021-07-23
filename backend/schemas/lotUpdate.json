@@ -11,7 +11,7 @@
     "description": {
       "type": "string"
     },
-    "location": {
+    "locId": {
       "type": "integer",
       "exclusiveMinimum": 0
     },

@@ -10,8 +10,7 @@ CREATE TABLE lot (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   loc_id INTEGER
-    REFERENCES location
-    ON DELETE CASCADE,
+    REFERENCES location ON DELETE CASCADE,
   quantity INTEGER 
     CHECK (quantity >= 0 OR quantity = NULL),
   description TEXT NOT NULL,

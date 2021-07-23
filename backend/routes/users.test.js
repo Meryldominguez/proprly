@@ -11,7 +11,6 @@ const {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testJobIds,
   u1Token,
   u2Token,
   adminToken,
@@ -26,26 +25,28 @@ afterAll(commonAfterAll);
 
 describe("POST /users", function () {
   test("works for admins: create non-admin", async function () {
+
     const resp = await request(app)
         .post("/users")
         .send({
-          username: "u-new",
+          username: "newusername",
           firstName: "First-new",
           lastName: "Last-newL",
           password: "password-new",
+          phone: null,
           email: "new@email.com",
-          isAdmin: false,
+          isAdmin: false
         })
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       user: {
-        username: "u-new",
+        username: "newusername",
         firstName: "First-new",
         lastName: "Last-newL",
         email: "new@email.com",
-        isAdmin: false,
-      }, token: expect.any(String),
+        isAdmin: false
+      }, token: expect.any(String)
     });
   });
 
@@ -53,18 +54,19 @@ describe("POST /users", function () {
     const resp = await request(app)
         .post("/users")
         .send({
-          username: "u-new",
+          username: "usernew",
           firstName: "First-new",
           lastName: "Last-newL",
           password: "password-new",
+          phone: null,
           email: "new@email.com",
-          isAdmin: true,
+          isAdmin: true
         })
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       user: {
-        username: "u-new",
+        username: "usernew",
         firstName: "First-new",
         lastName: "Last-newL",
         email: "new@email.com",
@@ -138,9 +140,18 @@ describe("GET /users", function () {
     expect(resp.body).toEqual({
       users: [
         {
+          username: "a1",
+          firstName: "A1F",
+          lastName: "A1L",
+          email: "admin@user.com",
+          phone: null,
+          isAdmin: true,
+        },
+        {
           username: "u1",
           firstName: "U1F",
           lastName: "U1L",
+          phone: null,
           email: "user1@user.com",
           isAdmin: false,
         },
@@ -148,6 +159,7 @@ describe("GET /users", function () {
           username: "u2",
           firstName: "U2F",
           lastName: "U2L",
+          phone: null,
           email: "user2@user.com",
           isAdmin: false,
         },
@@ -155,6 +167,7 @@ describe("GET /users", function () {
           username: "u3",
           firstName: "U3F",
           lastName: "U3L",
+          phone: null,
           email: "user3@user.com",
           isAdmin: false,
         },
@@ -199,9 +212,9 @@ describe("GET /users/:username", function () {
         username: "u1",
         firstName: "U1F",
         lastName: "U1L",
+        phone: null,
         email: "user1@user.com",
         isAdmin: false,
-        applications: [testJobIds[0]],
       },
     });
   });
@@ -216,8 +229,8 @@ describe("GET /users/:username", function () {
         firstName: "U1F",
         lastName: "U1L",
         email: "user1@user.com",
-        isAdmin: false,
-        applications: [testJobIds[0]],
+        phone: null,
+        isAdmin: false
       },
     });
   });
@@ -258,6 +271,7 @@ describe("PATCH /users/:username", () => {
         username: "u1",
         firstName: "New",
         lastName: "U1L",
+        phone: null,
         email: "user1@user.com",
         isAdmin: false,
       },
@@ -276,6 +290,7 @@ describe("PATCH /users/:username", () => {
         username: "u1",
         firstName: "New",
         lastName: "U1L",
+        phone: null,
         email: "user1@user.com",
         isAdmin: false,
       },
@@ -333,6 +348,7 @@ describe("PATCH /users/:username", () => {
         username: "u1",
         firstName: "U1F",
         lastName: "U1L",
+        phone: null,
         email: "user1@user.com",
         isAdmin: false,
       },
@@ -375,58 +391,6 @@ describe("DELETE /users/:username", function () {
   test("not found if user missing", async function () {
     const resp = await request(app)
         .delete(`/users/nope`)
-        .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.statusCode).toEqual(404);
-  });
-});
-
-/************************************** POST /users/:username/jobs/:id */
-
-describe("POST /users/:username/jobs/:id", function () {
-  test("works for admin", async function () {
-    const resp = await request(app)
-        .post(`/users/u1/jobs/${testJobIds[1]}`)
-        .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.body).toEqual({ applied: testJobIds[1] });
-  });
-
-  test("works for same user", async function () {
-    const resp = await request(app)
-        .post(`/users/u1/jobs/${testJobIds[1]}`)
-        .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.body).toEqual({ applied: testJobIds[1] });
-  });
-
-  test("unauth for others", async function () {
-    const resp = await request(app)
-        .post(`/users/u1/jobs/${testJobIds[1]}`)
-        .set("authorization", `Bearer ${u2Token}`);
-    expect(resp.statusCode).toEqual(401);
-  });
-
-  test("unauth for anon", async function () {
-    const resp = await request(app)
-        .post(`/users/u1/jobs/${testJobIds[1]}`);
-    expect(resp.statusCode).toEqual(401);
-  });
-
-  test("not found for no such username", async function () {
-    const resp = await request(app)
-        .post(`/users/nope/jobs/${testJobIds[1]}`)
-        .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.statusCode).toEqual(404);
-  });
-
-  test("not found for no such job", async function () {
-    const resp = await request(app)
-        .post(`/users/u1/jobs/0`)
-        .set("authorization", `Bearer ${adminToken}`);
-    expect(resp.statusCode).toEqual(404);
-  });
-
-  test("bad request invalid job id", async function () {
-    const resp = await request(app)
-        .post(`/users/u1/jobs/0`)
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });

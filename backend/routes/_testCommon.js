@@ -1,5 +1,6 @@
 'use strict'
 
+
 const db = require('../db.js')
 const User = require('../models/user')
 const Lot = require('../models/lot')
@@ -25,92 +26,92 @@ async function commonBeforeAll () {
   )
   const studio = await Location.create(
     {
-      name: 'Rehearsal studio',
-      notes: 'studio address, number of coordinator',
+      name: "Rehearsal studio",
+      notes: "studio address, number of coordinator",
       parendId: null
     }
   )
 
   const bay1 = await Location.create(
     {
-      name: 'Bay 1',
+      name: "Bay 1",
       notes: null,
       parendId: warehouse.id
     }
   )
-  const bay2 = await Location.create(
+  const bay2 =await Location.create(
     {
-      name: 'Bay 2',
+      name: "Bay 2",
       notes: null,
       parendId: warehouse.id
     }
   )
+  
+  await Lot.create(
+      {
+        name: "Lot1",
+        description: "New Lot1",
+        quantity: 3,
+        locId: bay1.id,
+        price : "$20.99"
+      });
 
   await Lot.create(
-    {
-      name: 'Lot1',
-      description: 'New Lot1',
-      quantity: 3,
-      locId: bay1.id,
-      price: '$20.99'
-    })
-
+      {
+        name: "Lot2",
+        description: "New Lot2",
+        quantity: 50,
+        locId: bay1.id,
+        price : null
+      });
   await Lot.create(
-    {
-      name: 'Lot2',
-      description: 'New Lot2',
-      quantity: 50,
-      locId: bay1.id,
-      price: null
-    })
+      {
+        name: "Lot3",
+        description: "New Lot3",
+        quantity: 1,
+        locId: bay1.id,
+        price : "$50"
+      });
   await Lot.create(
-    {
-      name: 'Lot3',
-      description: 'New Lot3',
-      quantity: 1,
-      locId: bay1.id,
-      price: '$50'
-    })
+      {
+        name: "Lot4",
+        description: "New Lot4",
+        quantity: 10,
+        locId: bay2.id,
+        price : "$10.99"
+      });
   await Lot.create(
-    {
-      name: 'Lot4',
-      description: 'New Lot4',
-      quantity: 10,
-      locId: bay2.id,
-      price: '$10.99'
-    })
+      {
+        name: "Lot5",
+        description: "New Lot5",
+        quantity: 50,
+        locId: bay2.id,
+        price : null
+      });
   await Lot.create(
-    {
-      name: 'Lot5',
-      description: 'New Lot5',
-      quantity: 50,
-      locId: bay2.id,
-      price: null
-    })
+      {
+        name: "Lot6",
+        description: "New Lot6",
+        quantity: 300,
+        locId: bay2.id,
+        price : "$2"
+      });
   await Lot.create(
-    {
-      name: 'Lot6',
-      description: 'New Lot6',
-      quantity: 300,
-      locId: bay2.id,
-      price: '$2'
-    })
+      {
+        name: "Lot7",
+        description: "New Lot7",
+        quantity: null,
+        locId: bay2.id,
+        price : "$30"
+      });
   await Lot.create(
-    {
-      name: 'Lot7',
-      description: 'New Lot7',
-      quantity: null,
-      locId: bay2.id,
-      price: '$30'
-    })
-  await Lot.create(
-    {
-      name: 'Lot8',
-      description: 'New Lot8',
-      quantity: null,
-      locId: studio.id,
-      price: null
-    })
+      {
+        name: "Lot8",
+        description: "New Lot8",
+        quantity: null,
+        locId: studio.id,
+        price : null
+      });
 
   await User.register({
     username: 'u1',
@@ -129,33 +130,33 @@ async function commonBeforeAll () {
     isAdmin: false
   })
   await User.register({
-    username: 'u3',
-    firstName: 'U3F',
-    lastName: 'U3L',
-    email: 'user3@user.com',
-    password: 'password3',
-    isAdmin: false
-  })
+    username: "u3",
+    firstName: "U3F",
+    lastName: "U3L",
+    email: "user3@user.com",
+    password: "password3",
+    isAdmin: false,
+  });
   await User.register({
-    username: 'a1',
-    firstName: 'A1F',
-    lastName: 'A1L',
-    email: 'admin@user.com',
-    password: 'adminpassword1',
+    username: "a1",
+    firstName: "A1F",
+    lastName: "A1L",
+    email: "admin@user.com",
+    password: "adminpassword1",
     isAdmin: true
-  })
+  });
 };
 
-async function commonBeforeEach () {
-  await db.query('BEGIN')
+async function commonBeforeEach() {
+  await db.query("BEGIN");
 };
 
-async function commonAfterEach () {
-  await db.query('ROLLBACK')
+async function commonAfterEach() {
+  await db.query("ROLLBACK");
 };
 
-async function commonAfterAll () {
-  await db.end()
+async function commonAfterAll() {
+  await db.end();
 };
 
 const u1Token = createToken({ username: 'u1', isAdmin: false })
@@ -167,7 +168,6 @@ module.exports = {
   commonBeforeEach,
   commonAfterEach,
   commonAfterAll,
-  testJobIds,
   u1Token,
   u2Token,
   adminToken

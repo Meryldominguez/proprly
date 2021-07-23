@@ -1,3 +1,4 @@
+
 'use strict'
 
 const request = require('supertest')
@@ -14,6 +15,7 @@ const {
   u1Token,
   u2Token,
   adminToken
+
 } = require('./_testCommon')
 
 beforeAll(commonBeforeAll)
@@ -180,6 +182,7 @@ describe('PATCH /lots/:id', () => {
         WHERE name = 'Lot1'`)
 
     const resp = await request(app)
+
       .patch(`/lots/${lot1.id}`)
       .send({
         name: 'New'
@@ -226,6 +229,7 @@ describe('PATCH /lots/:id', () => {
         WHERE name = 'Lot1'`)
 
     const resp = await request(app)
+
       .patch(`/lots/${lot1.id}`)
       .send({
         name: 'New'

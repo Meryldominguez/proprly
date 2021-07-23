@@ -17,7 +17,7 @@ class Location {
    * */
   static async create({ name, notes=null,parentId=null}) {
     if (!name || name === "") throw new BadRequestError(`Please include a name for the location`)
-    const result = await db.query(
+    const {rows:[loc]} = await db.query(
           `INSERT INTO location
            (name, notes, parent_id)
            VALUES ($1, $2,$3)
@@ -26,11 +26,8 @@ class Location {
           name,
           notes,
           parentId
-        ],
-        );
-    
-    const loc = result.rows;
-    return loc[0];
+        ],);
+    return loc;
   }
 
 

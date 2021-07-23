@@ -17,30 +17,29 @@ class Lot {
    * Throws BadRequestError if lot already in database.
    * */
 
-  static async create({ name, loc_id, quantity, price, description}) {
+  static async create({ name, locId, quantity, price, description}) {
     const duplicateCheck = await db.query(
       `SELECT name, loc_id
        FROM lot
        WHERE name = $1 AND loc_id = $2`,
-    [name, loc_id]);
+    [name, locId]);
 
     if (duplicateCheck.rows[0])
       throw new BadRequestError(`Duplicate item: ${name} already exists, in the same location. `);
 
-    const result = await db.query(
+    const {rows:[lot]} = await db.query(
           `INSERT INTO lot
            (name, loc_id, quantity, price, description)
            VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, name, loc_id, quantity, price, description`,
+           RETURNING id, name, loc_id as "locId", quantity, price, description`,
         [
           name,
-          loc_id,
+          locId,
           quantity,
           price,
           description
         ],
     );
-    const lot = result.rows[0];
     return lot;
   }
 
@@ -54,19 +53,19 @@ class Lot {
    * */
 
    static async findAll(params={}) {
-    let selectCols=[
-        "lot.id", 
-        "lot.name",
-        "location.name as location", 
-        "lot.quantity", 
-        "lot.price", 
-        "lot.description"]
 
-    let query = `SELECT ${selectCols.join(", ")}
-                 FROM lot
-                 JOIN location ON location.id = lot.loc_id
-                 `
-                 ; 
+    let query = `
+    SELECT 
+        lot.id, 
+        lot.name,
+        location.id as "locId",
+        location.name as location, 
+        lot.quantity, 
+        lot.price, 
+        lot.description
+      FROM lot
+      JOIN location ON location.id = lot.loc_id
+    `; 
     let whereExpressions = [];
     let queryValues = [];
 
@@ -76,19 +75,28 @@ class Lot {
     
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
-
     if (params['searchTerm']) {
+      query += "JOIN lot_tag AS x ON x.lot_id=lot.id \n"
+      query += "JOIN tag ON x.tag_id=tag.id \n"
+      
       queryValues.push(`%${params.searchTerm}%`);
       whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
       whereExpressions.push(`lot.description ILIKE $${queryValues.length}`)
-      whereExpressions.push(`location.name ILIKE $${queryValues.length} \n`)
+      whereExpressions.push(`location.name ILIKE $${queryValues.length} `)
+      whereExpressions.push(`tag.title ILIKE $${queryValues.length} \n`)
       query += "WHERE " + whereExpressions.join(" OR ")
-      query += " ORDER BY lot.name";
     }
-
-
+      query += "GROUP BY lot.id, location.id\n";
+      query += "ORDER BY lot.name";
+      
     // Finalize query and return results
-    const lotsRes = await db.query(query, queryValues);
+
+   if (queryValues.length>0){
+     const lotsRes = await db.query(query, queryValues)
+     return lotsRes.rows
+   }
+    const lotsRes = await db.query(query)
+   
     return lotsRes.rows;
   }
 
@@ -104,7 +112,7 @@ class Lot {
     const {rows:[lot]} = await db.query(
           `SELECT id,
                   name,
-                  loc_id, 
+                  loc_id as "locId", 
                   quantity, 
                   price, 
                   description
@@ -119,11 +127,12 @@ class Lot {
       lot.available = lot.quantity-(usedProps.length)
     }
     const {rows} = await db.query(
-        `SELECT t.title
+        `SELECT t.id, t.title
           FROM lot_tag
           JOIN tag AS t ON t.id=tag_id
           WHERE lot_id=$1
         `,[id])
+
     lot.tags=rows
     return lot;
   }
@@ -158,8 +167,7 @@ class Lot {
                                 quantity,
                                 price,
                                 loc_id as "locId"`;
-    const result = await db.query(querySql, [...values, id]);
-    const lot = result.rows[0];
+    const {rows:[lot]} = await db.query(querySql, [...values, id]);
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
 
@@ -174,13 +182,12 @@ class Lot {
   static async remove(id) {
     if (typeof id != 'number') throw new BadRequestError(`${id} is not an integer`)
 
-    const result = await db.query(
+    const {rows:[lot]} = await db.query(
           `DELETE
            FROM lot
            WHERE id = $1
            RETURNING id`,
         [id]);
-    const lot = result.rows[0];
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
     return lot
