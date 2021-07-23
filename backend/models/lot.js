@@ -54,6 +54,7 @@ class Lot {
    * */
 
    static async findAll(params={}) {
+    console.log(params)
     let selectCols=[
         "lot.id", 
         "lot.name",

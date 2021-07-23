@@ -28,24 +28,24 @@ describe("POST /users", function () {
     const resp = await request(app)
         .post("/users")
         .send({
-          username: "u-new",
+          username: "newusername",
           firstName: "First-new",
           lastName: "Last-newL",
           password: "password-new",
           phone: null,
           email: "new@email.com",
-          isAdmin: false,
+          isAdmin: false
         })
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       user: {
-        username: "u-new",
+        username: "newusername",
         firstName: "First-new",
         lastName: "Last-newL",
         email: "new@email.com",
-        isAdmin: false,
-      }, token: expect.any(String),
+        isAdmin: false
+      }, token: expect.any(String)
     });
   });
 
@@ -53,19 +53,19 @@ describe("POST /users", function () {
     const resp = await request(app)
         .post("/users")
         .send({
-          username: "u-new",
+          username: "usernew",
           firstName: "First-new",
           lastName: "Last-newL",
           password: "password-new",
           phone: null,
           email: "new@email.com",
-          isAdmin: true,
+          isAdmin: true
         })
         .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       user: {
-        username: "u-new",
+        username: "usernew",
         firstName: "First-new",
         lastName: "Last-newL",
         email: "new@email.com",

@@ -4,7 +4,7 @@ const jsonschema = require("jsonschema");
 const express = require("express");
 
 const { BadRequestError } = require("../expressError");
-const { ensureAdmin } = require("../middleware/auth");
+const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const Lot = require("../models/lot");
 
 const lotNewSchema = require("../schemas/lotNew.json");
@@ -12,6 +12,8 @@ const lotUpdateSchema = require("../schemas/lotUpdate.json");
 // const lotSearchSchema = require("../schemas/lotSearch.json");
 
 const router = new express.Router();
+
+router.use(ensureLoggedIn)
 
 /**For later
  * https://stackoverflow.com/questions/40423376/json-schema-validator-custom-message
@@ -52,16 +54,26 @@ router.post("/", async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  const q = req.query
+  const searchTerm = req.query.q
+  console.log()
   try {
     // const validator = jsonschema.validate(q, lotSearchSchema);
     // if (!validator.valid) {
     //   const errs = validator.errors.map(e => e.stack);
     //   throw new BadRequestError(errs);
     // }
-    const lots = await Lot.findAll(q);
+    if(searchTerm){
+      console.log("inside1")
+      const lots = await Lot.findAll({searchTerm});
+      return res.json({ lots });
+    }
+    console.log("outside1")
+    const lots = await Lot.findAll();
     return res.json({ lots });
+    
+    
   } catch (err) {
+    console.log(err)
     return next(err);
   }
 });

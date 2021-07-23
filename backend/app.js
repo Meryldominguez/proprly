@@ -25,9 +25,6 @@ app.use("/lots", lotsRoutes);
 app.use("/users", usersRoutes);
 app.use("/auth", authRoutes);
 
-app.get("/", function(req,res,next){
-  res.json({yay:"made it!"})
-})
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
   return next(new NotFoundError());

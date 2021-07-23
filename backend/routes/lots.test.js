@@ -280,7 +280,7 @@ describe("DELETE /lots/:id", function () {
     expect(resp.body).toEqual({ deleted: lot1.id });
   });
 
-  test("unauth if not admin", async function () {
+  test("unauth for users", async function () {
     const {rows:[lot1]} = await db.query(
       `SELECT * FROM lot
         WHERE name = 'Lot1'`)
