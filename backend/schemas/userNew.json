@@ -30,11 +30,15 @@
       "format": "email"
     },
     "phone":{
-      "type":"string",
-      "pattern": "^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$"
+      "anyOf": [
+        {"type": "string", 
+          "pattern": "^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$"},
+        {"type": "null"}
+      ]
     },
     "isAdmin": {
-      "type": "boolean"
+      "type": "boolean",
+      "default":false
     }
   },
   "additionalProperties": false,
