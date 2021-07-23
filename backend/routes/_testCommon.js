@@ -1,26 +1,26 @@
-"use strict";
-
-const db = require("../db.js");
-const User = require("../models/user");
-const Lot = require("../models/lot");
-const Location = require("../models/Location");
-const { createToken } = require("../helpers/tokens");
+'use strict'
 
 
-async function commonBeforeAll() {
-  console.log("beforeall")
+const db = require('../db.js')
+const User = require('../models/user')
+const Lot = require('../models/lot')
+const Location = require('../models/Location')
+const { createToken } = require('../helpers/tokens')
+
+async function commonBeforeAll () {
+  console.log('beforeall')
   // noinspection SqlWithoutWhere
-  await db.query("DELETE FROM lot");
-  await db.query("DELETE FROM users");
-  await db.query("DELETE FROM location");
-  await db.query("DELETE FROM tag");
-  await db.query("DELETE FROM production");
-  await db.query("DELETE FROM prop");
+  await db.query('DELETE FROM lot')
+  await db.query('DELETE FROM users')
+  await db.query('DELETE FROM location')
+  await db.query('DELETE FROM tag')
+  await db.query('DELETE FROM production')
+  await db.query('DELETE FROM prop')
 
   const warehouse = await Location.create(
     {
-      name: "Warehouse",
-      notes: "warehouse address, number of coordinator",
+      name: 'Warehouse',
+      notes: 'warehouse address, number of coordinator',
       parendId: null
     }
   )
@@ -113,23 +113,22 @@ async function commonBeforeAll() {
         price : null
       });
 
-  
   await User.register({
-    username: "u1",
-    firstName: "U1F",
-    lastName: "U1L",
-    email: "user1@user.com",
-    password: "password1",
-    isAdmin: false,
-  });
+    username: 'u1',
+    firstName: 'U1F',
+    lastName: 'U1L',
+    email: 'user1@user.com',
+    password: 'password1',
+    isAdmin: false
+  })
   await User.register({
-    username: "u2",
-    firstName: "U2F",
-    lastName: "U2L",
-    email: "user2@user.com",
-    password: "password2",
-    isAdmin: false,
-  });
+    username: 'u2',
+    firstName: 'U2F',
+    lastName: 'U2L',
+    email: 'user2@user.com',
+    password: 'password2',
+    isAdmin: false
+  })
   await User.register({
     username: "u3",
     firstName: "U3F",
@@ -146,7 +145,6 @@ async function commonBeforeAll() {
     password: "adminpassword1",
     isAdmin: true
   });
-  
 };
 
 async function commonBeforeEach() {
@@ -161,11 +159,9 @@ async function commonAfterAll() {
   await db.end();
 };
 
-
-const u1Token = createToken({ username: "u1", isAdmin: false });
-const u2Token = createToken({ username: "u2", isAdmin: false });
-const adminToken = createToken({ username: "admin", isAdmin: true });
-
+const u1Token = createToken({ username: 'u1', isAdmin: false })
+const u2Token = createToken({ username: 'u2', isAdmin: false })
+const adminToken = createToken({ username: 'admin', isAdmin: true })
 
 module.exports = {
   commonBeforeAll,
