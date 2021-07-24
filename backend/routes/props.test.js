@@ -4,7 +4,7 @@ const request = require('supertest')
 
 const db = require('../db.js')
 const app = require('../app')
-const Production = require('../models/production')
+const Prop = require('../models/prop')
 
 const {
   commonBeforeAll,
@@ -22,207 +22,158 @@ beforeEach(commonBeforeEach)
 afterEach(commonAfterEach)
 afterAll(commonAfterAll)
 
-/** ************************************ POST /productions */
+/** ************************************ POST /props */
 
-describe('POST /productions', function () {
-  test('works if logged in', async function () {
+describe('POST /props', function () {
+  test('works for admin', async function () {
+    const { rows: [prod] } = await db.query(
+      `SELECT * FROM production
+        WHERE title = 'The magic flute'`)
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot6'`)
 
     const resp = await request(app)
-      .post('/productions')
+      .post('/props')
       .send({
-          title:"Flight",
-          dateStart: new Date('1995-12-17T03:24:00'),
-          dateEnd: new Date('1995-12-17T03:24:00'),
-          active:true,
-          notes:"a fourth test production"
+          lotId: lot.id, 
+          prodId: prod.id,
+          quantity: 100,
+          notes:"a prop"
+      })
+      .set('authorization', `Bearer ${a1Token}`)
+    expect(resp.statusCode).toEqual(201)
+    expect(resp.body).toEqual({
+      prop: {
+        lotId: lot.id, 
+          prodId: prod.id,
+          quantity: 100,
+          notes:"a prop"
+      }
+    })
+  })
+  test('works for user', async function () {
+    const { rows: [prod] } = await db.query(
+      `SELECT * FROM production
+        WHERE title = 'The magic flute'`)
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot4'`)
+
+    const resp = await request(app)
+      .post('/props')
+      .send({
+          lotId: lot.id, 
+          prodId: prod.id,
+          quantity: 100,
+          notes:"a prop"
       })
       .set('authorization', `Bearer ${u1Token}`)
     expect(resp.statusCode).toEqual(201)
     expect(resp.body).toEqual({
-      production: {
-        id: expect.any(Number),
-        title:"Flight",
-        dateStart: expect.any(String),
-        dateEnd: expect.any(String),
-        active:true,
-        notes:"a fourth test production"
+      prop: {
+        lotId: lot.id, 
+          prodId: prod.id,
+          quantity: 100,
+          notes:"a prop"
       }
     })
   })
 
   test('unauth for anon', async function () {
+    const { rows: [prod] } = await db.query(
+      `SELECT * FROM production
+        WHERE title = 'La traviata'`)
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot4'`)
+
     const resp = await request(app)
-      .post('/productions')
+      .post('/props')
       .send({
-        title:"Jenufa",
-        dateStart: new Date('1995-12-17T03:24:00'),
-        dateEnd: new Date('1995-12-17T03:24:00'),
-        active:false,
-        notes:"a failed test production"
-      })
+        lotId: lot.id, 
+        prodId: prod.id,
+        quantity: 100,
+        notes:"a prop"
+    })
     expect(resp.statusCode).toEqual(401)
   })
 
   test('bad request if missing data', async function () {
     const resp = await request(app)
-      .post('/productions')
+      .post('/props')
       .send({
-        title:"Jenufa",
-        dateStart: new Date('1995-12-17T03:24:00'),
-        dateEnd: new Date('1995-12-17T03:24:00')
+          lotId: lot.id,
+          quantity: 100,
+          notes:"a prop"
       })
       .set('authorization', `Bearer ${u1Token}`)
     expect(resp.statusCode).toEqual(400)
   })
 })
 
-/** ************************************ GET productions */
+/** ************************************ PATCH /props/:prodId/:lotId */
 
-describe('GET /productions', function () {
-  test('works for admins', async function () {
-    const resp = await request(app)
-      .get('/productions')
-      .set('authorization', `Bearer ${adminToken}`)
-    expect(resp.body).toEqual({
-      productions: expect.any(Array)
-    })
-    expect(resp.body.productions.length).toBe(3)
-    expect(resp.status).toEqual(200)
-  })
-
-  test('works for user', async function () {
-    const resp = await request(app)
-      .get('/productions')
-      .set('authorization', `Bearer ${u1Token}`)
-    expect(resp.body.productions.length).toBe(3)
-    expect(resp.statusCode).toEqual(200)
-  })
-
-  test('unauth for anon', async function () {
-    const resp = await request(app)
-      .get('/productions')
-    expect(resp.statusCode).toEqual(401)
-  })
-
-  test('fails: test next() handler', async function () {
-    // there's no normal failure event which will cause this route to fail ---
-    // thus making it hard to test that the error-handler works with it. This
-    // should cause an error, all right :)
-    await db.query('DROP TABLE production CASCADE;')
-    const resp = await request(app)
-      .get('/productions')
-      .set('authorization', `Bearer ${adminToken}`)
-    expect(resp.statusCode).toEqual(500)
-  })
-})
-
-/** ************************************ GET /productions/:id */
-
-describe('GET /productions/:id', function () {
-  test('works for admin', async function () {
-    const { rows: [prod1] } = await db.query(
-      `SELECT * FROM production
-        WHERE title = 'Carmen'`)
-    const resp = await request(app)
-      .get(`/productions/${prod1.id}`)
-      .set('authorization', `Bearer ${adminToken}`)
-    expect(resp.body).toEqual({
-      production: {
-        id: expect.any(Number),
-        title:"Carmen",
-        dateStart: expect.any(String),
-        dateEnd: expect.any(String),
-        active:true,
-        notes:"a test production",
-        props: expect.any(Array)
-      }
-    })
-  })
-
-  test('works for user', async function () {
-    const { rows: [prod1] } = await db.query(
-      `SELECT * FROM production
-        WHERE title = 'Carmen'`)
-    const resp = await request(app)
-      .get(`/productions/${prod1.id}`)
-      .set('authorization', `Bearer ${u2Token}`)
-    expect(resp.statusCode).toEqual(200)
-  })
-
-  test('unauth for anon', async function () {
-    const { rows: [prod1] } = await db.query(
-      `SELECT * FROM production
-        WHERE title = 'Carmen'`)
-    const resp = await request(app)
-      .get(`/productions/${prod1.id}`)
-    expect(resp.statusCode).toEqual(401)
-  })
-
-  test('not found if production not found', async function () {
-    const resp = await request(app)
-      .get('/productions/100000')
-      .set('authorization', `Bearer ${adminToken}`)
-    expect(resp.statusCode).toEqual(404)
-  })
-})
-
-/** ************************************ PATCH /productions/:id */
-
-describe('PATCH /productions/:id', () => {
+describe('PATCH /props/:id', () => {
   test('works for admins', async function () {
 
-    const { rows: [prod1] } = await db.query(
+    const { rows: [prod] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'La traviata'`)
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot8'`)
 
     const resp = await request(app)
-      .patch(`/productions/${prod1.id}`)
+      .patch(`/props/${prod.id}/${lot.id}`)
       .send({
-        notes:"New"
+        notes:"New Notes"
       })
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.body).toEqual({
-      production: {
-        id: expect.any(Number),
-        title: 'La traviata',
-        dateStart: expect.any(String),
-        dateEnd: expect.any(String),
-        active:false,
-        notes:"New"
+      prop: {
+        prodId:prod2.id,
+        lotId:lot8.id,
+        quantity:null,
+        notes:"New Notes"
       }
     })
   })
 
   test('works for user', async function () {
-    const { rows: [prod1] } = await db.query(
+    const { rows: [prod] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'Carmen'`)
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot5'`)
 
     const resp = await request(app)
-      .patch(`/productions/${prod1.id}`)
+      .patch(`/props/${prod.id}/${lot.id}`)
       .send({
-        notes: 'New'
+        quantity: 25
       })
       .set('authorization', `Bearer ${u1Token}`)
     expect(resp.body).toEqual({
       production: {
-        id: expect.any(Number),
-        title: 'Carmen',
-        dateEnd:expect.any(String),
-        dateStart:expect.any(String),
-        notes: "New",
-        active:true
+        prodId:prod.id,
+        lotId:lot.id,
+        quantity:25,
+        notes:"prop notes"
       }
     })
   })
 
   test('unauth for anon', async function () {
-    const { rows: [prod1] } = await db.query(
+    const { rows: [prod] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'Carmen'`)
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot5'`)
 
     const resp = await request(app)
-      .patch(`/productions/${prod1.id}`)
+      .patch(`/props/${prod.id}/${lot.id}`)
       .send({
         notes: 'New'
       })
@@ -231,7 +182,7 @@ describe('PATCH /productions/:id', () => {
 
   test('not found if no such production', async function () {
     const resp = await request(app)
-      .patch('/productions/1000000')
+      .patch('/props/1000000')
       .send({
         title: 'Nope'
       })
@@ -239,7 +190,7 @@ describe('PATCH /productions/:id', () => {
     expect(resp.statusCode).toEqual(404)
 
     const resp2 = await request(app)
-      .patch('/productions/1000000')
+      .patch('/props/1000000')
       .send({
         title: 'Nope'
       })
@@ -248,11 +199,14 @@ describe('PATCH /productions/:id', () => {
   })
 
   test('bad request if invalid data', async function () {
-    const { rows: [prod1] } = await db.query(
+    const { rows: [prod] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'Carmen'`)
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot5'`)
     const resp = await request(app)
-      .patch(`/productions/${prod1.id}`)
+      .patch(`/props/${prod.id}`)
       .send({
         title: 42
       })
@@ -261,38 +215,46 @@ describe('PATCH /productions/:id', () => {
   })
 })
 
-/** ************************************ DELETE /productions/:id */
+/** ************************************ DELETE /props/:id */
 
-describe('DELETE /productions/:id', function () {
+describe('DELETE /props/:prodId/:lotId', function () {
   test('works for admin', async function () {
-    const { rows: [prod1] } = await db.query(
+    const { rows: [prod] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'Carmen'`)
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot1'`)    
     const resp = await request(app)
-      .delete(`/productions/${prod1.id}`)
+      .delete(`/props/${prod.id}/${lot.id}`)
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.body).toEqual({ deleted: prod1.id })
   })
 
   test('unauth for users', async function () {
-    const { rows: [prod2] } = await db.query(
+    const { rows: [prod] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'The magic flute'`)
+      const { rows: [lot] } = await db.query(
+        `SELECT * FROM lot
+          WHERE name = 'Lot7'`)    
 
     const resp = await request(app)
-      .delete(`/productions/${prod2.id}`)
+      .delete(`/props/${prod.id}/${lot.id}`)
       .set('authorization', `Bearer ${u2Token}`)
 
     expect(resp.statusCode).toEqual(401)
   })
 
   test('unauth for anon', async function () {
-    const { rows:[prod3] } = await db.query(
+    const { rows:[prod] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'La traviata'`)
-
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot6'`)  
     const resp = await request(app)
-      .delete(`/productions/${prod3.id}`)
+      .delete(`/props/${prod.id}/${lot.id}`)
     expect(resp.statusCode).toEqual(401)
   })
 })
