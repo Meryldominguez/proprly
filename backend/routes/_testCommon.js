@@ -7,6 +7,7 @@ const Lot = require('../models/lot')
 const Location = require('../models/Location')
 const { createToken } = require('../helpers/tokens')
 const Production = require('../models/production.js')
+const Prop = require('../models/prop.js')
 
 async function commonBeforeAll () {
   console.log('beforeall')
@@ -48,7 +49,7 @@ async function commonBeforeAll () {
     }
   )
   
-  await Lot.create(
+  const lot1 = await Lot.create(
       {
         name: "Lot1",
         description: "New Lot1",
@@ -57,7 +58,7 @@ async function commonBeforeAll () {
         price : "$20.99"
       });
 
-  await Lot.create(
+  const lot2 = await Lot.create(
       {
         name: "Lot2",
         description: "New Lot2",
@@ -65,7 +66,7 @@ async function commonBeforeAll () {
         locId: bay1.id,
         price : null
       });
-  await Lot.create(
+  const lot3 = await Lot.create(
       {
         name: "Lot3",
         description: "New Lot3",
@@ -73,7 +74,7 @@ async function commonBeforeAll () {
         locId: bay1.id,
         price : "$50"
       });
-  await Lot.create(
+  const lot4 = await Lot.create(
       {
         name: "Lot4",
         description: "New Lot4",
@@ -81,7 +82,7 @@ async function commonBeforeAll () {
         locId: bay2.id,
         price : "$10.99"
       });
-  await Lot.create(
+  const lot5 = await Lot.create(
       {
         name: "Lot5",
         description: "New Lot5",
@@ -89,7 +90,7 @@ async function commonBeforeAll () {
         locId: bay2.id,
         price : null
       });
-  await Lot.create(
+  const lot6 = await Lot.create(
       {
         name: "Lot6",
         description: "New Lot6",
@@ -97,7 +98,7 @@ async function commonBeforeAll () {
         locId: bay2.id,
         price : "$2"
       });
-  await Lot.create(
+  const lot7 = await Lot.create(
       {
         name: "Lot7",
         description: "New Lot7",
@@ -105,7 +106,7 @@ async function commonBeforeAll () {
         locId: bay2.id,
         price : "$30"
       });
-  await Lot.create(
+  const lot8 = await Lot.create(
       {
         name: "Lot8",
         description: "New Lot8",
@@ -113,6 +114,84 @@ async function commonBeforeAll () {
         locId: studio.id,
         price : null
       });
+
+  const prod1 = await Production.create({
+    title:"Carmen",
+    dateStart: new Date(),
+    dateEnd: new Date(),
+    active:true,
+    notes:"a test production"
+  });
+  const prod2 = await Production.create({
+    title:"La traviata",
+    dateStart: new Date(),
+    dateEnd: new Date(),
+    active:false,
+    notes:"a second test production"
+  });
+  const prod3 = await Production.create({
+    title:"The magic flute",
+    dateStart: new Date(),
+    dateEnd: new Date(),
+    active:true,
+    notes:"a third test production"
+  });
+
+  await Prop.create({
+    prodId:prod1.id,
+    lotId:lot1.id,
+    quantity:2,
+    notes:"prop notes"
+  })
+  await Prop.create({
+    prodId:prod1.id,
+    lotId:lot5.id,
+    quantity:20,
+    notes:"prop notes"
+  })
+  await Prop.create({
+    prodId:prod1.id,
+    lotId:lot3.id,
+    quantity:2,
+    notes:"prop notes"
+  })
+  await Prop.create({
+    prodId:prod2.id,
+    lotId:lot8.id,
+    quantity:null,
+    notes:"prop notes"
+  })
+  await Prop.create({
+    prodId:prod2.id,
+    lotId:lot6.id,
+    quantity:100,
+    notes:"prop notes"
+  })
+  await Prop.create({
+    prodId:prod2.id,
+    lotId:lot1.id,
+    quantity:2,
+    notes:"prop notes"
+  })
+  await Prop.create({
+    prodId:prod3.id,
+    lotId:lot3.id,
+    quantity:2,
+    notes:"prop notes"
+  })
+  await Prop.create({
+    prodId:prod3.id,
+    lotId:lot7.id,
+    quantity:300,
+    notes:"prop notes"
+  })
+  await Prop.create({
+    prodId:prod3.id,
+    lotId:lot5.id,
+    quantity:10,
+    notes:"prop notes"
+  })
+
 
   await User.register({
     username: 'u1',
@@ -145,29 +224,6 @@ async function commonBeforeAll () {
     email: "admin@user.com",
     password: "adminpassword1",
     isAdmin: true
-  });
-
-
-  await Production.create({
-    title:"Carmen",
-    dateStart: new Date(),
-    dateEnd: new Date(),
-    active:true,
-    notes:"a test production"
-  });
-  await Production.create({
-    title:"La traviata",
-    dateStart: new Date(),
-    dateEnd: new Date(),
-    active:false,
-    notes:"a second test production"
-  });
-  await Production.create({
-    title:"The magic flute",
-    dateStart: new Date(),
-    dateEnd: new Date(),
-    active:true,
-    notes:"a third test production"
   });
 };
 

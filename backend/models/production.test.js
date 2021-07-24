@@ -19,16 +19,14 @@ afterAll(commonAfterAll);
 describe("create", function () {
   let newProd = {
     title: "Flight(Dove)",
-    date_start: "2019-08-15",
-    date_end:"2019-09-29",
+    dateStart: "2019-08-15",
+    dateEnd:"2019-09-29",
     active: false,
     notes: "company premiere",
   };
 
   test("works", async function () {
     let prod = await Production.create(newProd);
-    delete newProd.date_end
-    delete newProd.date_start
 
     expect(prod).toEqual({
       ...newProd,
