@@ -42,8 +42,8 @@ describe('POST /productions', function () {
       production: {
         id: expect.any(Number),
         title:"Flight",
-        dateStart: expect.any(Date),
-        dateEnd: expect.any(Date),
+        dateStart: expect.any(String),
+        dateEnd: expect.any(String),
         active:true,
         notes:"a fourth test production"
       }
@@ -123,7 +123,6 @@ describe('GET /productions/:id', function () {
     const { rows: [prod1] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'Carmen'`)
-    console.log(prod1)
     const resp = await request(app)
       .get(`/productions/${prod1.id}`)
       .set('authorization', `Bearer ${adminToken}`)
