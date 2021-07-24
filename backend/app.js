@@ -12,6 +12,7 @@ const lotsRoutes = require("./routes/lots");
 const usersRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const prodRoutes = require("./routes/productions");
+const propsRoutes = require("./routes/props");
 
 const morgan = require("morgan");
 
@@ -26,6 +27,7 @@ app.use("/lots", lotsRoutes);
 app.use("/users", usersRoutes);
 app.use("/auth", authRoutes);
 app.use("/productions", prodRoutes);
+app.use("/props", propsRoutes);
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {

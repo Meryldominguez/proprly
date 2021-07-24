@@ -84,7 +84,6 @@ router.get("/",ensureLoggedIn, async function (req, res, next) {
 router.get("/:id",ensureLoggedIn, async function (req, res, next) {
   try {
     const production = await Production.get(Number(req.params.id));
-    console.log(production)
     return res.json({ production });
   } catch (err) {
     return next(err);
