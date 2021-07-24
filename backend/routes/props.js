@@ -52,7 +52,7 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
  * Authorization required: logged in
  */
 
-router.patch("/:id",ensureLoggedIn, async function (req, res, next) {
+router.patch("/:prodId/:lotId",ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, propUpdateSchema);
     if (!validator.valid) {
@@ -60,7 +60,7 @@ router.patch("/:id",ensureLoggedIn, async function (req, res, next) {
       throw new BadRequestError(errs);
     }
 
-    const prop = await Prop.update(Number(req.params.id), req.body);
+    const prop = await Prop.update(Number(req.params.prodId),Number(req.params.lotId), req.body);
     return res.json({ prop });
   } catch (err) {
     return next(err);
@@ -72,9 +72,9 @@ router.patch("/:id",ensureLoggedIn, async function (req, res, next) {
  * Authorization: admin
  */
 
-router.delete("/:id", ensureAdmin, async function (req, res, next) {
+router.delete("/:prodId/:lotId", ensureAdmin, async function (req, res, next) {
   try {
-    const {id} = await Prop.remove(Number(req.params.id));
+    const {id} = await Prop.remove(Number(req.params.prodId),Number(req.params.lotId));
     return res.json({ deleted:id });
   } catch (err) {
     return next(err);

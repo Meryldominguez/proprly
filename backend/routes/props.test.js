@@ -41,14 +41,14 @@ describe('POST /props', function () {
           quantity: 100,
           notes:"a prop"
       })
-      .set('authorization', `Bearer ${a1Token}`)
+      .set('authorization', `Bearer ${adminToken}`)
     expect(resp.statusCode).toEqual(201)
     expect(resp.body).toEqual({
       prop: {
         lotId: lot.id, 
-          prodId: prod.id,
-          quantity: 100,
-          notes:"a prop"
+        prodId: prod.id,
+        quantity: 100,
+        notes:"a prop"
       }
     })
   })
@@ -100,6 +100,9 @@ describe('POST /props', function () {
   })
 
   test('bad request if missing data', async function () {
+    const { rows: [lot] } = await db.query(
+      `SELECT * FROM lot
+        WHERE name = 'Lot4'`)
     const resp = await request(app)
       .post('/props')
       .send({
@@ -132,8 +135,8 @@ describe('PATCH /props/:id', () => {
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.body).toEqual({
       prop: {
-        prodId:prod2.id,
-        lotId:lot8.id,
+        prodId:prod.id,
+        lotId:lot.id,
         quantity:null,
         notes:"New Notes"
       }
@@ -155,7 +158,7 @@ describe('PATCH /props/:id', () => {
       })
       .set('authorization', `Bearer ${u1Token}`)
     expect(resp.body).toEqual({
-      production: {
+      prop: {
         prodId:prod.id,
         lotId:lot.id,
         quantity:25,
@@ -206,7 +209,7 @@ describe('PATCH /props/:id', () => {
       `SELECT * FROM lot
         WHERE name = 'Lot5'`)
     const resp = await request(app)
-      .patch(`/props/${prod.id}`)
+      .patch(`/props/${prod.id}/${lot.id}`)
       .send({
         title: 42
       })
@@ -215,21 +218,9 @@ describe('PATCH /props/:id', () => {
   })
 })
 
-/** ************************************ DELETE /props/:id */
+/** ************************************ DELETE /props/:prodId/:lotId */
 
 describe('DELETE /props/:prodId/:lotId', function () {
-  test('works for admin', async function () {
-    const { rows: [prod] } = await db.query(
-      `SELECT * FROM production
-        WHERE title = 'Carmen'`)
-    const { rows: [lot] } = await db.query(
-      `SELECT * FROM lot
-        WHERE name = 'Lot1'`)    
-    const resp = await request(app)
-      .delete(`/props/${prod.id}/${lot.id}`)
-      .set('authorization', `Bearer ${adminToken}`)
-    expect(resp.body).toEqual({ deleted: prod1.id })
-  })
 
   test('unauth for users', async function () {
     const { rows: [prod] } = await db.query(
