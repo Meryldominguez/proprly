@@ -6,6 +6,7 @@ const User = require('../models/user')
 const Lot = require('../models/lot')
 const Location = require('../models/Location')
 const { createToken } = require('../helpers/tokens')
+const Production = require('../models/production.js')
 
 async function commonBeforeAll () {
   console.log('beforeall')
@@ -144,6 +145,29 @@ async function commonBeforeAll () {
     email: "admin@user.com",
     password: "adminpassword1",
     isAdmin: true
+  });
+
+
+  await Production.create({
+    title:"Carmen",
+    dateStart: new Date(),
+    dateEnd: new Date(),
+    active:true,
+    notes:"a test production"
+  });
+  await Production.create({
+    title:"La traviata",
+    dateStart: new Date(),
+    dateEnd: new Date(),
+    active:false,
+    notes:"a second test production"
+  });
+  await Production.create({
+    title:"The magic flute",
+    dateStart: new Date(),
+    dateEnd: new Date(),
+    active:true,
+    notes:"a third test production"
   });
 };
 

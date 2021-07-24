@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://our.lot.com/lotNew.schema.json",
+  "$id": "http://example.com/lotNew.schema.json",
   "type": "object",
   "properties": {
     "name": {
