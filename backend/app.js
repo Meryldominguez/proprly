@@ -11,6 +11,7 @@ const { authenticateJWT, ensureLoggedIn } = require("./middleware/auth");
 const lotsRoutes = require("./routes/lots");
 const usersRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
+const prodRoutes = require("./routes/productions");
 
 const morgan = require("morgan");
 
@@ -24,6 +25,7 @@ app.use(authenticateJWT);
 app.use("/lots", lotsRoutes);
 app.use("/users", usersRoutes);
 app.use("/auth", authRoutes);
+app.use("/productions", prodRoutes);
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {

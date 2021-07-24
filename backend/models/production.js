@@ -5,7 +5,6 @@ const { NotFoundError, BadRequestError} = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 const Prop = require("./prop")
 
-
 /** Related functions for companies. */
 
 class Production {
@@ -16,7 +15,7 @@ class Production {
    * Returns { id, title, salary, equity, companyHandle }
    **/
 
-  static async create({title, date_start=null, date_end=null, active=true, notes }) {
+  static async create({title, dateStart=null, dateEnd=null, active=true, notes }) {
     const result = await db.query(
           `INSERT INTO production (
                              title,
@@ -28,8 +27,8 @@ class Production {
            RETURNING id, title, date_start as "dateStart", date_end as "dateEnd", active, notes`,
         [
           title,
-          date_start,
-          date_end,
+          dateStart,
+          dateEnd,
           active,
           notes
         ]);
@@ -122,9 +121,8 @@ class Production {
     const prod = prodRes.rows[0];
 
     if (!prod) throw new NotFoundError(`No prod: ${id}`);
-    
     const props = await Prop.getProdProps(id)
-    prod.props = props
+    prod.props = props? props : []
 
     return prod;
   }
@@ -182,6 +180,7 @@ class Production {
     const prod = result.rows[0];
 
     if (!prod) throw new NotFoundError(`No prod: ${id}`);
+    return prod
   }
 }
 

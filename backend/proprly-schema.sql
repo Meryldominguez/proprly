@@ -22,7 +22,7 @@ CREATE TABLE production (
   title TEXT NOT NULL,
   date_start DATE,
   date_end DATE,
-  active BOOLEAN NOT NULL DEFAULT TRUE,
+  active BOOLEAN DEFAULT TRUE,
   notes TEXT NOT NULL
 );
 CREATE TABLE prop (

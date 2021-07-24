@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/prodNew.schema.json",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "date_start": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "date_end": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": []
+}

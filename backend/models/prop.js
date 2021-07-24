@@ -4,7 +4,6 @@ const { compareSync } = require("bcrypt");
 const db = require("../db");
 const { NotFoundError, BadRequestError} = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
-const Production = require("./production")
 
 /** Related functions for companies. */
 
@@ -38,29 +37,28 @@ class Prop {
     return prop;
   }
 
-    /** Given a prod id, return props.
-   *
-   * Returns [...props]
-   *
-   * Throws NotFoundError if not found.
-   **/
+  /** Given a prod id, return props.
+ *
+ * Returns [...props]
+ *
+ * Throws NotFoundError if not found.
+ **/
 
-    static async getProdProps(prodId) {
+  static async getProdProps(prodId) {
+    if (typeof prodId != "number" || prodId<=0) throw new BadRequestError(`${prodId} is not a valid integer`)
+    let {rows:[{exists}]} = await db.query(
+        "SELECT EXISTS (SELECT FROM production WHERE id=$1)"
+        ,[prodId])
+    if (!exists) throw new NotFoundError(`${prodId} is not a production id that exists`)
 
-        if (typeof prodId != "number" || prodId<=0) throw new BadRequestError(`${prodId} is not a valid integer`)
-        let {rows:[{exists}]} = await db.query(
-            "SELECT EXISTS (SELECT FROM production WHERE id=$1)"
-            ,[prodId])
-        if (!exists) throw new NotFoundError(`${prodId} is not a production id that exists`)
-
-        let {rows} = await db.query(
-            `SELECT l.id, l.name, p.quantity, p.notes
-            FROM prop AS p
-            JOIN lot AS l ON p.lot_id=l.id
-            WHERE p.prod_id=$1
-            `,[prodId]);
-        return rows;
-    }
+    let {rows} = await db.query(
+        `SELECT l.id, l.name, p.quantity, p.notes
+        FROM prop AS p
+        JOIN lot AS l ON p.lot_id=l.id
+        WHERE p.prod_id=$1
+        `,[prodId]);
+    return rows;
+  }
 
     /** Given a lot id, return active props.
    *
@@ -69,23 +67,23 @@ class Prop {
    * Throws NotFoundError if not found.
    **/
 
-    static async getLotProps(lotId) {
-      if (typeof lotId != "number" || lotId<=0) throw new BadRequestError(`${lotId} is not a valid integer`)
-      let {rows:[{exists}]} = await db.query(
-          "SELECT EXISTS (SELECT FROM lot WHERE id=$1)"
-          ,[lotId])
-      if (!exists) throw new NotFoundError(`${lotId} is not a production id that exists`)
+  static async getLotProps(lotId) {
+    if (typeof lotId != "number" || lotId<=0) throw new BadRequestError(`${lotId} is not a valid integer`)
+    let {rows:[{exists}]} = await db.query(
+        "SELECT EXISTS (SELECT FROM lot WHERE id=$1)"
+        ,[lotId])
+    if (!exists) throw new NotFoundError(`${lotId} is not a production id that exists`)
 
-      let {rows} = await db.query(
-          `SELECT prod.id, prod.title, p.quantity, p.notes
-              FROM prop AS p
-              JOIN production AS prod ON prod.id=p.prod_id
-              WHERE p.lot_id=$1 AND prod.active = TRUE
-              `,
-      [lotId]);
+    let {rows} = await db.query(
+        `SELECT prod.id, prod.title, p.quantity, p.notes
+            FROM prop AS p
+            JOIN production AS prod ON prod.id=p.prod_id
+            WHERE p.lot_id=$1 AND prod.active = TRUE
+            `,
+    [lotId]);
 
-      return rows;
-    }
+    return rows;
+  }
 
   /** Update prop data with `data`.
    *
