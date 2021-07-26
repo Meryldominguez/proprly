@@ -66,6 +66,33 @@ class Tag {
     return tag;
   }
 
+  /** Given a Lot id, return all tags.
+   *
+   * Returns [tag,tag,tag]
+   *
+   * Throws NotFoundError if not found.
+   **/
+
+   static async getLotTags(lotId) {
+    if (typeof lotId != "number") throw new BadRequestError(`${lotId} is not an integer`)
+
+    let {rows:[{exists}]} = await db.query(
+      "SELECT EXISTS (SELECT FROM lot WHERE id=$1)"
+      ,[lotId])
+    if (!exists) throw new NotFoundError(`${lotId} is not a lot id that exists`)
+
+    let {rows:tags} = await db.query(
+      `SELECT t.id, t.title
+        FROM lot_tag
+        JOIN tag AS t ON tag_id=t.id
+        WHERE lot_id=$1
+        `,
+    [lotId]);
+
+    return tags;
+  }
+
+
   /** Update tag data with `data`.
    *
    * This is a "partial update" --- it's fine if data doesn't contain all the
