@@ -23,19 +23,37 @@ beforeEach(commonBeforeEach)
 afterEach(commonAfterEach)
 afterAll(commonAfterAll)
 
-/** ************************************ POST /lots */
+/** ************************************ POST /locations */
 
-describe('POST /lots', function () {
-  test('works if logged in', async function () {
-    
+describe('POST /locations', function () {
+  test('works for admin', async function () {
+
     const resp = await request(app)
-      .post('/lots')
+      .post('/locations')
+      .send({
+        name: 'Backroom',
+        notes: 'New',
+        parentId: null
+      })
+      .set('authorization', `Bearer ${adminToken}`)
+    expect(resp.statusCode).toEqual(201)
+    expect(resp.body).toEqual({
+      location: {
+        id: expect.any(Number),
+        name: 'Backroom',
+        notes: 'New',
+        parentId: null
+      }
+    })
+  })
+  test('works for user', async function () {
+
+    const resp = await request(app)
+      .post('/locations')
       .send({
         name: 'New Location',
-        description: 'New',
-        quantity: 2,
-        locId: bay1.id,
-        price: 20.99
+        notes: 'New',
+        parentId: null
       })
       .set('authorization', `Bearer ${u1Token}`)
     expect(resp.statusCode).toEqual(201)
@@ -43,10 +61,8 @@ describe('POST /lots', function () {
       location: {
         id: expect.any(Number),
         name: 'New Location',
-        description: 'New',
-        quantity: 2,
-        locId: bay1.id,
-        price: '$20.99'
+        notes: 'New',
+        parentId: null
       }
     })
   })
@@ -56,54 +72,52 @@ describe('POST /lots', function () {
       `SELECT * FROM location
         WHERE name = 'Bay 1'`)
     const resp = await request(app)
-      .post('/lots')
+      .post('/locations')
       .send({
-        name: 'New Location',
-        description: 'New',
-        quantity: 3,
-        locId: bay1.id,
-        price: '$20.99'
+        name: 'failed Location',
+        notes: 'New',
+        parentId: null
       })
     expect(resp.statusCode).toEqual(401)
   })
 
   test('bad request if missing data', async function () {
     const resp = await request(app)
-      .post('/lots')
+      .post('/locations')
       .send({
-        name: 'New Location',
-        description: 'New'
+        notes: 'New',
+        parentId: null
       })
       .set('authorization', `Bearer ${u1Token}`)
     expect(resp.statusCode).toEqual(400)
   })
 })
 
-/** ************************************ GET /lots */
+/** ************************************ GET /locations */
 
-describe('GET /lots', function () {
+describe('GET /locations', function () {
   test('works for admins', async function () {
     const resp = await request(app)
-      .get('/lots')
+      .get('/locations')
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.body).toEqual({
-      lots: expect.any(Array)
+      locations: expect.any(Array)
     })
-    expect(resp.body.lots.length).toBe(8)
+    expect(resp.body.locations.length).toBe(4)
     expect(resp.status).toEqual(200)
   })
 
   test('works for user', async function () {
     const resp = await request(app)
-      .get('/lots')
+      .get('/locations')
       .set('authorization', `Bearer ${u1Token}`)
-    expect(resp.body.lots.length).toBe(8)
+    expect(resp.body.locations.length).toBe(4)
     expect(resp.statusCode).toEqual(200)
   })
 
   test('unauth for anon', async function () {
     const resp = await request(app)
-      .get('/lots')
+      .get('/locations')
     expect(resp.statusCode).toEqual(401)
   })
 
@@ -113,130 +127,133 @@ describe('GET /lots', function () {
     // should cause an error, all right :)
     await db.query('DROP TABLE location CASCADE;')
     const resp = await request(app)
-      .get('/lots')
+      .get('/locations')
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.statusCode).toEqual(500)
   })
 })
 
-/** ************************************ GET /lots/:id */
+/** ************************************ GET /locations/:id */
 
-describe('GET /lots/:id', function () {
+describe('GET /locations/:id', function () {
   test('works for admin', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Bay 1'`)
     const resp = await request(app)
-      .get(`/lots/${lot1.id}`)
+      .get(`/locations/${loc.id}`)
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.body).toEqual({
       location: {
         id: expect.any(Number),
-        name: 'Lot1',
-        description: 'New Lot1',
-        quantity: 3,
-        available: 3,
-        locId: expect.any(Number),
-        price: '$20.99',
-        tags: []
+        items: expect.any(Array),
+        name: "Bay 1",
+        notes:null
       }
     })
+    expect(resp.body.location.items.length).toBe(3)
   })
-
   test('works for user', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Bay 1'`)
     const resp = await request(app)
-      .get(`/lots/${lot1.id}`)
+      .get(`/locations/${loc.id}`)
       .set('authorization', `Bearer ${u2Token}`)
     expect(resp.statusCode).toEqual(200)
+    expect(resp.body).toEqual({
+      location: {
+        id: expect.any(Number),
+        items: expect.any(Array),
+        name: "Bay 1",
+        notes:null
+      }
+    })
+    expect(resp.body.location.items.length).toBe(3)
   })
 
   test('unauth for anon', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Bay 1'`)
     const resp = await request(app)
-      .get(`/lots/${lot1.id}`)
+      .get(`/locations/${loc.id}`)
     expect(resp.statusCode).toEqual(401)
   })
 
   test('not found if location not found', async function () {
     const resp = await request(app)
-      .get('/lots/100000')
+      .get('/locations/100000')
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.statusCode).toEqual(404)
   })
 })
 
-/** ************************************ PATCH /lots/:id */
+/** ************************************ PATCH /locations/:id */
 
-describe('PATCH /lots/:id', () => {
+describe('PATCH /locations/:id', () => {
   test('works for admins', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Bay 1'`)
 
     const resp = await request(app)
-
-      .patch(`/lots/${lot1.id}`)
+      .patch(`/locations/${loc.id}`)
       .send({
-        name: 'New'
+        name: 'New Bay 1',
+        notes: 'New Bay 1'
       })
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.body).toEqual({
       location: {
         id: expect.any(Number),
-        name: 'New',
-        description: 'New Lot1',
-        quantity: 3,
-        locId: expect.any(Number),
-        price: '$20.99'
+        name: 'New Bay 1',
+        notes: 'New Bay 1',
+        parentId: expect.any(Number),
+
       }
     })
   })
 
   test('works for user', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Bay 2'`)
 
     const resp = await request(app)
-      .patch(`/lots/${lot1.id}`)
+      .patch(`/locations/${loc.id}`)
       .send({
-        name: 'New'
+        name: 'New Bay 2',
+        notes: 'New Bay 2'
       })
       .set('authorization', `Bearer ${u1Token}`)
     expect(resp.body).toEqual({
       location: {
         id: expect.any(Number),
-        name: 'New',
-        description: 'New Lot1',
-        quantity: 3,
-        locId: expect.any(Number),
-        price: '$20.99'
+        name: 'New Bay 2',
+        notes: 'New Bay 2',
+        parentId: expect.any(Number),
       }
     })
   })
 
   test('unauth for anon', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Bay 1'`)
 
     const resp = await request(app)
 
-      .patch(`/lots/${lot1.id}`)
+      .patch(`/locations/${loc.id}`)
       .send({
-        name: 'New'
+        name: 'Wont work'
       })
     expect(resp.statusCode).toEqual(401)
   })
 
   test('not found if no such location', async function () {
     const resp = await request(app)
-      .patch('/lots/1000000')
+      .patch('/locations/1000000')
       .send({
         name: 'Nope'
       })
@@ -244,7 +261,7 @@ describe('PATCH /lots/:id', () => {
     expect(resp.statusCode).toEqual(404)
 
     const resp2 = await request(app)
-      .patch('/lots/1000000')
+      .patch('/locations/1000000')
       .send({
         name: 'Nope'
       })
@@ -253,11 +270,11 @@ describe('PATCH /lots/:id', () => {
   })
 
   test('bad request if invalid data', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Warehouse'`)
     const resp = await request(app)
-      .patch(`/lots/${lot1.id}`)
+      .patch(`/locations/${loc.id}`)
       .send({
         name: 42
       })
@@ -266,38 +283,36 @@ describe('PATCH /lots/:id', () => {
   })
 })
 
-/** ************************************ DELETE /lots/:id */
+/** ************************************ DELETE /locations/:id */
 
-describe('DELETE /lots/:id', function () {
+describe('DELETE /locations/:id', function () {
   test('works for admin', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Bay 1'`)
     const resp = await request(app)
-      .delete(`/lots/${lot1.id}`)
+      .delete(`/locations/${loc.id}`)
       .set('authorization', `Bearer ${adminToken}`)
-    expect(resp.body).toEqual({ deleted: lot1.id })
+    expect(resp.body).toEqual({ deleted: loc.id })
   })
 
   test('unauth for users', async function () {
-    const { rows: [lot2] } = await db.query(
+    const { rows: [loc] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot2'`)
-
+        WHERE name = 'Bay 2'`)
     const resp = await request(app)
-      .delete(`/lots/${lot2.id}`)
+      .delete(`/locations/${loc.id}`)
       .set('authorization', `Bearer ${u2Token}`)
 
     expect(resp.statusCode).toEqual(401)
   })
 
   test('unauth for anon', async function () {
-    const { rows: [lot3] } = await db.query(
+    const { rows: [lot] } = await db.query(
       `SELECT * FROM location
-        WHERE name = 'Lot3'`)
-
+        WHERE name = 'Warehouse'`)
     const resp = await request(app)
-      .delete(`/lots/${lot3.id}`)
+      .delete(`/locations/${lot.id}`)
     expect(resp.statusCode).toEqual(401)
   })
 })

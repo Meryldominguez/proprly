@@ -1,4 +1,4 @@
-/** Routes for lots. */
+/** Routes for locations. */
 
 const jsonschema = require("jsonschema");
 const express = require("express");
@@ -9,7 +9,6 @@ const Location = require("../models/location");
 
 const locNewSchema = require("../schemas/locNew.json");
 const locUpdateSchema = require("../schemas/locUpdate.json");
-// const lotSearchSchema = require("../schemas/lotSearch.json");
 
 const router = new express.Router();
 
@@ -28,7 +27,7 @@ const router = new express.Router();
  */
 router.post("/",ensureLoggedIn, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, lotNewSchema);
+    const validator = jsonschema.validate(req.body, locNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
@@ -52,23 +51,13 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
  * Authorization required: logged in
  */
 
-router.get("/",ensureLoggedIn, async function (req, res, next) {
+router.get("/", ensureLoggedIn, async function (req, res, next) {
   const searchTerm = req.query.q
   try {
-    if(searchTerm){
-      const validator = jsonschema.validate(q, lotSearchSchema);
-      if (!validator.valid) {
-        const errs = validator.errors.map(e => e.stack);
-        throw new BadRequestError(errs);
-      }
-      const lots = await Location.findAll({searchTerm});
-      return res.json({ lots });
-    }
-    const lots = await Location.findAll();
-    return res.json({ lots });
-    
-    
+    const locations = await Location.getChildren();
+    return res.json({ locations });
   } catch (err) {
+    // console.log(err)
     return next(err);
   }
 });
@@ -81,7 +70,7 @@ router.get("/",ensureLoggedIn, async function (req, res, next) {
  * Authorization required: logged in
  */
 
-router.get("/:id",ensureLoggedIn, async function (req, res, next) {
+router.get("/:id", ensureLoggedIn, async function (req, res, next) {
   try {
     const location = await Location.get(Number(req.params.id));
     return res.json({ location });
@@ -103,7 +92,7 @@ router.get("/:id",ensureLoggedIn, async function (req, res, next) {
 
 router.patch("/:id",ensureLoggedIn, async function (req, res, next) {
   try {
-    const validator = jsonschema.validate(req.body, lotUpdateSchema);
+    const validator = jsonschema.validate(req.body, locUpdateSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
