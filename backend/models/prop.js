@@ -67,20 +67,18 @@ class Prop {
    * Throws NotFoundError if not found.
    **/
 
-  static async getLotProps(lotId) {
+  static async getLotProps(lotId,active=true) {
     if (typeof lotId != "number" || lotId<=0) throw new BadRequestError(`${lotId} is not a valid integer`)
     let {rows:[{exists}]} = await db.query(
         "SELECT EXISTS (SELECT FROM lot WHERE id=$1)"
         ,[lotId])
-    if (!exists) throw new NotFoundError(`${lotId} is not a production id that exists`)
-
-    let {rows} = await db.query(
-        `SELECT prod.id, prod.title, p.quantity, p.notes
+    if (!exists) throw new NotFoundError(`${lotId} is not a Lot id that exists`)
+    let query = `SELECT prod.id, prod.title, p.quantity, p.notes
             FROM prop AS p
             JOIN production AS prod ON prod.id=p.prod_id
-            WHERE p.lot_id=$1 AND prod.active = TRUE
-            `,
-    [lotId]);
+            WHERE p.lot_id=$1`
+    if (active) query+= ' AND prod.active = TRUE'
+    let {rows} = await db.query(query,[lotId]);
 
     return rows;
   }
