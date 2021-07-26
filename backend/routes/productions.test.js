@@ -115,6 +115,49 @@ describe('GET /productions', function () {
     expect(resp.statusCode).toEqual(500)
   })
 })
+/** ************************************ GET productions?QUERY */
+
+describe('GET /productions?QUERY', function () {
+  test('works with isActive', async function () {
+    const resp = await request(app)
+      .get('/productions?isActive=true')
+      .set('authorization', `Bearer ${u1Token}`)
+    expect(resp.body).toEqual({
+      productions: expect.any(Array)
+    })
+    expect(resp.body.productions.length).toBe(2)
+    expect(resp.status).toEqual(200)
+  })
+  test('works with search', async function () {
+    const resp = await request(app)
+      .get('/productions?search=third')
+      .set('authorization', `Bearer ${u1Token}`)
+    expect(resp.body.productions.length).toBe(1)
+    expect(resp.statusCode).toEqual(200)
+  })
+  test('works with year', async function () {
+    const resp = await request(app)
+      .get('/productions?year=2006,2002')
+      .set('authorization', `Bearer ${u1Token}`)
+      console.log(resp.body)
+    expect(resp.body.productions.length).toBe(2)
+    expect(resp.statusCode).toEqual(200)
+  })
+  test('fails with incorrect format year', async function () {
+    const resp = await request(app)
+      .get('/productions?year=20')
+      .set('authorization', `Bearer ${u1Token}`)
+      console.log(resp.body)
+    expect(resp.statusCode).toEqual(400)
+  })
+  test('fails with bad query', async function () {
+    const resp = await request(app)
+      .get('/productions?work=something')
+      .set('authorization', `Bearer ${u1Token}`)
+      console.log(resp.body)
+    expect(resp.statusCode).toEqual(400)
+  })
+})
 
 /** ************************************ GET /productions/:id */
 
@@ -123,7 +166,6 @@ describe('GET /productions/:id', function () {
     const { rows: [prod1] } = await db.query(
       `SELECT * FROM production
         WHERE title = 'Carmen'`)
-    console.log(prod1)
     const resp = await request(app)
       .get(`/productions/${prod1.id}`)
       .set('authorization', `Bearer ${adminToken}`)
