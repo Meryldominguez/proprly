@@ -283,24 +283,15 @@ describe('DELETE /lots/:id', function () {
   })
 
   test('unauth for users', async function () {
-    const { rows: [lot2] } = await db.query(
-      `SELECT * FROM lot
-        WHERE name = 'Lot2'`)
-
     const resp = await request(app)
-      .delete(`/lots/${lot2.id}`)
+      .delete(`/lots/10`)
       .set('authorization', `Bearer ${u2Token}`)
-
     expect(resp.statusCode).toEqual(401)
   })
 
   test('unauth for anon', async function () {
-    const { rows: [lot3] } = await db.query(
-      `SELECT * FROM lot
-        WHERE name = 'Lot3'`)
-
     const resp = await request(app)
-      .delete(`/lots/${lot3.id}`)
+      .delete(`/lots/10`)
     expect(resp.statusCode).toEqual(401)
   })
 })
