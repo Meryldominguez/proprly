@@ -47,7 +47,7 @@ class Production {
    * Returns [{ id, title, dateStart, dateEnd, active, notes }, ...]
    * */
 
-  static async findAll({ isActive, search, year=[]} = {}) {
+  static async findAll({ isActive=null, search=null, year=[]} = {}) {
     let query = `SELECT id,
                         title,
                         date_start as "dateStart",
@@ -61,41 +61,43 @@ class Production {
     // For each possible search term, add to whereExpressions and
     // queryValues so we can generate the right SQL
     
-    if (isActive != undefined){
+    if (isActive){
       isActive === true ?  
       whereExpressions.push(`active = TRUE`)
       :
       whereExpressions.push(`active = FALSE`)
     }
 
-    if (search !== undefined) {
+    if (search) {
       let searchValues = search.split(" ")
 
       searchValues.forEach(val=>{
         queryValues.push(`%${val}%`);
-        whereExpressions.push(`title ILIKE $${queryValues.length} OR notes ILIKE $${queryValues.length}`);
+        whereExpressions.push(`title ILIKE $${queryValues.length} OR notes ILIKE $${queryValues.length}\n`);
 
       })
       
     }
     if(year.length>0){
-      let yearExpressions = ""
+      let yearExpressions = []
       year.forEach((y)=> {
         queryValues.push(y)
-        yearExpressions += `EXTRACT(year from "dateStart") = ${y} OR EXTRACT(year from "dateEnd") = ${y}`
+        yearExpressions.push( `EXTRACT(year from date_start) = ${y} OR EXTRACT(year from date_end) = ${y} \n`)
+        yearExpressions.push( `${y} BETWEEN EXTRACT(year from date_start) AND EXTRACT(year from date_end)`)
       })
-      whereExpressions.push(yearExpressions.join(" OR "))
+      whereExpressions.push(yearExpressions.join(" \nOR "))
     }
 
 
     if (whereExpressions.length > 0) {
-      query += " WHERE " + whereExpressions.join(" AND ");
+      query += "\nWHERE " + whereExpressions.join(" \nAND ");
     }
 
     // Finalize query and return results
 
-    query += " ORDER BY title";
-    const jobsRes = await db.query(query, queryValues);
+    query += " \nORDER BY title";
+    const jobsRes = await db.query(query);
+
     return jobsRes.rows;
   }
 

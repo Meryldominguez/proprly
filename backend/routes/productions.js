@@ -9,7 +9,7 @@ const Production = require("../models/production");
 
 const prodNewSchema = require("../schemas/prodNew.json");
 const prodUpdateSchema = require("../schemas/prodUpdate.json");
-// const prodSearchSchema = require("../schemas/prodSearch.json");
+const prodSearchSchema = require("../schemas/prodSearch.json");
 
 const router = new express.Router();
 
@@ -53,20 +53,23 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/",ensureLoggedIn, async function (req, res, next) {
-  const searchTerm = req.query.q
   try {
-    if(searchTerm){
-      const validator = jsonschema.validate(q, prodSearchSchema);
+    const searchParams = req.query
+    if (searchParams['year']) searchParams.year=searchParams.year.split(",")
+    if (searchParams['isActive']) searchParams.isActive=Boolean(searchParams.isActive)
+
+    if(Object.keys(searchParams).length>0){
+      const validator = jsonschema.validate(searchParams, prodSearchSchema);
       if (!validator.valid) {
         const errs = validator.errors.map(e => e.stack);
         throw new BadRequestError(errs);
       }
-      const productions = await Production.findAll({...searchTerm});
+      console.log(searchParams)
+      const productions = await Production.findAll(searchParams);
       return res.json({ productions });
     }
     const productions = await Production.findAll();
     return res.json({ productions });
-    
     
   } catch (err) {
     return next(err);
