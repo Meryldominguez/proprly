@@ -123,8 +123,13 @@ class Lot {
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
 
     if (lot['quantity'] !== null) {
+      //Only gets props from active productions
       const usedProps = await Prop.getLotProps(id)
-      lot.available = lot.quantity-(usedProps.length)
+      lot.available = lot.quantity
+      usedProps.forEach(prop=>{
+        console.log(lot.available, prop.quantity)
+       lot.available = lot.available-prop.quantity
+      })
     }
     const {rows} = await db.query(
         `SELECT t.id, t.title
