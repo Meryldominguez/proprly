@@ -30,6 +30,29 @@ class Tag {
     return result.rows[0];
   }
 
+  /** get all tags.
+   *
+   * Returns [{ id, title},tag,tag]
+   *
+   * Throws NotFoundError if not found.
+   **/
+
+   static async getAll() {
+    
+    let {rows:tags} = await db.query(
+      `SELECT t.id,
+              t.title,
+              COUNT(lot_id) AS "lotsWithTag"
+        FROM tag AS t
+        FULL OUTER JOIN lot_tag ON tag_id=t.id
+        LEFT JOIN lot AS l ON lot_id=l.id
+        GROUP BY t.id
+        ORDER BY t.id
+        `);
+
+    return tags;
+  }
+
   /** Given a tag id, return data about tag.
    *
    * Returns { id, title, lots:[] }

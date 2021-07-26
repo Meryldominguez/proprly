@@ -70,6 +70,21 @@ describe("create",function () {
 
 });
 
+/************************************** getAll */
+
+describe("getAll", function () {
+  test("works", async function () {
+    let tags = await Tag.getAll();
+    expect(tags.length).toEqual(5)
+    expect(tags).toEqual(expect.any(Array))
+    expect(tags[0]).toEqual({
+      lotsWithTag: "2", 
+      id: expect.any(Number), 
+      title: "Set Dressing"
+    })
+  });
+
+});
 /************************************** get */
 
 describe("get", function () {

@@ -4,6 +4,7 @@ const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 const Prop = require("./prop");
+const Tag = require("./tag");
 
 /** Related functions for lots. */
 
@@ -130,14 +131,8 @@ class Lot {
        lot.available = lot.available-prop.quantity
       })
     }
-    const {rows} = await db.query(
-        `SELECT t.id, t.title
-          FROM lot_tag
-          JOIN tag AS t ON t.id=tag_id
-          WHERE lot_id=$1
-        `,[id])
+    lot.tags=await Tag.getLotTags(id)
 
-    lot.tags=rows
     return lot;
   }
 

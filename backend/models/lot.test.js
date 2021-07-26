@@ -165,8 +165,9 @@ describe("get", function () {
         quantity: 1,
         price:"$10.99",
         tags:expect.any(Array)
-      },
-    )
+      })
+    expect(lot1.tags.length).toBe(4)
+    
     let [lot2] = await Lot.findAll({searchTerm:"2"});
     lot2 = await Lot.get(lot2.id);
     expect(lot2).toEqual(
