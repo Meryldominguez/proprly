@@ -30,6 +30,29 @@ class Tag {
     return result.rows[0];
   }
 
+  /** get all tags.
+   *
+   * Returns [{ id, title},tag,tag]
+   *
+   * Throws NotFoundError if not found.
+   **/
+
+   static async getAll() {
+    
+    let {rows:tags} = await db.query(
+      `SELECT t.id,
+              t.title,
+              COUNT(lot_id) AS "lotsWithTag"
+        FROM tag AS t
+        FULL OUTER JOIN lot_tag ON tag_id=t.id
+        LEFT JOIN lot AS l ON lot_id=l.id
+        GROUP BY t.id
+        ORDER BY t.id
+        `);
+
+    return tags;
+  }
+
   /** Given a tag id, return data about tag.
    *
    * Returns { id, title, lots:[] }
@@ -65,6 +88,33 @@ class Tag {
 
     return tag;
   }
+
+  /** Given a Lot id, return all tags.
+   *
+   * Returns [tag,tag,tag]
+   *
+   * Throws NotFoundError if not found.
+   **/
+
+   static async getLotTags(lotId) {
+    if (typeof lotId != "number") throw new BadRequestError(`${lotId} is not an integer`)
+
+    let {rows:[{exists}]} = await db.query(
+      "SELECT EXISTS (SELECT FROM lot WHERE id=$1)"
+      ,[lotId])
+    if (!exists) throw new NotFoundError(`${lotId} is not a lot id that exists`)
+
+    let {rows:tags} = await db.query(
+      `SELECT t.id, t.title
+        FROM lot_tag
+        JOIN tag AS t ON tag_id=t.id
+        WHERE lot_id=$1
+        `,
+    [lotId]);
+
+    return tags;
+  }
+
 
   /** Update tag data with `data`.
    *

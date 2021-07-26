@@ -70,6 +70,21 @@ describe("create",function () {
 
 });
 
+/************************************** getAll */
+
+describe("getAll", function () {
+  test("works", async function () {
+    let tags = await Tag.getAll();
+    expect(tags.length).toEqual(5)
+    expect(tags).toEqual(expect.any(Array))
+    expect(tags[0]).toEqual({
+      lotsWithTag: "2", 
+      id: expect.any(Number), 
+      title: "Set Dressing"
+    })
+  });
+
+});
 /************************************** get */
 
 describe("get", function () {
@@ -90,7 +105,7 @@ describe("get", function () {
     expect(tag.lots.length).toBe(2)
   });
 
-  test("not found if no such lot", async function () {
+  test("not found if no such tag", async function () {
     try {
       await Tag.get(-200);
       fail();
@@ -109,6 +124,55 @@ describe("get", function () {
   test("not found if passed null", async function () {
     try {
       await Tag.get();
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
+/************************************** get */
+
+describe("getLotTags", function () {
+  test("works", async function () {
+    const {rows:[{id}]} = await db.query(
+      `SELECT id FROM lot
+       WHERE name = 'item2'`);
+      
+    let tags = await Tag.getLotTags(id);
+    expect(tags).toEqual([
+      {
+        id: expect.any(Number),
+        title: "Hand Props",
+
+      },
+      {
+        id: expect.any(Number),
+        title: "Furniture",
+
+      }
+    ])
+    expect(tags.length).toBe(2)
+  });
+
+  test("not found if no such lot", async function () {
+    try {
+      await Tag.getLotTags(-200);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+  test("not found if string passed as id", async function () {
+    try {
+      await Tag.getLotTags("X");
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+  test("not found if passed null", async function () {
+    try {
+      await Tag.getLotTags();
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
