@@ -23,14 +23,14 @@ async function commonBeforeAll () {
     {
       name: 'Warehouse',
       notes: 'warehouse address, number of coordinator',
-      parendId: null
+      parentId: null
     }
   )
   const studio = await Location.create(
     {
       name: "Rehearsal studio",
       notes: "studio address, number of coordinator",
-      parendId: null
+      parentId: null
     }
   )
 
@@ -38,14 +38,14 @@ async function commonBeforeAll () {
     {
       name: "Bay 1",
       notes: null,
-      parendId: warehouse.id
+      parentId: warehouse.id
     }
   )
   const bay2 =await Location.create(
     {
       name: "Bay 2",
       notes: null,
-      parendId: warehouse.id
+      parentId: warehouse.id
     }
   )
   

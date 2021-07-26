@@ -36,37 +36,35 @@ class Location {
    **/
 
   static async getChildren(id=null) {
-    
-    const result = await db.query(
-      `WITH RECURSIVE findchildren AS ( 
-        SELECT 
-            child.parent_id AS "locationId", 
-            parent.name AS "locationName",
-            child.id AS "childId",
-            child.name AS "childName"
-            FROM location as child
-        JOIN location AS parent ON child.parent_id=parent.id
-        ${id ? `WHERE parent.id=${id}`: ""}
+    const idQuery = id?`WHERE child.id=${id}`:"WHERE NOT child.id IS NULL";
+    const query = `WITH RECURSIVE findchildren AS ( 
+      SELECT 
+          child.parent_id AS "parentId", 
+          parent.name AS "parentName",
+          child.id AS "locationId",
+          child.name AS "locationName"
+          FROM location AS child
+      FULL OUTER JOIN location AS parent ON child.parent_id=parent.id
+      ${idQuery}
 
-        UNION ALL
+      UNION ALL
 
-        SELECT child.parent_id, parent.name,child.id, child.name
-            FROM findchildren AS r
-        JOIN location AS parent ON parent.id=r."childId"
-        JOIN location AS child ON parent.id=child.parent_id
-      )
+      SELECT child.parent_id, parent.name,child.id, child.name
+          FROM findchildren AS r
+      JOIN location AS parent ON parent.id=r."locationId"
+      JOIN location AS child ON parent.id=child.parent_id
+    )
 
-      SELECT * FROM findchildren
-      GROUP BY "locationId","locationName", "childId", "childName"
-      ORDER BY "locationId", "childId";`);
-
-      
+    SELECT * FROM findchildren
+    GROUP BY "parentId","parentName", "locationId", "locationName"
+    ORDER BY "parentId" DESC`
+    const result = await db.query(query)
     return result.rows
   }
 
   /** Given a location id, return location and items listed under it or its child locations.
    *
-   * Returns { id, name, notes, items=[loc, loc, loc...] }
+   * Returns { id, name, notes, items=[lot, lot, lot...] }
    *
    * Throws NotFoundError if not found.
    **/
@@ -82,8 +80,8 @@ class Location {
     if (!loc) throw new NotFoundError(`No location: ${id}`);
 
     const childArrray = await Location.getChildren(loc.id)
-    const idSet = new Set ()
-    childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
+    const idSet = new Set()
+    childArrray.map(item => [item.locationId,item.locationId].forEach(i => idSet.add(i)))
     const idArray=Array.from(idSet)
 
     let lotQuery = await db.query(
@@ -97,6 +95,24 @@ class Location {
     loc.items = lotQuery.rows
     return loc;
   }
+  /** Given a location id, return location and items listed under it or its child locations.
+   *
+   * Returns [loc:{children=[{loc},{loc}]}, loc, loc...] 
+   *
+   * Throws NotFoundError if not found.
+  //  **/
+  //  static async getAll() {
+  //   let locs = []
+  //   const childArrray = await Location.getChildren()
+  //   childArrray.forEach((row,idx)=>{
+  //     if (locs.indexOf(row['parentId'])===-1){
+  //       const loc = {id:row.locationId, name:locationName}
+  //       locs.push(loc)
+  //     }
+      
+  //   })
+  //   return locs;
+  // }
 
   /** Update location data with `data`.
    *
