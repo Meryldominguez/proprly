@@ -81,7 +81,6 @@ class Production {
     if(year.length>0){
       let yearExpressions = []
       year.forEach((y)=> {
-        queryValues.push(y)
         yearExpressions.push( `EXTRACT(year from date_start) = ${y} OR EXTRACT(year from date_end) = ${y} \n`)
         yearExpressions.push( `${y} BETWEEN EXTRACT(year from date_start) AND EXTRACT(year from date_end)`)
       })
@@ -95,9 +94,13 @@ class Production {
 
     // Finalize query and return results
 
-    query += " \nORDER BY title";
+    query += "\nORDER BY title";
+console.log(query, queryValues)
+    if (queryValues.length>0){
+      const jobsRes = await db.query(query,queryValues);
+      return jobsRes.rows;
+    }
     const jobsRes = await db.query(query);
-
     return jobsRes.rows;
   }
 

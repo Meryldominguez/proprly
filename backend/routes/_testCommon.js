@@ -117,22 +117,22 @@ async function commonBeforeAll () {
 
   const prod1 = await Production.create({
     title:"Carmen",
-    dateStart: new Date(),
-    dateEnd: new Date(),
+    dateStart: new Date("May, 2020"),
+    dateEnd: new Date("July, 2020"),
     active:true,
     notes:"a test production"
   });
   const prod2 = await Production.create({
     title:"La traviata",
-    dateStart: new Date(),
-    dateEnd: new Date(),
+    dateStart: new Date("September, 2006"),
+    dateEnd: new Date("November, 2006"),
     active:false,
     notes:"a second test production"
   });
   const prod3 = await Production.create({
     title:"The magic flute",
-    dateStart: new Date(),
-    dateEnd: new Date(),
+    dateStart: new Date("January, 2001"),
+    dateEnd: new Date("December, 2003"),
     active:true,
     notes:"a third test production"
   });

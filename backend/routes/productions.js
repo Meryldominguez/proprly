@@ -64,7 +64,6 @@ router.get("/",ensureLoggedIn, async function (req, res, next) {
         const errs = validator.errors.map(e => e.stack);
         throw new BadRequestError(errs);
       }
-      console.log(searchParams)
       const productions = await Production.findAll(searchParams);
       return res.json({ productions });
     }
