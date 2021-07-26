@@ -49,7 +49,6 @@ describe("create", function () {
   test("fails with null", async function () {
     try {
       const res = await Prop.create({});
-      console.log(res)
       fail();
     } catch (err){
       expect(err instanceof BadRequestError).toBeTruthy();

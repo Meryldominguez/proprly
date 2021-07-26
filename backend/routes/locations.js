@@ -57,7 +57,6 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
     const locations = await Location.getChildren();
     return res.json({ locations });
   } catch (err) {
-    // console.log(err)
     return next(err);
   }
 });

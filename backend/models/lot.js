@@ -127,7 +127,6 @@ class Lot {
       const usedProps = await Prop.getLotProps(id)
       lot.available = lot.quantity
       usedProps.forEach(prop=>{
-        console.log(lot.available, prop.quantity)
        lot.available = lot.available-prop.quantity
       })
     }

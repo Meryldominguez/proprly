@@ -10,7 +10,6 @@ const Production = require('../models/production.js')
 const Prop = require('../models/prop.js')
 
 async function commonBeforeAll () {
-  console.log('beforeall')
   // noinspection SqlWithoutWhere
   await db.query('DELETE FROM lot')
   await db.query('DELETE FROM users')
