@@ -256,11 +256,11 @@ describe('PATCH /lots/:id', () => {
   })
 
   test('bad request if invalid data', async function () {
-    const { rows: [lot1] } = await db.query(
+    const { rows: [lot2] } = await db.query(
       `SELECT * FROM lot
-        WHERE name = 'Lot1'`)
+        WHERE name = 'Lot2'`)
     const resp = await request(app)
-      .patch(`/lots/${lot1.id}`)
+      .patch(`/lots/${lot2.id}`)
       .send({
         name: 42
       })
