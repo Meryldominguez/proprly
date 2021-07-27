@@ -88,10 +88,9 @@ class Lot {
       query += "WHERE " + whereExpressions.join(" OR ")
     }
       query += "GROUP BY lot.id, location.id\n";
-      query += "ORDER BY lot.name";
+      query += "ORDER BY lot.id,lot.name";
+      // Finalize query and return results
       
-    // Finalize query and return results
-
    if (queryValues.length>0){
      const lotsRes = await db.query(query, queryValues)
      return lotsRes.rows
