@@ -29,6 +29,22 @@ class Tag {
     
     return result.rows[0];
   }
+  /** connect a lot to a tag, if tag doesnt exist, create,  return new tag data.
+   *
+   * data should be { name, notes }
+   *
+   * Returns { id, name, notes }
+   *
+   * Throws BadRequestError if tag already in database.
+   * */
+  static async tag(lotId,{title}) {
+    if (!title || title === "") throw new BadRequestError(`Please include a title for the tag`)
+
+    const {rows:tag} = await db.query(
+          `SELECT tag_something($1,$2)`,[lotId,title]);
+    
+    return tag;
+  }
 
   /** get all tags.
    *

@@ -60,3 +60,31 @@ CREATE TABLE lot_tag (
   PRIMARY KEY (lot_id, tag_id)
 );
 
+CREATE OR REPLACE FUNCTION tag_something(lot_id INTEGER ,tag_title VARCHAR)
+RETURNS RECORD AS
+$$
+DECLARE
+   new_tag_id INT;
+   res RECORD;
+  BEGIN
+    IF NOT EXISTS (SELECT * FROM tag WHERE title=tag_title) 
+    THEN
+        INSERT INTO tag(title)
+        VALUES('test')
+        RETURNING id INTO new_tag_id;
+
+        INSERT INTO lot_tag(lot_id,tag_id)
+        VALUES(lot_id,new_tag_id)
+        RETURNING * INTO res;
+    ELSE
+        SELECT id INTO new_tag_id FROM tag WHERE title='test';
+
+        INSERT INTO lot_tag(lot_id,tag_id)
+        VALUES(lot_id, new_tag_id)
+        RETURNING * INTO res;
+    END IF;
+RETURN res;
+END;
+$$ 
+LANGUAGE plpgsql
+;
