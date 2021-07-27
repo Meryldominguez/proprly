@@ -44,7 +44,7 @@ class Location {
           child.id AS "locationId",
           child.name AS "locationName"
           FROM location AS child
-      FULL OUTER JOIN location AS parent ON child.parent_id=parent.id
+      LEFT JOIN location AS parent ON child.parent_id=parent.id
       ${idQuery}
 
       UNION ALL
@@ -80,9 +80,7 @@ class Location {
     if (!loc) throw new NotFoundError(`No location: ${id}`);
 
     const childArrray = await Location.getChildren(loc.id)
-    const idSet = new Set()
-    childArrray.map(item => [item.locationId,item.locationId].forEach(i => idSet.add(i)))
-    const idArray=Array.from(idSet)
+    const idArray = childArrray.map(item => item.locationId)
 
     let lotQuery = await db.query(
       `SELECT lot.id, lot.name, quantity, description, price, loc_id, location.name as "location"
