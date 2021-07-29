@@ -4,6 +4,7 @@ const db = require("../db.js");
 process.cwd()
 const { BadRequestError, NotFoundError } = require("../expressError");
 const Tag = require("./tag.js");
+const Lot = require("./lot.js");
 const {
   commonBeforeAll,
   commonBeforeEach,
@@ -70,6 +71,58 @@ describe("create",function () {
 
 });
 
+/************************************** getAll */
+
+describe("tag", function () {
+  test("works for new tag", async function () {
+    const [lot1] = await Lot.findAll({searchTerm:"1"});
+    let tag = await Tag.tag(Number(lot1.id),{title:"Test Tag"});
+    expect(tag).toEqual({
+      tagId: expect.any(Number),
+      lotId: lot1.id,
+      lotName: "item1",
+      tagTitle: "Test Tag"
+    });
+  });
+  test("works for existing tag", async function () {
+    const [lot3] = await Lot.findAll({searchTerm:"3"});
+    let tag = await Tag.tag(Number(lot3.id),{title:"Test Tag"});
+
+    expect(tag).toEqual({
+      tagId: expect.any(Number),
+      lotId: lot3.id,
+      lotName: "item3",
+      tagTitle: "Test Tag"
+    });
+  });
+  test("fails for existing tag/lot pair", async function () {
+    try {
+      const [lot3] = await Lot.findAll({searchTerm:"3"});
+
+      await Tag.tag(Number(lot3.id),{title:"Test Tag"});
+      await Tag.tag(Number(lot3.id),{title:"Test Tag"});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy()
+    }   
+  });
+  test("fails for bad data", async function () {
+    const [lot3] = await Lot.findAll({searchTerm:"3"});
+    try {
+      await Tag.tag(Number(lot3.id),{});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy()
+    }
+    try {
+      await Tag.tag(lot3.id,{tag:"hello"});
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy()
+    }   
+  });
+
+});
 /************************************** getAll */
 
 describe("getAll", function () {

@@ -29,6 +29,7 @@ class Tag {
     
     return result.rows[0];
   }
+  
   /** connect a lot to a tag, if tag doesnt exist, create,  return new tag data.
    *
    * data should be { name, notes }
@@ -38,11 +39,11 @@ class Tag {
    * Throws BadRequestError if tag already in database.
    * */
   static async tag(lotId,{title}) {
-    if (typeof lotId != "number" || !lotId) throw new BadRequestError(`lotId should be an integer`)
     if (!title || title === "") throw new BadRequestError(`Please include a title for the tag`)
+    if (typeof lotId != "number" || !lotId) throw new BadRequestError(`lotId should be an integer`)
 
-    const {rows:tag} = await db.query(
-          `SELECT tag_something($1,$2)`,[lotId,title]);
+    const {rows:[tag]} = await db.query(
+          `SELECT * FROM tag_something($1,$2)`,[lotId,title]);
     
     if(!tag) throw new BadRequestError("That lot already has that tag")
 
