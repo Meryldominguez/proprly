@@ -38,11 +38,14 @@ class Tag {
    * Throws BadRequestError if tag already in database.
    * */
   static async tag(lotId,{title}) {
+    if (typeof lotId != "number" || !lotId) throw new BadRequestError(`lotId should be an integer`)
     if (!title || title === "") throw new BadRequestError(`Please include a title for the tag`)
 
     const {rows:tag} = await db.query(
           `SELECT tag_something($1,$2)`,[lotId,title]);
     
+    if(!tag) throw new BadRequestError("That lot already has that tag")
+
     return tag;
   }
 
