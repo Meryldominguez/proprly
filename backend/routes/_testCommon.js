@@ -31,7 +31,7 @@ async function commonBeforeAll () {
   await addProps();
   console.log("added Props")
   await addTags();
-  console.log("No tags yet")
+  console.log("added Tags")
 
   await addUsers();
   console.log("added Users")
@@ -253,14 +253,15 @@ async function addProps(){
 
 async function addTags(){
   try {
-    const [lot1,lot2,lot3,lot4,lot5,lot6,lot7,lot8] = await Lot.findAll()
+    const [lot1,lot2,lot3,lot4] = await Lot.findAll()
 
-    await Tag.create({title:"Set Dressing"})
-    await Tag.create({title:"Hand Prop"})
-    await Tag.create({title:"Florals"})
-    await Tag.create({title:"Blue"})
-    await Tag.create({title:"Red"})
-    await Tag.create({title:"Furniture"})
+    await Tag.tag(Number(lot1.id),{title:"Set Dressing"})
+    await Tag.tag(Number(lot2.id),{title:"Hand Prop"})
+    await Tag.tag(Number(lot3.id),{title:"Florals"})
+    await Tag.tag(Number(lot4.id),{title:"Blue"})
+    await Tag.tag(Number(lot1.id),{title:"Set Piece"})
+    await Tag.tag(Number(lot2.id),{title:"Furniture"})
+
     
   } catch (error) {
     

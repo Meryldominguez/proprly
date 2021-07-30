@@ -304,7 +304,7 @@ describe("remove Prop",  function () {
 
     const {rows:tagCount} = await db.query(
       "SELECT * FROM tag");
-    expect(tagCount.length).toBe(5)
+    expect(tagCount.length).toBe(6)
   });
 
   test("not found if no such lot", async function () {
