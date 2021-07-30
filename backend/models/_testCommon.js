@@ -35,7 +35,8 @@ async function commonBeforeAll() {
            ('Hand Props'),
            ('Fabric'),
            ('Furniture'),
-           ('Florals')
+           ('Florals'),
+           ('Set Pieces')
     RETURNING id,title
             `);
   

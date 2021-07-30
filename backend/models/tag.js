@@ -17,7 +17,7 @@ class Tag {
    * */
   static async create({title}) {
     if (!title || title === "") throw new BadRequestError(`Please include a name for the tag`)
-    const result = await db.query(
+    const {rows:[tag]} = await db.query(
           `INSERT INTO tag
            (title)
            VALUES ($1)
@@ -27,7 +27,27 @@ class Tag {
         ],
         );
     
-    return result.rows[0];
+    return tag;
+  }
+
+  /** connect a lot to a tag, if tag doesnt exist, create,  return new tag data.
+   *
+   * data should be { name, notes }
+   *
+   * Returns { id, name, notes }
+   *
+   * Throws BadRequestError if tag already in database.
+   * */
+  static async tag(lotId,{title}) {
+    if (!title || title === "") throw new BadRequestError(`Please include a title for the tag`)
+    if (typeof lotId != "number" || !lotId) throw new BadRequestError(`lotId should be an integer`)
+
+    const {rows:[tag]} = await db.query(
+          `SELECT * FROM tag_something($1,$2)`,[lotId,title]);
+    
+    if(!tag) throw new BadRequestError("That lot already has that tag")
+
+    return tag;
   }
 
   /** get all tags.
@@ -37,19 +57,26 @@ class Tag {
    * Throws NotFoundError if not found.
    **/
 
-   static async getAll() {
-    
-    let {rows:tags} = await db.query(
-      `SELECT t.id,
-              t.title,
-              COUNT(lot_id) AS "lotsWithTag"
-        FROM tag AS t
-        FULL OUTER JOIN lot_tag ON tag_id=t.id
-        LEFT JOIN lot AS l ON lot_id=l.id
-        GROUP BY t.id
-        ORDER BY t.id
-        `);
+   static async getAll(search=null) {
+    if (typeof search !== "string" && search !== null) throw new BadRequestError(`search must be a string`)
 
+    const whereExpression = search? `WHERE t.title ILIKE '%${search}%'` : ""
+
+    const query =
+      `SELECT t.id,
+            t.title,
+            COUNT(lot_id) AS "lotsWithTag"
+      FROM tag AS t
+      FULL OUTER JOIN lot_tag ON tag_id=t.id
+      LEFT JOIN lot AS l ON lot_id=l.id
+      ${whereExpression}
+      GROUP BY t.id
+      ORDER BY t.id`
+
+    let {rows:tags} = await db.query(query);
+
+    if (tags.length === 0 ) throw new NotFoundError(`No tags that match: ${search}`);
+    
     return tags;
   }
 
@@ -72,19 +99,8 @@ class Tag {
 
     if (!tag) throw new NotFoundError(`No tag: ${id}`);
     
-    let {rows} = await db.query(
-      `SELECT l.id, 
-          l.name, 
-          l.description,
-          loc.id AS "locId", 
-          loc.name AS location
-        FROM lot_tag
-        JOIN lot AS l ON lot_id=l.id
-        JOIN location AS loc ON l.loc_id=loc.id
-        WHERE tag_id=$1
-        `,
-    [id]);
-    tag.lots = rows
+    let lots = await Tag.getTagLots(id)
+    tag.lots = lots
 
     return tag;
   }
@@ -113,6 +129,38 @@ class Tag {
     [lotId]);
 
     return tags;
+  }
+
+  /** Given a tag id, return all tags.
+   *
+   * Returns [tag,tag,tag]
+   *
+   * Throws NotFoundError if not found.
+   **/
+
+   static async getTagLots(tagId) {
+    if (typeof tagId != "number") throw new BadRequestError(`${tagId} is not an integer`)
+
+    let {rows:[{exists}]} = await db.query(
+      "SELECT EXISTS (SELECT FROM tag WHERE id=$1)"
+      ,[tagId])
+    if (!exists) throw new NotFoundError(`${tagId} is not a tag id that exists`)
+
+    let {rows:lots} = await db.query(
+      `SELECT 
+          l.id, 
+          l.name, 
+          l.description,
+          loc.id AS "locId", 
+          loc.name AS location
+        FROM lot_tag
+        JOIN lot AS l ON lot_id=l.id
+        JOIN location AS loc ON loc.id=l.loc_id
+        WHERE tag_id=$1
+        `,
+    [tagId]);
+
+    return lots;
   }
 
 
@@ -166,6 +214,27 @@ class Tag {
     const tag = result.rows[0];
 
     if (!tag) throw new NotFoundError(`No tag: ${id}`);
+    return tag
+  }
+
+  /** Delete given lot_tag from database; returns id.
+   *
+   * Throws NotFoundError if tag not found.
+   **/
+
+  static async removeTag(lotId,tagId) {
+    if (typeof lotId != 'number'|| typeof tagId != 'number') throw new BadRequestError(`Both lotId and tagId must be an integer`)
+
+    const {rows} = await db.query(
+          `DELETE
+           FROM lot_tag
+           WHERE lot_id = $1 AND tag_id=$2
+           RETURNING lot_id AS "lotId", tag_id AS "tagId"`,
+        [lotId, tagId]);
+
+    const tag = rows[0];
+
+    if (!tag) throw new NotFoundError(`there is no lot_tag with lotId,tagId (${lotId},${tagId})`);
     return tag
   }
 }
