@@ -11,6 +11,7 @@ const {
   commonAfterEach,
   commonAfterAll
 } = require("./_testCommon");
+const { tag } = require("./tag.js");
 
 beforeAll(commonBeforeAll);
 beforeEach(commonBeforeEach);
@@ -71,7 +72,7 @@ describe("create",function () {
 
 });
 
-/************************************** getAll */
+/************************************** tagLot */
 
 describe("tag", function () {
   test("works for new tag", async function () {
@@ -126,15 +127,34 @@ describe("tag", function () {
 /************************************** getAll */
 
 describe("getAll", function () {
-  test("works", async function () {
+  test("works, no search", async function () {
     let tags = await Tag.getAll();
-    expect(tags.length).toEqual(5)
+    expect(tags.length).toEqual(6)
     expect(tags).toEqual(expect.any(Array))
     expect(tags[0]).toEqual({
       lotsWithTag: "2", 
       id: expect.any(Number), 
       title: "Set Dressing"
     })
+  });
+  test("works, search", async function () {
+    let tags = await Tag.getAll("set");
+    expect(tags.length).toEqual(2)
+    expect(tags).toEqual(expect.any(Array))
+    expect(tags[1]).toEqual({
+      lotsWithTag: "0", 
+      id: expect.any(Number), 
+      title: "Set Pieces"
+    })
+  });
+  test("works, error for no tag", async function () {
+    try {
+      await Tag.getAll("Nothing");
+      fail()
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+
+    }
   });
 
 });
@@ -183,7 +203,7 @@ describe("get", function () {
     }
   });
 });
-/************************************** get */
+/************************************** getLotTags */
 
 describe("getLotTags", function () {
   test("works", async function () {
@@ -232,6 +252,61 @@ describe("getLotTags", function () {
     }
   });
 });
+/************************************** getTagLots */
+
+describe("getTagLots", function () {
+  test("works", async function () {
+    const {rows:[{id}]} = await db.query(
+      `SELECT id FROM tag
+       WHERE name = 'Hand Props'`);
+      
+    let lots = await Tag.getTagLots(id);
+    expect(lots).toEqual([
+      {
+        id: expect.any(Number),
+        name: "item1",
+        locId: expect.any(Number),
+        location:"First Location",
+        description:"Desc1"
+
+      },
+      {
+        id: expect.any(Number),
+        name: "item2",
+        locId: expect.any(Number),
+        location:"Second Location",
+        description:"Desc2"
+
+      }
+    ])
+    expect(tags.length).toBe(2)
+  });
+
+  test("not found if no such lot", async function () {
+    try {
+      await Tag.getTagLots(-200);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+  test("not found if string passed as id", async function () {
+    try {
+      await Tag.getTagLots("X");
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+  test("not found if passed null", async function () {
+    try {
+      await Tag.getTagLots();
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
 
 /************************************** update */
 
@@ -240,7 +315,7 @@ describe("update", function () {
     title: "New Description"
   };
 
-  test("works", async function () {
+  xtest("works", async function () {
     const {rows} = await db.query(
       `SELECT id, title, title
        FROM tag
@@ -262,7 +337,7 @@ describe("update", function () {
     }]);
   });
 
-  test("not found if no such lot", async function () {
+  xtest("not found if no such lot", async function () {
     try {
       await Tag.update(-3, updateData);
       fail();
@@ -271,7 +346,7 @@ describe("update", function () {
     }
   });
 
-  test("bad request with no data", async function () {
+  xtest("bad request with no data", async function () {
     try {
       const {rows} = await db.query(
         `SELECT id, title
@@ -315,6 +390,41 @@ describe("remove Tag", function () {
   test("not found if string passed as id", async function () {
     try {
       await Tag.remove("X");
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
+/************************************** removeLotTag */
+
+describe("remove lotTag", function () {
+  test("works", async function () {
+    const {rows:[{lotId, tagId}]} = await db.query(
+      `SELECT lot_id AS "lotId", tag_id AS "tagId"
+      FROM lot_tag
+      JOIN tag ON tag_id=tag.id
+      WHERE tag.title='Hand Props'`,
+    );
+
+    await Tag.removeTag(Number(lotId),Number(tagId));
+
+    const {rows} = await db.query(
+        `SELECT * FROM lot_tag WHERE tag_id=${tagId} AND lot_id=${lotId}`);
+    expect(rows.length).toEqual(0);
+  });
+
+  test("not found if no such lot", async function () {
+    try {
+      await Tag.removeTag(-200,203);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+  test("not found if bad data passed", async function () {
+    try {
+      await Tag.removeTag("30","12");
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();
