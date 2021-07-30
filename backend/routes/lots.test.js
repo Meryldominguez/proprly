@@ -18,7 +18,7 @@ const {
 
 } = require('./_testCommon')
 
-beforeAll(commonBeforeAll)
+beforeAll(async ()=> await commonBeforeAll("/lots Routes"))
 beforeEach(commonBeforeEach)
 afterEach(commonAfterEach)
 afterAll(commonAfterAll)
@@ -141,7 +141,7 @@ describe('GET /lots/:id', function () {
         available: 1,
         locId: expect.any(Number),
         price: '$20.99',
-        tags: []
+        tags: expect.any(Array)
       }
     })
   })

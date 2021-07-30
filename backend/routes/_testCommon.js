@@ -13,7 +13,7 @@ const User = require('../models/user')
 const { createToken } = require('../helpers/tokens')
 
 
-async function commonBeforeAll () {
+async function commonBeforeAll (testName) {
   // noinspection SqlWithoutWhere
   await db.query('DELETE FROM location')
   await db.query('DELETE FROM lot')
@@ -22,19 +22,14 @@ async function commonBeforeAll () {
   await db.query('DELETE FROM tag')
   await db.query('DELETE FROM users')
   
-  await addLocations();
-  console.log("added Locations")
-  await addLots();
-  console.log("added Lots")
-  await addProductions();
-  console.log("added Productions")
-  await addProps();
-  console.log("added Props")
-  await addTags();
-  console.log("added Tags")
-
   await addUsers();
-  console.log("added Users")
+  await addLocations();
+  await addLots();
+  await addProductions();
+  await addProps();
+  await addTags();
+
+  console.log(`Ready for ${testName} tests`)
 
 };
 

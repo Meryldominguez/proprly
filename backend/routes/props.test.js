@@ -17,7 +17,7 @@ const {
 
 } = require('./_testCommon')
 
-beforeAll(commonBeforeAll)
+beforeAll(async ()=> await commonBeforeAll("/props Routes"))
 beforeEach(commonBeforeEach)
 afterEach(commonAfterEach)
 afterAll(commonAfterAll)

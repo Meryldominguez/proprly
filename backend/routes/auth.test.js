@@ -11,7 +11,7 @@ const {
   commonAfterAll
 } = require('./_testCommon')
 
-beforeAll(commonBeforeAll)
+beforeAll(async ()=> await commonBeforeAll("/auth Routes"))
 beforeEach(commonBeforeEach)
 afterEach(commonAfterEach)
 afterAll(commonAfterAll)

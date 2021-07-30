@@ -16,7 +16,7 @@ const {
   adminToken,
 } = require("./_testCommon");
 
-beforeAll(commonBeforeAll);
+beforeAll(async ()=> await commonBeforeAll("/users Routes"));
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);

@@ -258,7 +258,7 @@ describe("getTagLots", function () {
   test("works", async function () {
     const {rows:[{id}]} = await db.query(
       `SELECT id FROM tag
-       WHERE name = 'Hand Props'`);
+       WHERE title = 'Hand Props'`);
       
     let lots = await Tag.getTagLots(id);
     expect(lots).toEqual([
@@ -274,12 +274,12 @@ describe("getTagLots", function () {
         id: expect.any(Number),
         name: "item2",
         locId: expect.any(Number),
-        location:"Second Location",
+        location:"First Location",
         description:"Desc2"
 
       }
     ])
-    expect(tags.length).toBe(2)
+    expect(lots.length).toBe(2)
   });
 
   test("not found if no such lot", async function () {
@@ -315,7 +315,7 @@ describe("update", function () {
     title: "New Description"
   };
 
-  xtest("works", async function () {
+  test("works", async function () {
     const {rows} = await db.query(
       `SELECT id, title, title
        FROM tag
@@ -337,7 +337,7 @@ describe("update", function () {
     }]);
   });
 
-  xtest("not found if no such lot", async function () {
+  test("not found if no such lot", async function () {
     try {
       await Tag.update(-3, updateData);
       fail();
@@ -346,7 +346,7 @@ describe("update", function () {
     }
   });
 
-  xtest("bad request with no data", async function () {
+  test("bad request with no data", async function () {
     try {
       const {rows} = await db.query(
         `SELECT id, title
