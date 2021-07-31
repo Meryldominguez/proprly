@@ -115,6 +115,23 @@ describe('GET /locations', function () {
     expect(resp.statusCode).toEqual(200)
   })
 
+  test('works with search', async function () {
+    const { rows: [bay1] } = await db.query(
+      `SELECT * FROM location
+        WHERE name = 'Bay 1'`)
+    const resp = await request(app)
+      .get(`/locations?id=${bay1.id}`)
+      .set('authorization', `Bearer ${u1Token}`)
+    expect(resp.body.locations.length).toBe(1)
+    expect(resp.statusCode).toEqual(200)
+  })
+  test('fails with bad search', async function () {
+    const resp = await request(app)
+      .get(`/locations?id=abcde`)
+      .set('authorization', `Bearer ${u1Token}`)
+    expect(resp.statusCode).toEqual(400)
+  })
+
   test('unauth for anon', async function () {
     const resp = await request(app)
       .get('/locations')

@@ -52,9 +52,16 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", ensureLoggedIn, async function (req, res, next) {
-  const searchTerm = req.query.q
+  
   try {
-    const locations = await Location.getChildren();
+    const id = req.query.id? req.query.id : null
+
+    if (!Number(id) && id != null) throw new BadRequestError("id must be a number")
+    const locations = id ? 
+      await Location.getChildren(Number(id))
+      :
+      await Location.getChildren();
+
     return res.json({ locations });
   } catch (err) {
     return next(err);
