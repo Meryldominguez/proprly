@@ -1,12 +1,15 @@
 import logo from './logo.png';
 import './App.css';
 import  Navbar  from "./Navbar";
+import useAuth from "./hooks/useAuth"
 
 function App() {
+  const [user, signup, login, logout] = useAuth()
+
   if (process.env.NODE_ENV !=='production') {
     return (
       <div className="App">
-        <Navbar />
+        <Navbar logout={logout}/>
       </div>
     );
   }
