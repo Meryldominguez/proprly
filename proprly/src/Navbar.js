@@ -15,6 +15,8 @@ import {
   Link
 } from "react-router-dom"
 
+import UserContext from './context/UserContext'
+
 
 
 const useStyles = createStyles((theme) => ({
@@ -92,11 +94,7 @@ function Navbar({logout}) {
   const theme = useTheme()
   const classes = useStyles(theme);
 
-  // const LinkBehavior = React.forwardRef((props, ref) => (
-  //   <Link ref={ref} to="/getting-started/installation/" {...props} />
-  // ));
-
-  // const {user, isLoading} = useContext(UserContext)
+  const {user, isLoading} = useContext(UserContext)
 
   return (
     <AppBar position="sticky">
@@ -122,20 +120,20 @@ function Navbar({logout}) {
           </div>
           <div className={classes.root} />
           <div className={classes.sectionDesktop}>
-        <Button component={Link} to="/productions" color="inherit" >Productions</Button>
-        
-        <IconButton
+        {(user && !isLoading) && 
+        <>
+          <Button component={Link} to="/productions" color="inherit" >Productions</Button>
+          <IconButton
               edge="end"
               aria-label="account of current user"
               color="inherit"
               component={Link}
               to="/profile"
             >
-              <AccountCircle />
-            </IconButton>
-
-        <Button component={Link} to="/signup" color="inherit"> Signup</Button>
-        <Button component={Link} to="/login" color="inherit"> Login</Button>
+            <AccountCircle />
+          </IconButton>
+        </>
+        } 
         </div>
       </Toolbar>
     </AppBar>

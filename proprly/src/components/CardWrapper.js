@@ -18,12 +18,12 @@ const useStyles = createStyles(theme=>({
 
 export default function CardWrapper({children, title}) {
   const theme = useTheme()
-  const classes = useStyles(theme);
+  const classes = useStyles(theme)
 
   return (
     <Card title={title} className={classes.root}>
       <CardContent>
-        <Typography className={classes.title} color="textPrimary" gutterBottom>
+        <Typography className={classes.title} variant="h6" color="textPrimary" gutterBottom>
           {title}
         </Typography>
           {children}

@@ -1,28 +1,20 @@
-import React, {useContext} from "react"
+import React from "react"
+import { Box } from "@material-ui/core";
 
 
-// import AlertContainer from "../components/AlertContainer"
-// import AlertContext from "../context/AlertContext"
 import LoggedInRoutes from "./LoggedInRoutes";
 import AnonRoutes from "./AnonRoutes";
 
 
+function Routes({user, isLoading}) {
 
-function Routes({user}) {
-  // const {alerts, setAlerts} = useContext(AlertContext)
-
-  
   return (
-      <div className="Content-Container">
-        {/* <Pagination>
-      <Pagination.Prev onClick={history.goBack}/>
-      <Pagination.Next  onClick={history.goForward}/>
-        </Pagination> */}
+      <Box>
         {/* <AlertContainer alerts={[...alerts]} setAlerts={setAlerts} /> */}
-          {user ?
+          {user && !isLoading?
           <LoggedInRoutes username={user.username}/>
           :
           <AnonRoutes />}
-      </div>)
+      </Box>)
 }
 export default Routes;

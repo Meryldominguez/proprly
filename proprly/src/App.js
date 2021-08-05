@@ -3,29 +3,40 @@ import { BrowserRouter } from "react-router-dom";
 import logo from './logo.png';
 import './App.css';
 import { ThemeProvider } from '@material-ui/core/styles';
-import {ProprlyTheme} from "./ProprlyTheme"
+import { ProprlyTheme } from "./ProprlyTheme"
 
+import AlertContext from "./context/AlertContext";
+import UserContext from "./context/UserContext";
 import  Navbar  from "./Navbar";
 
 import useAuth from "./hooks/useAuth"
-import AnonRoutes from "./routes/AnonRoutes";
+import {useGetUserProfile} from "./hooks/useFetch"
+import Routes from "./routes/Routes";
 
 
 function App() {
   const [user, signup, login, logout] = useAuth()
+
+  let [[profile, setProfile], isLoading, authProfile, updateProfile, apply] = useGetUserProfile(user?user.username:null)
+
+  const [alerts, setAlerts] = useState([])
+
   
 
   if (process.env.NODE_ENV !=='production') {
     return (
       <ThemeProvider theme={ProprlyTheme}>
         <div className="App">
-        <BrowserRouter>
-            <Navbar logout={logout}/>
-            <AnonRoutes />
-          
-        </BrowserRouter>
-          
+        <UserContext.Provider value={{user, signup, login, profile, setProfile, isLoading, authProfile, updateProfile, apply}}>
+          <AlertContext.Provider value={{alerts,setAlerts}}>
+            <BrowserRouter>
+                <Navbar logout={logout}/>
+                <Routes />
+            </BrowserRouter>
+          </AlertContext.Provider>
+        </UserContext.Provider>
         </div>
+
       </ThemeProvider>
     );
   }
