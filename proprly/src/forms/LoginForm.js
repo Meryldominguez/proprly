@@ -1,37 +1,44 @@
 import React, {useContext, useState} from 'react'
+import { createStyles, useTheme } from '@material-ui/core/styles';
+import { Container } from '@material-ui/core';
+
 import { 
-    Button,
-    Form,
-    Card,
-    Col
-} from 'react-bootstrap'
-import { useHistory } from 'react-router';
-import AlertContext from '../context/AlertContext';
+    TextField
+ } from '@material-ui/core'
+import { useHistory } from 'react-router'
  
+const useStyles = createStyles((theme) => ({
+    root: {
+      '& .MuiTextField-root': {
+        margin: theme.spacing(1),
+        width: '25ch',
+      },
+    },
+  }));
+
 const LoginForm = ({login}) => {
-    const history = useHistory()
-    const {alerts,setAlerts} = useContext(AlertContext)
+    const theme = useTheme()
+    const classes = useStyles(theme);
+
+    const initialState = {
+        username:"",
+        password:""
+    }
     
-    const [formData, setFormData] = useState(
-        {
-            username:"",
-            password:""
-        });
+    // const {alerts,setAlerts} = useContext(AlertContext)
+    const [formData, setFormData] = useState(initialState);
+    const history = useHistory()
 
     const handleSubmit = async (evt)=> {
         evt.preventDefault();
         try {
             await login(formData)
-            setAlerts([...alerts,{variant:"success",msg:"You have successfully logged in!"}])
+            // setAlerts([...alerts,{variant:"success",msg:"Welcome back!"}])
             history.push("/")
         } catch (error) {
-            setFormData({
-                username:"",
-                password:""
-            })
-            setAlerts([...alerts,...error.map(e=>{return {variant:"danger",msg:e}})] )
-            }
-    };
+            // setAlerts([...alerts,...error.map(e=>{return {variant:"danger",msg:e}})] )
+        }
+      };
 
     const handleChange = evt => {
         const {name,value} = evt.target;
@@ -39,37 +46,22 @@ const LoginForm = ({login}) => {
             ...formData,
             [name]:value,
         });
+        console.log(formData)
     };
   return (
-
-    <Col xs={8} className="m-auto">
-    <Card className="p-3 my-5">
-        <h4>Login to your Jobify account:</h4>
-    <Form onSubmit={handleSubmit} className="my-3">
-        <Form.Group controlId="formBasicUsername">
-            <Form.Control 
-                type="text" 
-                placeholder="Enter username"
-                name="username"
-                value={formData.username}
+    <Container component="main">
+        <form onSubmit={handleSubmit}>
+            <TextField
+                id="outlined-password-input"
+                className={classes.root}
+                label="Password"
+                type="password"
+                autoComplete="current-password"
+                variant="outlined"
                 onChange={handleChange}
                 />
-        </Form.Group>
-        <Form.Group controlId="formBasicPassword">
-            <Form.Control 
-                type="password" 
-                placeholder="Password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-            />
-        </Form.Group>
-        <Button variant="primary" type="submit">
-            Login
-        </Button>
-    </Form>
-    </Card>
-    </Col>
+        </form>
+    </Container>
   )
 }
  

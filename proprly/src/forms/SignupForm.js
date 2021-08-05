@@ -1,11 +1,10 @@
 import React, {useContext, useState} from 'react'
-import { createStyles } from '@material-ui/core/styles';
+import { createStyles, useTheme } from '@material-ui/core/styles';
 
 import { 
     TextField
  } from '@material-ui/core'
 import { useHistory } from 'react-router'
-// import AlertContext from '../context/AlertContext'
  
 const useStyles = createStyles((theme) => ({
     root: {
@@ -17,8 +16,8 @@ const useStyles = createStyles((theme) => ({
   }));
 
 const SignupForm = ({signup}) => {
-
-    const classes = useStyles();
+    const theme = useTheme()
+    const classes = useStyles(theme);
 
     const initialState = {
         username:"",
@@ -53,6 +52,14 @@ const SignupForm = ({signup}) => {
   return (
     
     <form onSubmit={handleSubmit}>
+        <TextField
+            id="outlined-password-input"
+            className={classes.root}
+            label="Password"
+            type="text"
+            variant="outlined"
+            onChange={handleChange}
+            />
         <TextField
             id="outlined-password-input"
             className={classes.root}

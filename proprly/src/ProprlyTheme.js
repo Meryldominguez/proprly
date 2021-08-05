@@ -1,6 +1,6 @@
 import { createTheme } from "@material-ui/core"
 
-const proprTheme = createTheme ({
+const ProprlyTheme = createTheme ({
     palette: {
         type: 'light',
         primary: {
@@ -11,4 +11,4 @@ const proprTheme = createTheme ({
         },
       },
 })
-export default proprTheme
+export {ProprlyTheme}
