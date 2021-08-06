@@ -4,11 +4,11 @@ import LoggedInRoutes from "./LoggedInRoutes";
 import AnonRoutes from "./AnonRoutes";
 
 
-function Routes({user, isLoading}) {
+function Routes({user}) {
   return (
       <>
         {/* <AlertContainer alerts={[...alerts]} setAlerts={setAlerts} /> */}
-          {user && !isLoading?
+          {user ?
           <LoggedInRoutes username={user.username}/>
           :
           <AnonRoutes />}

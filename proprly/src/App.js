@@ -33,7 +33,7 @@ function App() {
             <BrowserRouter>
                 <Navbar logout={logout}/>
                 <AlertContainer alerts={alerts} setAlerts={setAlerts}/>
-                <Routes user={user} isLoading={isLoading}/>
+                {!isLoading && <Routes user={user} isLoading={isLoading}/>}
             </BrowserRouter>
           </AlertContext.Provider>
         </UserContext.Provider>
