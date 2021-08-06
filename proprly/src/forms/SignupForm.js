@@ -28,10 +28,17 @@ const SignupForm = ({userSignup}) => {
 
     const handleSubmit = async (evt)=> {
         evt.preventDefault();
+        console.log(formData)
         try {
           if (formData.password!==formData.confirmPassword) throw new Error("Passwords must match")
-            setFormData(formData.forEach(item=>item.trim()))
-            await userSignup(formData)
+            const trimmedData = {
+              email:formData.email.trim(),
+              firstName:formData.firstName.trim(),
+              lastName:formData.lastName.trim(),
+              password:formData.password,
+              username:formData.username.trim()
+            }
+            await userSignup(trimmedData)
             // setAlerts([...alerts,{variant:"success",msg:"You have successfully signed up!"}])
             history.push("/")
         } catch (error) {
@@ -96,7 +103,7 @@ const SignupForm = ({userSignup}) => {
               id="password-input"
               name="password"
               label="Password"
-              type="text"
+              type="password"
               variant="outlined"
               onChange={handleChange}
               />
@@ -104,6 +111,7 @@ const SignupForm = ({userSignup}) => {
         <Grid item xs={6}>
           <TextField
             id="confirmPassword-input"
+            name="confirmPassword"
             label="Confirm Password"
             type="password"
             autoComplete="current-password"
