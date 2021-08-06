@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-// import AlertContext from "../context/AlertContext";
+import React, {useState, useContext} from 'react'
+import AlertContext from "../context/AlertContext";
 
 import { 
     TextField,
@@ -22,7 +22,7 @@ const SignupForm = ({userSignup}) => {
         confirmPassword:""
     }
     
-    // const {alerts,setAlerts} = useContext(AlertContext)
+    const {setAlerts} = useContext(AlertContext)
     const [formData, setFormData] = useState(initialState);
     const history = useHistory()
 
@@ -39,11 +39,11 @@ const SignupForm = ({userSignup}) => {
               username:formData.username.trim()
             }
             await userSignup(trimmedData)
-            // setAlerts([...alerts,{variant:"success",msg:"You have successfully signed up!"}])
+            setAlerts([{variant:"success",msg:"You have successfully signed up!"}])
             history.push("/")
         } catch (error) {
           console.log(error)
-            // setAlerts([...alerts,...error.map(e=>{return {severity:"error",msg:e}})] )
+          setAlerts([...error.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
         }
       };
 
@@ -103,6 +103,7 @@ const SignupForm = ({userSignup}) => {
               id="password-input"
               name="password"
               label="Password"
+              autoComplete="new-password"
               type="password"
               variant="outlined"
               onChange={handleChange}

@@ -22,20 +22,19 @@ function App() {
   let [[profile, setProfile], isLoading, authProfile, updateProfile, apply] = useGetUserProfile(user?user.username:null)
 
   const [alerts, setAlerts] = useState([])
-  console.log(user, isLoading)
 
     if (process.env.NODE_ENV !=='production') {
     return (
       <ThemeProvider theme={ProprlyTheme}>
         <div className="App">
         <UserContext.Provider value={{user, signup, login, profile, setProfile, isLoading, authProfile, updateProfile, apply}}>
-          <AlertContext.Provider value={{alerts,setAlerts}}>
             <BrowserRouter>
+              <AlertContext.Provider value={{alerts,setAlerts}}>
                 <Navbar logout={logout}/>
                 <AlertContainer alerts={alerts} setAlerts={setAlerts}/>
                 {!isLoading && <Routes user={user} isLoading={isLoading}/>}
+              </AlertContext.Provider>
             </BrowserRouter>
-          </AlertContext.Provider>
         </UserContext.Provider>
         </div>
 

@@ -30,7 +30,7 @@ class ProprlyApi {
     } catch (err) {
       console.error("API Error:", err);
       let message = err.response.data.error.message;
-      throw Array.isArray(message) ? message : [message];
+      throw Array.isArray(message) ? message.map((m, inx)=> message[inx]= {msg:m}) : [{msg:message}];
     }
   }
 

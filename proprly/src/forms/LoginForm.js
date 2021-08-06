@@ -26,11 +26,11 @@ const LoginForm = ({userLogin}) => {
         evt.preventDefault();
         try {
             await userLogin(formData)
-            // setAlerts([...alerts,{severity:"success",msg:"Welcome back!"}])
+            setAlerts([...alerts,{severity:"success",msg:"Welcome back!"}])
             history.push("/")
         } catch (error) {
             console.log(error)
-            // setAlerts([...alerts,...error.map(e=>{return {severity:"danger",msg:e}})] )
+            setAlerts([...error.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
         }
       };
 
@@ -51,6 +51,7 @@ const LoginForm = ({userLogin}) => {
           name="username"
           fullWidth
           label="Username"
+          autoComplete="username"
           type="text"
           variant="outlined"
           onChange={handleChange}

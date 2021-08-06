@@ -4,7 +4,7 @@ import { Box, Grid, TextField, Button } from "@material-ui/core";
 
 import LoadingSpinner from '../components/Spinner'
 import UserContext from '../context/UserContext'
-// import AlertContext from '../context/AlertContext'
+import AlertContext from '../context/AlertContext'
 
 
 const ProfileForm = () => {
@@ -13,7 +13,7 @@ const ProfileForm = () => {
     const {profile, authProfile, isLoading, updateProfile, setProfile}= useContext(UserContext)    
     const [formData, setFormData] = useState(profile);
 
-    // const {alerts, setAlerts} = useContext(AlertContext)
+    const {alerts, setAlerts} = useContext(AlertContext)
     
     useEffect(()=>{
         let email, firstName, lastName, phone
@@ -29,25 +29,24 @@ const ProfileForm = () => {
 
 
     const handleSubmit = async (evt)=> {
-        console.log("submitted",formData)
         evt.preventDefault();
         try {
-            if(!formData.password) throw Array("Password required to confirm changes!")
+            if(!formData.password) throw Object({severity:"info",msg:"Password required to confirm changes!"})
             if (await authProfile(formData.password)){
                 const trimmedData = {
                     email:formData.email.trim(),
                     firstName:formData.firstName.trim(),
                     lastName:formData.lastName.trim(),
-                    phone:formData.phone.trim()
+                    phone:formData.phone?formData.phone.trim():null
                 }
                 await updateProfile(trimmedData)
                 setFormData({...trimmedData,password:""})
             } 
-            // setAlerts([...alerts,{variant:"success", msg:"Profile updated!"}])
+            setAlerts([...alerts,{severity:"success", msg:"Profile updated!"}])
         } catch (error) {
             console.log(error)
             setFormData({...formData, password:""})
-            // setAlerts([...alerts,{variant:"danger", msg:error}])
+            setAlerts([...error.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
         }
         
     };
