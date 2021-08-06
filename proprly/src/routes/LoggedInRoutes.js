@@ -10,6 +10,7 @@ import {
 import CardWrapper from '../components/CardWrapper'
 
 import ProfileForm from "../forms/ProfileForm"
+import Dashboard from '../components/Dashboard'
 
  
 const LoggedInRoutes = ({username}) => {
@@ -17,12 +18,12 @@ const LoggedInRoutes = ({username}) => {
   return (
     <Container maxWidth="sm">
     <Switch >
-  
     <Route exact path="/">
+      <Dashboard />
     </Route>
-    <Route exact path="/companies/:handle" />
+    <Route exact path="/productions/:id" />
 
-    <Route exact path="/companies" />
+    <Route exact path="/lots" />
 
     <Route exact path="/jobs" />
 
