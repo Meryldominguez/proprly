@@ -1,5 +1,4 @@
 import React, {useState} from 'react'
-import { createStyles, useTheme } from '@material-ui/core/styles';
 // import AlertContext from "../context/AlertContext";
 
 import { 
@@ -10,18 +9,9 @@ import {
  } from '@material-ui/core'
 import { useHistory } from 'react-router'
  
-const useStyles = createStyles((theme) => ({
-    root: {
-      '& .MuiTextField-root': {
-        margin: theme.spacing(1),
-        width: '25ch',
-      },
-    },
-  }));
+
 
 const SignupForm = ({userSignup}) => {
-    const theme = useTheme()
-    const classes = useStyles(theme);
 
     const initialState = {
         username:"",
@@ -40,6 +30,7 @@ const SignupForm = ({userSignup}) => {
         evt.preventDefault();
         try {
           if (formData.password!==formData.confirmPassword) throw new Error("Passwords must match")
+            setFormData(formData.forEach(item=>item.trim()))
             await userSignup(formData)
             // setAlerts([...alerts,{variant:"success",msg:"You have successfully signed up!"}])
             history.push("/")
@@ -57,14 +48,12 @@ const SignupForm = ({userSignup}) => {
         });
     };
   return (
-    
     <Box component="form" onSubmit={handleSubmit}>
       <Grid container rowSpacing={{xs:2}} spacing={2} >
         <Grid item xs={6}> 
           <TextField
               id="firstName-input"
               name="firstName"
-              className={classes.root}
               label="First Name"
               type="text"
               variant="outlined"
@@ -75,7 +64,6 @@ const SignupForm = ({userSignup}) => {
           <TextField
             id="lastName-input"
             name="lastName"
-            className={classes.root}
             label="Last Name"
             type="text"
             variant="outlined"
@@ -86,7 +74,6 @@ const SignupForm = ({userSignup}) => {
           <TextField
               id="username-input"
               name="username"
-              className={classes.root}
               label="Username"
               type="text"
               autoComplete="username"
@@ -98,7 +85,6 @@ const SignupForm = ({userSignup}) => {
           <TextField
             id="email-input"
             name="email"
-            className={classes.root}
             label="Email"
             type="email"
             variant="outlined"
@@ -109,7 +95,6 @@ const SignupForm = ({userSignup}) => {
           <TextField
               id="password-input"
               name="password"
-              className={classes.root}
               label="Password"
               type="text"
               variant="outlined"
@@ -119,7 +104,6 @@ const SignupForm = ({userSignup}) => {
         <Grid item xs={6}>
           <TextField
             id="confirmPassword-input"
-            className={classes.root}
             label="Confirm Password"
             type="password"
             autoComplete="current-password"

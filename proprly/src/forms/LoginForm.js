@@ -1,5 +1,4 @@
 import React, {useContext, useState} from 'react'
-import { createStyles, useTheme } from '@material-ui/core/styles';
 import { Box,Grid, Button } from '@material-ui/core';
 
 import { 
@@ -8,25 +7,17 @@ import {
 import { useHistory } from 'react-router'
 import AlertContext from '../context/AlertContext';
  
-const useStyles = createStyles((theme) => ({
-    root: {
-      '& .MuiTextField-root': {
-        margin: theme.spacing(1),
-        width: '25ch',
-      },
-    },
-  }));
+
 
 const LoginForm = ({userLogin}) => {
-    const theme = useTheme()
-    const classes = useStyles(theme);
+
 
     const initialState = {
         username:"",
         password:""
     }
     
-    // const {alerts,setAlerts} = useContext(AlertContext)
+    const {alerts,setAlerts} = useContext(AlertContext)
     const [formData, setFormData] = useState(initialState);
 
     const history = useHistory()
@@ -59,7 +50,6 @@ const LoginForm = ({userLogin}) => {
           id="username-input"
           name="username"
           fullWidth
-          className={classes.root}
           label="Username"
           type="text"
           variant="outlined"
@@ -71,8 +61,8 @@ const LoginForm = ({userLogin}) => {
           id="password-input"
           name="password"
           fullWidth
-          className={classes.root}
           label="Password"
+          autoComplete="current-password"
           type="password"
           variant="outlined"
           onChange={handleChange}

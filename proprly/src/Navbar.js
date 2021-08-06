@@ -1,142 +1,122 @@
-import React,{ useContext } from "react";
+import {
+  useContext 
+} from "react";
+import UserContext from "./context/UserContext";
 import { 
   AppBar,
   Toolbar,
+  Button,
   IconButton,
   Typography, 
-  Button,
-  InputBase
+  InputBase,
+  Box
 } from "@material-ui/core";
-
-import { alpha, createStyles, useTheme } from '@material-ui/core/styles';
-import { Menu, Search, AccountCircle} from '@material-ui/icons'
-
+import { 
+  Search, 
+  Home, 
+  AccountCircle
+} from '@material-ui/icons'
+import { 
+  alpha, 
+  styled 
+} from '@material-ui/core/styles';
 import {
   Link
 } from "react-router-dom"
 
-import UserContext from './context/UserContext'
 
 
+const SearchBox = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(3),
+    width: 'auto',
+  },
+}));
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
 
-const useStyles = createStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    align:'right',
-    flexGrow: 1,
-    marginRight: theme.spacing(2),
-    marginLeft: theme.spacing(2),
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-  },
-  profileButtons:{
-    align:'right'
-  },
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: theme.spacing(1),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto',
-    },
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
       width: '20ch',
     },
   },
-  sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
-    },
-  },
-  sectionMobile: {
-    display: 'flex',
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
-    },
-  },
 }));
 
+
 function Navbar({logout}) {
-  const theme = useTheme()
-  const classes = useStyles(theme);
 
   const {user, isLoading} = useContext(UserContext)
 
   return (
+    <Box>
     <AppBar position="sticky">
       <Toolbar>
-        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-          <Menu />
+        <IconButton 
+          size="large"
+          edge="start"
+          color="inherit"
+          sx={{ mr: 2 }}
+          component={Link}
+          to="/"
+        >
+          <Home />
         </IconButton>
-        <Typography variant="h6" className={classes.title}>
+        <Typography 
+          variant="h6"
+          component="div"
+          sx={{ display: { xs: 'none', sm: 'block' } }} 
+          noWrap
+          >
           Proprly
         </Typography>
-        <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <Search />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </div>
-          <div className={classes.root} />
-          <div className={classes.sectionDesktop}>
-        {(user && !isLoading) && 
-        <>
-          <Button component={Link} to="/productions" color="inherit" >Productions</Button>
-          <IconButton
-              edge="end"
-              aria-label="account of current user"
-              color="inherit"
-              component={Link}
-              to="/profile"
-            >
-            <AccountCircle />
-          </IconButton>
-        </>
-        } 
-        </div>
+        <SearchBox>
+          <SearchIconWrapper>
+            <Search />
+          </SearchIconWrapper>
+          <StyledInputBase
+            placeholder="Search…"
+            inputProps={{ 'aria-label': 'search' }}
+          />
+        </SearchBox>
+        <Box sx={{ flexGrow: 1 }} />
+        {/* <Box sx={{ display: { xs: 'none', md: 'flex' } }}> */}
+        <Button component={Link} to="/productions" color="inherit" >hello</Button>
+        <IconButton
+            edge="end"
+            aria-label="account of current user"
+            color="inherit"
+            component={Link}
+            to='/profile'
+          >
+          <AccountCircle />
+        </IconButton>
+        {/* </Box> */}
       </Toolbar>
     </AppBar>
+    </Box>
   );
 }
 

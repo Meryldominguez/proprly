@@ -2,12 +2,14 @@ import { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import logo from './logo.png';
 import './App.css';
+
 import { ThemeProvider } from '@material-ui/core/styles';
 import { ProprlyTheme } from "./ProprlyTheme"
 
 import AlertContext from "./context/AlertContext";
 import UserContext from "./context/UserContext";
 import  Navbar  from "./Navbar";
+import AlertContainer from "./components/AlertContainer"
 
 import useAuth from "./hooks/useAuth"
 import {useGetUserProfile} from "./hooks/useFetch"
@@ -20,10 +22,9 @@ function App() {
   let [[profile, setProfile], isLoading, authProfile, updateProfile, apply] = useGetUserProfile(user?user.username:null)
 
   const [alerts, setAlerts] = useState([])
+  console.log(user, isLoading)
 
-  
-
-  if (process.env.NODE_ENV !=='production') {
+    if (process.env.NODE_ENV !=='production') {
     return (
       <ThemeProvider theme={ProprlyTheme}>
         <div className="App">
@@ -31,7 +32,8 @@ function App() {
           <AlertContext.Provider value={{alerts,setAlerts}}>
             <BrowserRouter>
                 <Navbar logout={logout}/>
-                <Routes />
+                <AlertContainer alerts={alerts} setAlerts={setAlerts}/>
+                <Routes user={user} isLoading={isLoading}/>
             </BrowserRouter>
           </AlertContext.Provider>
         </UserContext.Provider>

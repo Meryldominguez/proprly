@@ -15,7 +15,7 @@ const AnonRoutes = () => {
 
   const [signUp, toggleSignUp] = useToggle(true)
   const {signup, login} = useContext(UserContext)
-
+    console.log("anon routes")
   return (
     <Switch>
         <Route exact path="/">

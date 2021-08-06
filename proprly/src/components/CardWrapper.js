@@ -1,29 +1,16 @@
 import React from 'react';
-import { createStyles, useTheme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-const useStyles = createStyles(theme=>({
-  root: {
-    minWidth: 275
-  },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
-  },
-}));
+
 
 export default function CardWrapper({children, title}) {
-  const theme = useTheme()
-  const classes = useStyles(theme)
 
   return (
-    <Card title={title} className={classes.root}>
+    <Card title={title} >
       <CardContent>
-        <Typography className={classes.title} variant="h6" color="textPrimary" gutterBottom>
+        <Typography fontSize={14} variant="h6" color="textPrimary" gutterBottom>
           {title}
         </Typography>
           {children}
