@@ -103,6 +103,7 @@ class ProprlyApi {
     }
     const parsedLocations =recursiveLoc(res.locations)
     return parsedLocations
+    // return res.locations
   }
 
   /** Get all location. Searching can be accomplished by query string*/

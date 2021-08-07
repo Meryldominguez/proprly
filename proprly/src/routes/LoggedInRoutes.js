@@ -12,7 +12,7 @@ import {
   Container
 } from '@material-ui/core'
 import CardWrapper from '../components/CardWrapper'
-import Location from '../components/Location'
+import Location from '../components/LocationDashboard'
 import ProfileForm from "../forms/ProfileForm"
 
  
@@ -20,7 +20,6 @@ const LoggedInRoutes = ({username}) => {
   console.log("logged in routes")
   let {search} = useLocation()
   const queryObj= parse(search)
-  console.log(queryObj)
   return (
     <Container maxWidth="sm">
     <Switch >

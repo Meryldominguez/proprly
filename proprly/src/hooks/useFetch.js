@@ -24,17 +24,18 @@ const useFetchLots = () => {
 }
 
 const useFetchLocations = (query="") => {
+    const [isLoading,setIsLoading] = useState(true)
     const [locations, setLocations] = useState()
     useEffect(()=>{
         async function load(){
             const resp = await ProprlyApi.getLocs(query)
-            console.log(resp)
             setLocations(resp)
+            setIsLoading(false)
             return resp
         }
         load()
     },[query])
-    return [locations]
+    return [locations, isLoading]
 }
 
 // const useFetchJobs = () => {

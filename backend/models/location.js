@@ -40,7 +40,6 @@ class Location {
     const query = `WITH RECURSIVE findchildren AS ( 
       SELECT 
           child.parent_id AS "parentId", 
-          parent.name AS "parentName",
           child.id AS "locationId",
           child.name AS "locationName"
           FROM location AS child
@@ -49,14 +48,14 @@ class Location {
 
       UNION ALL
 
-      SELECT child.parent_id, parent.name,child.id, child.name
+      SELECT child.parent_id,child.id, child.name
           FROM findchildren AS r
       JOIN location AS parent ON parent.id=r."locationId"
       JOIN location AS child ON parent.id=child.parent_id
     )
 
     SELECT * FROM findchildren
-    GROUP BY "parentId","parentName", "locationId", "locationName"
+    GROUP BY "parentId", "locationId", "locationName"
     ORDER BY "locationId" `
     const result = await db.query(query)
     return result.rows
