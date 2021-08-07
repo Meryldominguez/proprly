@@ -57,7 +57,7 @@ class Location {
 
     SELECT * FROM findchildren
     GROUP BY "parentId","parentName", "locationId", "locationName"
-    ORDER BY "parentId" DESC`
+    ORDER BY "locationId" `
     const result = await db.query(query)
     return result.rows
   }

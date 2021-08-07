@@ -23,31 +23,32 @@ const useFetchLots = () => {
     return [companies, isLoading, search]
 }
 
-const useFetchCompany = (handle) => {
-    const [company, setCompany] = useState()
+const useFetchLocations = (query="") => {
+    const [locations, setLocations] = useState()
     useEffect(()=>{
         async function load(){
-            const resp = await ProprlyApi.getCompany(handle)
-            setCompany(resp)
+            const resp = await ProprlyApi.getLocs(query)
+            console.log(resp)
+            setLocations(resp)
             return resp
         }
         load()
-    },[handle])
-    return [company]
+    },[query])
+    return [locations]
 }
 
-const useFetchJobs = () => {
-    const [jobs, setJobs] = useState()
-    useEffect(()=>{
-        async function load(){
-            const resp = await ProprlyApi.getJobs()
-            setJobs(resp)
-            return resp
-        }
-        if (!jobs) load()
-    },[jobs])
-    return [jobs, setJobs]
-}
+// const useFetchJobs = () => {
+//     const [jobs, setJobs] = useState()
+//     useEffect(()=>{
+//         async function load(){
+//             const resp = await ProprlyApi.getJobs()
+//             setJobs(resp)
+//             return resp
+//         }
+//         if (!jobs) load()
+//     },[jobs])
+//     return [jobs, setJobs]
+// }
 const useGetUserProfile = (username) => {
     const [profile, setProfile] = useState()
     const [isLoading, setIsLoading] = useState(true)
@@ -84,4 +85,4 @@ const useGetUserProfile = (username) => {
     return [[profile,setProfile], isLoading, authProfile, updateProfile, Apply]
 }
 
-export {useFetchLots, useFetchJobs, useFetchCompany, useGetUserProfile}
+export {useFetchLots, useFetchLocations, useGetUserProfile}
