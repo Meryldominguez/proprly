@@ -7,20 +7,45 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider
+  Divider,
+  Grid
 } from '@material-ui/core'
 import RoomIcon from '@material-ui/icons/Room';
-import { useFetchLocations } from '../hooks/useFetch'
+import { useFetchLocation, useFetchLocations } from '../hooks/useFetch'
 import LoadingSpinner from './Spinner';
-import stringify from 'fast-json-stable-stringify';
+import CardWrapper from './CardWrapper';
 
 
+const LocList = ({currentFeature,feature,locations})=>{ 
+return (
+  <>
+  {locations.map(item=> item['children']? 
+  (<>
+    <SingleLoc featured={currentFeature===item.locationId} feature={feature} key={uuid()} item={item} />
+    <Divider />
+      <List key={uuid()} component="div" disablePadding>
+        {LocList({currentFeature,feature,locations:item.children})} 
+      </List>
+    <Divider />
+    </>
+  )
+  : 
+  (<SingleLoc featured={currentFeature===item.locationId} feature={feature} key={uuid()} item={item}/>)
+  )}
+</>
+)}
 
-const LocList = ({locations})=>{ 
+const SingleLoc = ({featured,feature,item})=>{
 
-  const SingleLoc = ({item})=>{
+  const handleFeature = (evt)=>{
+    evt.preventDefault()
+    if (!featured ) feature(item.locationId)
+  }
+  
+  console.log(feature)
     return (
-      <ListItemButton 
+      <ListItemButton
+        onClick={handleFeature}
         sx={{ pl: 4 }}>
         <ListItemIcon>
           <RoomIcon />
@@ -30,33 +55,13 @@ const LocList = ({locations})=>{
     )
   }
 
-return (
-  <>
-  {locations.map(item=> item['children']? 
-  (<>
-    <SingleLoc key={uuid()} item={item} />
-    <Divider />
-      <List key={uuid()} component="div" disablePadding>
-        <LocList locations={item.children} /> 
-      </List>
-    <Divider />
-    </>
-  )
-  : 
-  (<SingleLoc  key={uuid()} item={item}/>)
-  )}
-</>
-)}
-
-
-
 const LocationDashboard = ({id}) => {
-  const [locations,isLoading] = useFetchLocations(id?`?id=${id}`:"")
-  return (!isLoading && locations)?
-  (
-    <Box xs={6}>
+  const [locations,locsLoading] = useFetchLocations(id?`?id=${id}`:"")
+  const [featured, locLoading, setFeature] = useFetchLocation(id?id:null)
+  return (!locsLoading && !locLoading && locations)?
+  (<Grid container>
       <List
-        sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+        sx={{ border:'1',  width: '100%', bgcolor: 'background.paper' }}
         component="nav"
         aria-labelledby="nested-list-subheader"
         subheader={
@@ -65,11 +70,20 @@ const LocationDashboard = ({id}) => {
         </ListSubheader>
         }
       >
-      <LocList key={uuid()} locations={locations}/>
+      <LocList 
+        currentFeature={featured.id}
+        feature={(id)=>setFeature(id)}
+        key={uuid()} 
+        locations={locations}
+      />
     </List>
-
-
-    </Box>
+ 
+      <CardWrapper title={featured.name}>
+        <span>        
+          {featured.notes}
+        </span>
+      </CardWrapper>
+    </Grid>
   )
   :
   <LoadingSpinner />
