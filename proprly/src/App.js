@@ -4,7 +4,8 @@ import logo from './logo.png';
 import './App.css';
 
 import { ThemeProvider } from '@material-ui/core/styles';
-import { ProprlyTheme } from "./ProprlyTheme"
+import { Container } from '@material-ui/core';
+import { ProprlyTheme } from "./ProprlyTheme";
 
 import AlertContext from "./context/AlertContext";
 import UserContext from "./context/UserContext";
@@ -26,7 +27,7 @@ function App() {
     if (process.env.NODE_ENV !=='production') {
     return (
       <ThemeProvider theme={ProprlyTheme}>
-        <div className="App">
+        <Container className="App">
         <UserContext.Provider value={{user, signup, login, profile, setProfile, isLoading, authProfile, updateProfile, apply}}>
             <BrowserRouter>
               <AlertContext.Provider value={{alerts,setAlerts}}>
@@ -36,7 +37,7 @@ function App() {
               </AlertContext.Provider>
             </BrowserRouter>
         </UserContext.Provider>
-        </div>
+        </Container>
 
       </ThemeProvider>
     );

@@ -3,90 +3,105 @@ import {v4 as uuid} from "uuid";
 import {
   Box,
   List,
+  ListItem,
   ListSubheader,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
   Grid
 } from '@material-ui/core'
-import RoomIcon from '@material-ui/icons/Room';
-import { useFetchLocation, useFetchLocations } from '../hooks/useFetch'
+import RedeemIcon from '@material-ui/icons/Redeem';
+import { FixedSizeList } from 'react-window';
+// import InfiniteLoader from "react-window-infinite-loader"
+
+import { useFetchLots, useFetchLot } from '../hooks/useFetch'
 import LoadingSpinner from './Spinner';
 import CardWrapper from './CardWrapper';
+import SearchForm from '../forms/SearchForm';
 
 
-const LocList = ({currentFeature,feature,locations})=>{ 
-return (
+const LotList= ({currentFeature,feature,lots}) =>{
+  const renderList = ({index,style})=>{
+  return (
   <>
-  {locations.map(item=> item['children']? 
-  (<>
-    <SingleLoc featured={currentFeature===item.locationId} feature={feature} key={uuid()} item={item} />
-    <Divider />
-      <List key={uuid()} component="div" disablePadding>
-        {LocList({currentFeature,feature,locations:item.children})} 
-      </List>
-    <Divider />
-    </>
+  {console.log(index)}
+    <SingleLot 
+      style={style}
+      featured={currentFeature===lots[index].id} 
+      feature={feature} 
+      key={uuid()} 
+      item={lots[index]} 
+    />
+  </>
   )
-  : 
-  (<SingleLoc featured={currentFeature===item.locationId} feature={feature} key={uuid()} item={item}/>)
-  )}
-</>
-)}
+}
+  return (
+    <Box
+      sx={{ bgcolor: 'background.paper' }}
+    >
+        <FixedSizeList
+          height={400}
+          itemSize={46}
+          itemCount={lots.length}
+          overscanCount={3}
+        >
+          {renderList}
+        </FixedSizeList>
+    </Box>
+  );
+}
 
-const SingleLoc = ({featured,feature,item})=>{
 
+const SingleLot = ({featured,feature,item,style})=>{
   const handleFeature = (evt)=>{
     evt.preventDefault()
-    if (!featured ) feature(item.locationId)
+    if (!featured ) feature(item.id)
   }
-  
-  console.log(feature)
     return (
-      <ListItemButton
-        onClick={handleFeature}
-        sx={{ pl: 4 }}>
-        <ListItemIcon>
-          <RoomIcon />
-        </ListItemIcon>
-        <ListItemText primary={item.locationName} />
-      </ListItemButton>
+      <ListItem component="div" style={style} disablePadding>
+        <ListItemButton
+          onClick={handleFeature}
+          sx={{ pl: 4 }}
+          disabled={featured}
+          selected={featured}
+          >
+          <ListItemIcon>
+            <RedeemIcon />
+          </ListItemIcon>
+          <ListItemText primary={item.name} />
+        </ListItemButton>
+      </ListItem>
     )
   }
 
-const LocationDashboard = ({id}) => {
-  const [locations,locsLoading] = useFetchLocations(id?`?id=${id}`:"")
-  const [featured, locLoading, setFeature] = useFetchLocation(id?id:null)
-  return (!locsLoading && !locLoading && locations)?
-  (<Grid container>
-      <List
-        sx={{ border:'1',  width: '100%', bgcolor: 'background.paper' }}
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-        subheader={
-        <ListSubheader component="div" id="nested-list-subheader">
-          Locations
-        </ListSubheader>
-        }
-      >
-      <LocList 
+const LotDashboard = ({searchTerm}) => {
+  const [featured, lotLoading, setFeature] = useFetchLot(null)
+  const [lots,lotsLoading, search] = useFetchLots(searchTerm?`?searchTerm=${searchTerm}`:"")
+  
+
+  return (!lotsLoading && !lotLoading)?
+  (<Grid container xs={12} justifyContent="center">
+    <Grid item xs={12}>
+      <SearchForm search={q=>search(q)}/>
+    </Grid>
+    <Grid item xs={6}>
+      <LotList 
         currentFeature={featured.id}
-        feature={(id)=>setFeature(id)}
-        key={uuid()} 
-        locations={locations}
+        feature={(id)=>setFeature(id)} 
+        lots={lots}
       />
-    </List>
- 
+    </Grid>
+    <Grid item xs={6}>
       <CardWrapper title={featured.name}>
         <span>        
-          {featured.notes}
+          {featured.description}
         </span>
       </CardWrapper>
+      </Grid>
     </Grid>
   )
   :
   <LoadingSpinner />
 }
  
-export default LocationDashboard
+export default LotDashboard

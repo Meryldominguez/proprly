@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react"
 import ProprlyApi from "../api"
 
-const useFetchLots = () => {
-    const [query, setQuery] = useState("")
+const useFetchLots = (q) => {
+    const [query, setQuery] = useState(q)
     const [isLoading,setIsLoading] = useState(true)
-    const [companies, setCompanies] = useState()
+    const [lots, setLots] = useState([])
 
     useEffect(()=>{
         async function load(){
-            const resp = await ProprlyApi.getCompanies(query)
-            setCompanies(resp)
+            const resp = await ProprlyApi.getLots(query)
+            setLots(resp)
             setIsLoading(false)
             return resp
         }
@@ -20,7 +20,36 @@ const useFetchLots = () => {
         setIsLoading(true)
         setQuery(data)
     }
-    return [companies, isLoading, search]
+    return [lots, isLoading, search]
+}
+const useFetchLot = (input) => {
+    const blankFeature = {
+        id:null,
+        name: "Featured Item",
+        notes: "Select an item on the side for more information",
+        tags: []
+    }
+    const [id, setId] = useState(input? input : blankFeature.id)
+    const [isLoading,setIsLoading] = useState(true)
+    const [lot, setLot] = useState()
+
+    useEffect(()=>{
+        async function load(){
+            const resp = (id)? 
+                await ProprlyApi.getLot(id)
+                : blankFeature
+            setLot(resp)
+            setIsLoading(false)
+            return resp
+        }
+        load()
+    },[id])
+
+    const setFeature = (id)=>{
+        setIsLoading(true)
+        setId(id)
+    }
+    return [lot, isLoading, setFeature]
 }
 
 const useFetchLocations = (query="") => {
@@ -46,10 +75,8 @@ const useFetchLocation = (input) => {
         items: []
     }
     const [id, setId] = useState(input? input : blankFeature.id)
-    
     const [isLoading, setIsLoading] = useState(true)
     const [location, setLocation] = useState()
-    console.log(id, isLoading, location)
 
     useEffect(()=>{
         async function load(){
@@ -120,4 +147,4 @@ const useGetUserProfile = (username) => {
     return [[profile,setProfile], isLoading, authProfile, updateProfile, Apply]
 }
 
-export {useFetchLots, useFetchLocations, useFetchLocation, useGetUserProfile}
+export {useFetchLots,useFetchLot, useFetchLocations, useFetchLocation, useGetUserProfile}

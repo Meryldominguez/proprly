@@ -41,25 +41,25 @@ const SingleLoc = ({featured,feature,item})=>{
     evt.preventDefault()
     if (!featured ) feature(item.locationId)
   }
-  
-  console.log(feature)
-    return (
-      <ListItemButton
-        onClick={handleFeature}
-        sx={{ pl: 4 }}>
-        <ListItemIcon>
-          <RoomIcon />
-        </ListItemIcon>
-        <ListItemText primary={item.locationName} />
-      </ListItemButton>
-    )
-  }
+  return (
+  <ListItemButton
+    onClick={handleFeature}
+    sx={{ pl: 4 }}
+    disabled={featured}>
+    <ListItemIcon>
+      <RoomIcon />
+    </ListItemIcon>
+    <ListItemText primary={item.locationName} />
+  </ListItemButton>
+  )
+}
 
 const LocationDashboard = ({id}) => {
   const [locations,locsLoading] = useFetchLocations(id?`?id=${id}`:"")
   const [featured, locLoading, setFeature] = useFetchLocation(id?id:null)
   return (!locsLoading && !locLoading && locations)?
   (<Grid container>
+    <Grid xs={6}>
       <List
         sx={{ border:'1',  width: '100%', bgcolor: 'background.paper' }}
         component="nav"
@@ -77,13 +77,15 @@ const LocationDashboard = ({id}) => {
         locations={locations}
       />
     </List>
- 
+    </Grid>
+    <Grid xs={6}>
       <CardWrapper title={featured.name}>
         <span>        
           {featured.notes}
         </span>
       </CardWrapper>
     </Grid>
+  </Grid>
   )
   :
   <LoadingSpinner />

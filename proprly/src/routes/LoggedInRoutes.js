@@ -12,7 +12,8 @@ import {
   Container
 } from '@material-ui/core'
 import CardWrapper from '../components/CardWrapper'
-import Location from '../components/LocationDashboard'
+import LocationDashboard from '../components/LocationDashboard'
+import LotDashboard from '../components/LotDashboard'
 import ProfileForm from "../forms/ProfileForm"
 import Dashboard from '../components/Dashboard'
 
@@ -22,21 +23,28 @@ const LoggedInRoutes = ({username}) => {
   let {search} = useLocation()
   const queryObj= parse(search)
   return (
-    <Container maxWidth="sm">
+    <Container>
     <Switch >
     <Route exact path="/">
       <Dashboard />
     </Route>
     <Route exact path="/productions/:id" />
 
-    <Route exact path="/lots" />
+    <Route path="/lots">
+      <CardWrapper title="Items">
+        <LotDashboard searchTerm={queryObj.searchTerm} />
+      </CardWrapper>
+    </Route>
+
     <Route exact path="/productions" />
 
     <Route path="/locations">
-      <Location id={queryObj.id} />
+      <CardWrapper title="Locations">
+        <LocationDashboard id={queryObj.id} />
+      </CardWrapper>
     </Route> 
    
-    <Route exact path="/locations/:id" />
+    {/* <Route exact path="/locations/:id" /> */}
 
     <Route exact path="/profile">
         <CardWrapper title={`${username}'s profile`} >
