@@ -92,7 +92,7 @@ function Navbar({logout}) {
           >
           Proprly
         </Typography>
-        <SearchBox>
+        {/* <SearchBox>
           <SearchIconWrapper>
             <Search />
           </SearchIconWrapper>
@@ -100,10 +100,12 @@ function Navbar({logout}) {
             placeholder="Search…"
             inputProps={{ 'aria-label': 'search' }}
           />
-        </SearchBox>
+        </SearchBox> */}
         <Box sx={{ flexGrow: 1 }} />
         {/* <Box sx={{ display: { xs: 'none', md: 'flex' } }}> */}
-        <Button component={Link} to="/productions" color="inherit" >hello</Button>
+        <Button component={Link} to="/lots" color="inherit" >Inventory</Button>
+        <Button component={Link} to="/locations" color="inherit" >Locations</Button>
+        <Button component={Link} to="/productions" color="inherit" >Productions</Button>
         <IconButton
             edge="end"
             aria-label="account of current user"

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { parse } from "query-string";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL ||"http://localhost:3001";
 
@@ -68,33 +69,51 @@ class ProprlyApi {
 
   // Locations API routes
 
-  /** create a new Lot. */
+  /** create a new Loc. */
 
   static async newLoc(data) {
-    let res = await this.request(`lots/`,{data},"post");
-    return res.lot;
+    let res = await this.request(`locations/`,{data},"post");
+    return res.location;
   }
   /** Get details on a location by id. */
 
   static async getLoc(id) {
-    let res = await this.request(`lots/${id}`);
-    return res.lot;
+    let res = await this.request(`locations/${id}`);
+    return res.location;
   }
 
-  /** Get all location. Searching by id can be accomplished by query string*/
-  static async getLocs(queryString="") {
-    let res = await this.request(`lots${queryString}`);
-    return res.lots;
+  /** Get all locations nested with children. Searching by id can be accomplished by query string*/
+  static async getLocs(query="") {
+    let res = await this.request(`locations${query}`);
+    const recursiveLoc = (arr)=>{
+      const child = arr.pop()
+      const parsed = arr.every((loc,idx) => {
+        if (loc.locationId=== child.parentId) {
+          loc.children=loc.children?
+            [...loc.children,child]:[child]
+          return false
+        }
+        return true
+      })
+      if (parsed){
+        arr.push(child)
+        return arr
+      }
+      return recursiveLoc(arr)
+    }
+    const parsedLocations =recursiveLoc(res.locations)
+    return parsedLocations
+    // return res.locations
   }
 
   /** Get all location. Searching can be accomplished by query string*/
   static async updateLoc(id, data) {
-    let res = await this.request(`lots/`,{data},"patch");
-    return res.lot;
+    let res = await this.request(`locations/${id}`,{data},"patch");
+    return res.location;
   }
   /** delete a location by id. */
   static async deleteLoc(id) {
-    let res = await this.request(`lots/${id}`,"delete");
+    let res = await this.request(`locations/${id}`,"delete");
     return res;
   }
 

@@ -23,31 +23,67 @@ const useFetchLots = () => {
     return [companies, isLoading, search]
 }
 
-const useFetchCompany = (handle) => {
-    const [company, setCompany] = useState()
+const useFetchLocations = (query="") => {
+    const [isLoading,setIsLoading] = useState(true)
+    const [locations, setLocations] = useState()
     useEffect(()=>{
         async function load(){
-            const resp = await ProprlyApi.getCompany(handle)
-            setCompany(resp)
+            const resp = await ProprlyApi.getLocs(query)
+            setLocations(resp)
+            setIsLoading(false)
             return resp
         }
         load()
-    },[handle])
-    return [company]
+    },[query])
+    return [locations, isLoading]
 }
 
-const useFetchJobs = () => {
-    const [jobs, setJobs] = useState()
+const useFetchLocation = (input) => {
+    const blankFeature = {
+        id:null,
+        name: "Featured location",
+        notes: "Select a location on the side for more information",
+        items: []
+    }
+    const [id, setId] = useState(input? input : blankFeature.id)
+    
+    const [isLoading, setIsLoading] = useState(true)
+    const [location, setLocation] = useState()
+    console.log(id, isLoading, location)
+
     useEffect(()=>{
         async function load(){
-            const resp = await ProprlyApi.getJobs()
-            setJobs(resp)
-            return resp
+            let resp = blankFeature
+            if (id) {
+                resp = await ProprlyApi.getLoc(id)
+            }
+            setLocation(resp)
+            setIsLoading(false)
+            return resp   
         }
-        if (!jobs) load()
-    },[jobs])
-    return [jobs, setJobs]
+        load()
+    },[id])
+
+    const setFeature = (id)=>{
+        setIsLoading(true)
+        setId(id)
+    }
+    
+    return [location, isLoading, setFeature]
 }
+
+// const useFetchJobs = () => {
+//     const [jobs, setJobs] = useState()
+//     useEffect(()=>{
+//         async function load(){
+//             const resp = await ProprlyApi.getJobs()
+//             setJobs(resp)
+//             return resp
+//         }
+//         if (!jobs) load()
+//     },[jobs])
+//     return [jobs, setJobs]
+// }
 const useGetUserProfile = (username) => {
     const [profile, setProfile] = useState()
     const [isLoading, setIsLoading] = useState(true)
@@ -84,4 +120,4 @@ const useGetUserProfile = (username) => {
     return [[profile,setProfile], isLoading, authProfile, updateProfile, Apply]
 }
 
-export {useFetchLots, useFetchJobs, useFetchCompany, useGetUserProfile}
+export {useFetchLots, useFetchLocations, useFetchLocation, useGetUserProfile}
