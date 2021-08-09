@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@material-ui/styles": "^4.11.4",
-    "query-string": "^7.0.1"
-  }
-}

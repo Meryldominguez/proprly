@@ -1,5 +1,4 @@
 import axios from "axios";
-import { parse } from "query-string";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL ||"http://localhost:3001";
 
@@ -16,7 +15,7 @@ class ProprlyApi {
   static token;
 
   static async request(endpoint, data = {}, method = "get") {
-    console.debug("API Call:", endpoint, data, method);
+    console.debug("API Call:", endpoint, "\nData:",data, "\nMethod:", method);
 
     //there are multiple ways to pass an authorization token, this is how you pass it in the header.
     //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
@@ -63,7 +62,8 @@ class ProprlyApi {
   }
   /** Get details on a lot by id. */
   static async deleteLot(id) {
-    let res = await this.request(`lots/${id}`,"delete");
+    const method="delete"
+    let res = await this.request(`lots/${id}`,{},method);
     return res;
   }
 
