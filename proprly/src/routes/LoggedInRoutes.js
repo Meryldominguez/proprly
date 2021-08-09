@@ -30,17 +30,35 @@ const LoggedInRoutes = ({username}) => {
     </Route>
     <Route exact path="/productions/:id" />
 
-    <Route path="/lots">
+    <Route exact path="/lots">
       <CardWrapper title="Items">
-        <LotDashboard searchTerm={queryObj.searchTerm} />
+        <LotDashboard 
+        searchTerm={queryObj.searchTerm} 
+        />
+      </CardWrapper>
+    </Route>
+    <Route exact path="/lots/:featuredId">
+      <CardWrapper title="Items">
+        <LotDashboard 
+        searchTerm={queryObj.searchTerm} 
+        />
       </CardWrapper>
     </Route>
 
     <Route exact path="/productions" />
 
-    <Route path="/locations">
+    <Route exact path="/locations">
       <CardWrapper title="Locations">
-        <LocationDashboard id={queryObj.id} />
+        <LocationDashboard 
+        id={queryObj.id} 
+        />
+      </CardWrapper>
+    </Route> 
+    <Route exact path="/locations/:featureId">
+      <CardWrapper title="Locations">
+        <LocationDashboard 
+        id={queryObj.id} 
+        />
       </CardWrapper>
     </Route> 
    
