@@ -1,4 +1,6 @@
-import React,{useState} from 'react';
+import React,{
+  useState
+} from 'react';
 import {v4 as uuid} from "uuid";
 import {
   List,
@@ -14,7 +16,9 @@ import {
   ExpandLess
 } from '@material-ui/icons'
 
-import {Link} from 'react-router-dom'
+import {
+  Link
+} from 'react-router-dom'
 
 const LotDetail = ({item}) => {
   const [open, setOpen] = useState(false);

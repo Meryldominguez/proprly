@@ -1,7 +1,7 @@
 import React,{useContext} from 'react'
-import UserContext from '../context/UserContext';
-import CardWrapper from './CardWrapper';
-import TabBar from './TabBar';
+import UserContext from '../../context/UserContext';
+import CardWrapper from '../CardWrapper';
+import TabBar from '../TabBar';
 import LotDetail from './LotDetail'
 // import LotEditForm from '../forms/LotEditForm'
 import LotDelete from './LotDelete'

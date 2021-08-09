@@ -15,12 +15,12 @@ import {
 
 // import AlertContext from '../context/AlertContext';
 import { useFetchLots, useFetchLot } from '../../hooks/useFetch'
-
-import LoadingSpinner from '../Spinner';
-import SearchForm from '../../forms/LotSearchForm';
-import LotFeature from '../LotFeature';
 import CardWrapper from '../CardWrapper';
-import LotList from '../LotList'
+import LoadingSpinner from '../Spinner';
+
+import SearchForm from '../../forms/LotSearchForm';
+import LotFeature from './LotFeature';
+import LotList from './LotList'
 
 const LotDashboard = ({searchTerm}) => {
   const { featuredId } = useParams()
