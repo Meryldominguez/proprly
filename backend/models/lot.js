@@ -110,21 +110,23 @@ class Lot {
    static async get(id) {
     if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
     const {rows:[lot]} = await db.query(
-          `SELECT id,
-                  name,
-                  loc_id as "locId", 
-                  quantity, 
-                  price, 
-                  description
+          `SELECT lot.id,
+                  lot.name,
+                  lot.loc_id as "locId", 
+                  lot.quantity, 
+                  lot.price, 
+                  lot.description,
+                  l.name as "location"
            FROM lot
-           WHERE id = $1`,
+           JOIN location AS l ON l.id=lot.loc_id
+           WHERE lot.id = $1`,
         [id]);
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
-
+    const usedProps = await Prop.getLotProps(id)
+    lot.active= usedProps
     if (lot['quantity'] !== null) {
       //Only gets props from active productions
-      const usedProps = await Prop.getLotProps(id)
       lot.available = lot.quantity
       usedProps.forEach(prop=>{
        lot.available = lot.available-prop.quantity
