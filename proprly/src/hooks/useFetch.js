@@ -3,18 +3,21 @@ import ProprlyApi from "../api"
 
 const useFetchLots = (q) => {
     const [query, setQuery] = useState(q)
-    const [isLoading,setIsLoading] = useState(true)
     const [lots, setLots] = useState([])
-
+    const [isLoading,setIsLoading] = useState(true)
     useEffect(()=>{
         async function load(){
-            const resp = await ProprlyApi.getLots(query)
-            setLots(resp)
-            setIsLoading(false)
-            return resp
+            try {
+                const resp = await ProprlyApi.getLots(query)
+                setLots(resp)
+                setIsLoading(false)
+                return resp
+            } catch (err) {
+                console.error(err)
+            }
         }
         load()
-    },[query])
+    },[query, isLoading])
 
     const search = (data)=>{
         setIsLoading(true)
@@ -22,28 +25,31 @@ const useFetchLots = (q) => {
     }
     return [lots, isLoading, search]
 }
-const useFetchLot = (input) => {
-    const blankFeature = {
-        id:null,
-        name: "Featured Item",
-        notes: "Select an item on the side for more information",
-        tags: []
-    }
-    const [id, setId] = useState(input? input : blankFeature.id)
-    const [isLoading,setIsLoading] = useState(true)
+const useFetchLot = (lotId) => {
+    const [id, setId] = useState(lotId)
     const [lot, setLot] = useState()
+    const [isLoading,setIsLoading] = useState(true)
 
     useEffect(()=>{
         async function load(){
-            const resp = (id)? 
-                await ProprlyApi.getLot(id)
-                : blankFeature
-            setLot(resp)
-            setIsLoading(false)
-            return resp
+            try {
+                const resp = (id)?
+                    await ProprlyApi.getLot(id)
+                    : {
+                        id:null,
+                        name: "Featured Item",
+                        description: "Select an item on the side for more information"
+                    }
+                setLot(resp)
+                setIsLoading(false)
+                return resp
+            } catch (err) {
+                setId(null)
+                console.log(err)
+            }
         }
         load()
-    },[id])
+    },[id, isLoading])
 
     const setFeature = (id)=>{
         setIsLoading(true)

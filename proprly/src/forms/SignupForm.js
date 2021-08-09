@@ -28,7 +28,6 @@ const SignupForm = ({userSignup}) => {
 
     const handleSubmit = async (evt)=> {
         evt.preventDefault();
-        console.log(formData)
         try {
           if (formData.password!==formData.confirmPassword) throw new Error("Passwords must match")
             const trimmedData = {
@@ -42,7 +41,6 @@ const SignupForm = ({userSignup}) => {
             setAlerts([{variant:"success",msg:"You have successfully signed up!"}])
             history.push("/")
         } catch (error) {
-          console.log(error)
           setAlerts([...error.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
         }
       };
