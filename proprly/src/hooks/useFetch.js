@@ -23,7 +23,7 @@ const useFetchLots = (q) => {
         setIsLoading(true)
         setQuery(data)
     }
-    return [lots, isLoading, search]
+    return [lots, isLoading, search, setQuery]
 }
 const useFetchLot = (lotId) => {
     const [id, setId] = useState(lotId)

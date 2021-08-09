@@ -6,7 +6,7 @@ import LotDetail from './LotDetail'
 // import LotEditForm from '../forms/LotEditForm'
 import LotDelete from './LotDelete'
 
-const LotFeature = ({setFeature,item}) => {
+const LotFeature = ({setLots,setFeature,item}) => {
   const {profile} = useContext(UserContext)
 
   return (item.id)?
@@ -20,7 +20,8 @@ const LotFeature = ({setFeature,item}) => {
               <LotDetail item={item} />},
             // {title:"Edit", component:<LotEditForm item={item} />},
             {title:"Delete", component:
-              <LotDelete 
+              <LotDelete
+                refreshLots={(i)=>setLots([i])} 
                 refreshFeature={(id)=>setFeature(id)} 
                 id={item.id} />}
           ]
