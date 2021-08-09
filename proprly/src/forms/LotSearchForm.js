@@ -19,7 +19,6 @@ const LotSearchForm = ({featuredId,resetFeature,searchLots}) => {
 
     const handleSubmit = async (evt)=> {
         evt.preventDefault();
-        resetFeature(null)
         formData.searchterm !=="" ?
             searchLots(`?${querystring.stringify(formData)}`)
             :searchLots("")
