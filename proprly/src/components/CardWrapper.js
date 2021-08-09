@@ -8,9 +8,9 @@ import Typography from '@material-ui/core/Typography';
 export default function CardWrapper({children, title}) {
 
   return (
-    <Card title={title} >
+    <Card sx={{height:'100%'}} title={title} >
       <CardContent>
-        <Typography fontSize={20} variant="h6" color="textPrimary" gutterBottom>
+        <Typography fontSize={24} variant="h6" color="textPrimary" gutterBottom>
           {title}
         </Typography>
           {children}

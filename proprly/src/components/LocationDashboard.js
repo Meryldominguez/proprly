@@ -58,8 +58,13 @@ const LocationDashboard = ({id}) => {
   const [locations,locsLoading] = useFetchLocations(id?`?id=${id}`:"")
   const [featured, locLoading, setFeature] = useFetchLocation(id?id:null)
   return (!locsLoading && !locLoading && locations)?
-  (<Grid container>
-    <Grid xs={6}>
+  (<Grid 
+    container 
+    rowSpacing={3} 
+    columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+    justifyContent="center"
+    >
+    <Grid item xs={6}>
       <List
         sx={{ border:'1',  width: '100%', bgcolor: 'background.paper' }}
         component="nav"
@@ -78,7 +83,7 @@ const LocationDashboard = ({id}) => {
       />
     </List>
     </Grid>
-    <Grid xs={6}>
+    <Grid item xs={6}>
       <CardWrapper title={featured.name}>
         <span>        
           {featured.notes}
