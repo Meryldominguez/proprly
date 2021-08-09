@@ -1,12 +1,12 @@
 import React,{useContext}from 'react'
-import AlertContext from "../context/AlertContext";
+import AlertContext from "../../context/AlertContext";
 
 import {
     Grid,
     Button
 } from '@material-ui/core'
-import ProprlyApi from '../api'
-const LotDelete = ({refreshFeature,id}) => {
+import ProprlyApi from '../../api'
+const LotDelete = ({refreshLots,refreshFeature,id}) => {
     const {setAlerts} = useContext(AlertContext)
 
 
@@ -16,6 +16,7 @@ const LotDelete = ({refreshFeature,id}) => {
             
             const resp = await ProprlyApi.deleteLot(id)
             console.log(resp)
+            refreshLots()
             refreshFeature()
             setAlerts([{variant:"success",msg:`Item #${id} has been deleted`}])
         } catch (err) {

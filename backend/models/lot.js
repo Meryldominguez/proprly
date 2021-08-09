@@ -83,7 +83,8 @@ class Lot {
       queryValues.push(`%${params.searchTerm}%`);
       whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
       whereExpressions.push(`lot.description ILIKE $${queryValues.length}`)
-      whereExpressions.push(`location.name ILIKE $${queryValues.length} `)
+      // Maybe not as helpful??
+      // whereExpressions.push(`location.name ILIKE $${queryValues.length} `)
       whereExpressions.push(`tag.title ILIKE $${queryValues.length} \n`)
       query += "WHERE " + whereExpressions.join(" OR ")
     }

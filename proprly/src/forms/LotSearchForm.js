@@ -10,7 +10,7 @@ import {
     TextField
  } from '@material-ui/core'
  
-const SearchForm = ({featuredId,resetFeature,searchLots}) => {
+const LotSearchForm = ({featuredId,resetFeature,searchLots}) => {
     const history = useHistory()
     const [formData, setFormData] = useState(
         {
@@ -59,4 +59,4 @@ const SearchForm = ({featuredId,resetFeature,searchLots}) => {
   )
 }
  
-export default SearchForm
+export default LotSearchForm
