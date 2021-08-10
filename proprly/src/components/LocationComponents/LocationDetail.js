@@ -4,6 +4,9 @@ import React,{
 import {
   Link
 } from 'react-router-dom'
+import {
+  FixedSizeList
+} from 'react-window'
 
 import {v4 as uuid} from "uuid";
 import {
@@ -11,8 +14,8 @@ import {
   ListItemButton,
   ListItemText,
   Collapse,
-  ListSubheader,
   Typography,
+  Box,
   Grid
 } from '@material-ui/core'
 import {
@@ -20,81 +23,105 @@ import {
   ExpandLess
 } from '@material-ui/icons'
 
-const LocationDetail = ({loc}) => {
-  const [open, setOpen] = useState(false);
-
-  const handleClick = () => {
-    setOpen(!open);
+const LocationDetail = ({location}) => {
+  const [openItems, setOpenitems] = useState(false);
+  const [openNotes, setOpenNotes] = useState(false);
+  const handleClickItems = () => {
+    setOpenitems(!openItems);
   };
-  console.log(loc)
+  const handleClickNotes = () => {
+    setOpenNotes(!openNotes);
+  };
+  console.log(location)
   return (
     <List>
-      <Typography variant='subtitle1' >{loc.description}</Typography>
-      <ListItemButton component={Link} to={`/locations?id=${loc.locId}`}>
-          <ListItemText>Location</ListItemText>
-          <ListItemText align="right">{loc.location}</ListItemText>
-      </ListItemButton>
-      {loc.price && 
-      <ListItemButton>
-        <ListItemText>Price</ListItemText>
-        <ListItemText align="right">{loc.price}</ListItemText>
-      </ListItemButton>
-      }
-      <ListItemButton>
-        <ListItemText>Quantity</ListItemText>
-        <ListItemText align="right">{loc.quantity===null? "N/A": loc.quantity}</ListItemText>
-      </ListItemButton>
-      {loc.quantity &&
-      <ListItemButton>
-        <ListItemText>Available</ListItemText>
-        <ListItemText align="right">{loc.available}</ListItemText>
-      </ListItemButton>
-      }
-      <ListItemButton disabled={loc.active.length< 1 } onClick={handleClick}>
-        <ListItemText align='right'>[{loc.active.length} Active Productions]</ListItemText>
-        {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-        <ListSubheader component="div" id="nested-list-subheader">
-          <Grid container>
-            <Grid loc xs={6}>
-              <Typography align='left'>Production Title</Typography>
-            </Grid>
-            <Grid loc xs={6}>
-              <Typography align='right'>Quantity</Typography>
-            </Grid>
+      {location.notes?
+      <Collapse in={!openNotes} timeout="auto" collapsedSize={60}>
+        <Grid container onClick={handleClickNotes}>
+          <Grid item xs={12}>
+            <Typography 
+              width="100%"
+              noWrap={openNotes}
+              variant='subtitle1'
+            >
+              {location.notes}
+            </Typography>
           </Grid>
-        </ListSubheader>  
-          {loc.active.map(prod=>(
-            <>
-          <ListItemButton 
-            component={Link} 
-            to={`productions/${prod.id}`}
-            key={uuid()} 
-            sx={{ pl: 4 }}
-          >
-            <ListItemText 
-              style={{ flex: 1 }} 
-              align="left" 
-              primaryTypographyProps={{
-                noWrap:true
-              }}
-              >{prod.title}</ListItemText>
-            <ListItemText
-              align="right"
-            >{prod.quantity?prod.quantity:"N/A"}</ListItemText>
+          <Grid item xs={12}>
+            {openNotes ? <ExpandLess /> : <ExpandMore/>}
+          </Grid>
+        </Grid>
+      </Collapse>
+      :
+      <Typography 
+      width="100%"
+      variant='subtitle1'
+      >
+        No Notes for this Location
+      </Typography>
+      }
+      <ListItemButton disabled={location.items.length< 1 } onClick={handleClickItems}>
+        <ListItemText align='right'>[{location.items.length} Items]</ListItemText>
+        {openItems ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={openItems} timeout="auto" >
+        {/* <List component="div" disableGutters disablePadding>
+          {location.items.map(item=>(
+              <ListItemButton 
+              component={Link} 
+              to={`/lots/${item.id}`}
+              key={uuid()} 
+            >
+              <ListItemText
+                align="left"
+                secondaryTypographyProps={{
+                  noWrap:true
+                }}
+                primary={item.name}
+                secondary={item.description}
+              />
+            </ListItemButton>
             
-          </ListItemButton>
-            {prod.notes && 
-            <List dense disablePadding>
-              <ListItemText align="left" secondary={prod.notes} />
-            </List>}
-          </>
-            ))}
-        </List>
+          ))}
+        </List> */}
+        <ItemList items={location.items} />
       </Collapse>
     </ List>
+  )
+}
+const ItemList= ({items}) =>{
+  const renderList = ({index,style})=>{
+  return (
+    <ListItemButton 
+    style={style}
+    component={Link} 
+    to={`/lots/${items[index].id}`}
+    key={uuid()} 
+  >
+    <ListItemText
+      align="left"
+      secondaryTypographyProps={{
+        noWrap:true
+      }}
+      primary={items[index].name}
+      secondary={items[index].description}
+    />
+  </ListItemButton>
+  )
+}
+  return (
+    <Box
+      sx={{ bgcolor: 'background.paper' }}
+    >
+        <FixedSizeList
+          height={400}
+          itemSize={60}
+          itemCount={items.length}
+          overscanCount={3}
+        >
+          {renderList}
+        </FixedSizeList>
+    </Box>
   )
 }
  

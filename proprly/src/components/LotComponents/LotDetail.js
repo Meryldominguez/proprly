@@ -30,7 +30,7 @@ const LotDetail = ({item}) => {
   return (
     <List>
       <Typography variant='subtitle1' >{item.description}</Typography>
-      <ListItemButton component={Link} to={`/locations?id=${item.locId}`}>
+      <ListItemButton component={Link} to={`/locations/${item.locId}`}>
           <ListItemText>Location</ListItemText>
           <ListItemText align="right">{item.location}</ListItemText>
       </ListItemButton>
@@ -82,11 +82,12 @@ const LotDetail = ({item}) => {
               >{prod.title}</ListItemText>
             <ListItemText
               align="right"
+              key={uuid()} 
             >{prod.quantity?prod.quantity:"N/A"}</ListItemText>
             
           </ListItemButton>
             {prod.notes && 
-            <List key={uuid()} dense disablePadding>
+            <List key={uuid()}dense disablePadding>
               <ListItemText align="left" secondary={prod.notes} />
             </List>}
           </>

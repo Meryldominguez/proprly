@@ -58,7 +58,8 @@ const useFetchLot = (lotId) => {
     return [lot, isLoading, setFeature]
 }
 
-const useFetchLocations = (query="") => {
+const useFetchLocations = (q) => {
+    const [query, setQuery] = useState(q)
     const [isLoading,setIsLoading] = useState(true)
     const [locations, setLocations] = useState()
     useEffect(()=>{
@@ -70,32 +71,31 @@ const useFetchLocations = (query="") => {
         }
         load()
     },[query])
-    return [locations, isLoading]
+    return [locations, isLoading, setQuery]
 }
 
-const useFetchLocation = (input) => {
-    const blankFeature = {
-        id:null,
-        name: "Featured location",
-        notes: "Select a location on the side for more information",
-        items: []
-    }
-    const [id, setId] = useState(input? input : blankFeature.id)
+const useFetchLocation = (locId) => {
+  
+    const [id, setId] = useState(locId)
     const [isLoading, setIsLoading] = useState(true)
     const [location, setLocation] = useState()
 
     useEffect(()=>{
         async function load(){
-            let resp = blankFeature
-            if (id) {
-                resp = await ProprlyApi.getLoc(id)
-            }
+            
+            const resp= id?
+                await ProprlyApi.getLoc(id)
+                : {
+                    id:null,
+                    name: "Featured location",
+                    notes: "Select a location on the side for more information"
+                }
             setLocation(resp)
             setIsLoading(false)
             return resp   
         }
         load()
-    },[id])
+    },[id, isLoading])
 
     const setFeature = (id)=>{
         setIsLoading(true)

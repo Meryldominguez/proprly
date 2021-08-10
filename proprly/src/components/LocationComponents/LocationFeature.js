@@ -6,38 +6,38 @@ import LocDetail from './LocationDetail'
 // import LotEditForm from '../forms/LotEditForm'
 import LocDelete from './LocationDelete'
 
-const LocFeature = ({setLots,setFeature,item}) => {
+const LocFeature = ({setLocs,setFeature,location}) => {
   const {profile} = useContext(UserContext)
 
-  return (item.id)?
+  return (location.id)?
   (
-    <CardWrapper title={item.name}>
+    <CardWrapper title={location.name}>
       <TabBar
         tabsArr={profile.isAdmin?
           [
-            {title:"Details", component:<LocDetail item={item} />},
+            {title:"Details", component:<LocDetail location={location} />},
             {title:"Edit", component:
-              <LocDetail item={item} />},
-            // {title:"Edit", component:<LotEditForm item={item} />},
+              <LocDetail location={location} />},
+            // {title:"Edit", component:<LotEditForm location={location} />},
             {title:"Delete", component:
               <LocDelete
-                refreshLots={(i)=>setLots([i])} 
+                refreshLocs={(i)=>setLocs([i])} 
                 refreshFeature={(id)=>setFeature(id)} 
-                id={item.id} />}
+                id={location.id} />}
           ]
           :
           [
-            {title:"Details", component:<LocDetail item={item} />},
-            {title:"Edit", component:<LocDetail item={item} />},
-            // {title:"Edit", component:<LotEditForm item={item} />},
+            {title:"Details", component:<LocDetail location={location} />},
+            {title:"Edit", component:<LocDetail location={location} />},
+            // {title:"Edit", component:<LotEditForm location={location} />},
           ]
         }/>
     </CardWrapper>
   )
   :
-    <CardWrapper title={item.name}>
+    <CardWrapper title={location.name}>
       <span>        
-        {item.description}
+        {location.notes}
       </span>
     </CardWrapper>
 }

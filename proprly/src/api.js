@@ -113,7 +113,8 @@ class ProprlyApi {
   }
   /** delete a location by id. */
   static async deleteLoc(id) {
-    let res = await this.request(`locations/${id}`,"delete");
+    let method="delete"
+    let res = await this.request(`locations/${id}`,{},method);
     return res;
   }
 

@@ -57,14 +57,16 @@ const LotDashboard = ({searchTerm}) => {
         <Typography spacing={3}>
           No results for your search
         </Typography> 
-          <small>Try another term, or searching with location names</small>
-        
-
+          <small>Try another term?</small>
       </CardWrapper>
       }
     </Grid>
     <Grid item xs={8}>
-      <LotFeature query={queryString} setLots={setLots} setFeature={setFeature} item={featured} />
+      <LotFeature 
+        query={queryString} 
+        setLots={setLots} 
+        setFeature={setFeature} 
+        item={featured} />
     </Grid>
   </Grid>
   )

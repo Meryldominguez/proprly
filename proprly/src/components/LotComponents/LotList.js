@@ -1,8 +1,5 @@
-import React,{useContext} from 'react'
-
+import React from 'react'
 import {
-  useParams,
-  Redirect,
   useHistory
 } from 'react-router-dom';
 import {v4 as uuid} from "uuid";

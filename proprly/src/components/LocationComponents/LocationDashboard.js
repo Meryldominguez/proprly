@@ -1,19 +1,32 @@
 import React from 'react'
+import {
+  useParams,
+  // Redirect
+} from 'react-router-dom';
 import {v4 as uuid} from "uuid";
 import {
   List,
   ListSubheader,
-  Grid
+  Grid,
+  Typography
 } from '@material-ui/core'
 import { useFetchLocation, useFetchLocations } from '../../hooks/useFetch'
 import LoadingSpinner from '../Spinner';
 import CardWrapper from '../CardWrapper';
 import LocList from './LocationList';
+import LocFeature from './LocationFeature';
 
 
 const LocationDashboard = ({id}) => {
-  const [locations,locsLoading] = useFetchLocations(id?`?id=${id}`:"")
-  const [featured, locLoading, setFeature] = useFetchLocation(id?id:null)
+  const { featuredId } = useParams()
+  const queryString = id?`?id=${id}`:""
+
+  const [locations,locsLoading, setLocs] = useFetchLocations(queryString)
+  const [featured, locLoading, setFeature] = useFetchLocation(featuredId?featuredId:null)
+  console.log(locations,featured)
+
+
+
   return (!locsLoading && !locLoading && locations)?
   (<Grid 
     container 
@@ -32,20 +45,28 @@ const LocationDashboard = ({id}) => {
         </ListSubheader>
         }
       >
+      {locations.length>0?
       <LocList 
         currentFeature={featured.id}
         feature={(id)=>setFeature(id)}
-        key={uuid()} 
         locations={locations}
       />
+      :
+      <CardWrapper>
+        <Typography spacing={3}>
+          No results for your search
+        </Typography> 
+      </CardWrapper>
+      }
     </List>
     </Grid>
     <Grid item xs={6}>
-      <CardWrapper title={featured.name}>
-        <span>        
-          {featured.notes}
-        </span>
-      </CardWrapper>
+      <LocFeature 
+        location={featured}
+        query={queryString}
+        setFeature={setFeature} 
+        setLocs={setLocs} 
+         />
     </Grid>
   </Grid>
   )

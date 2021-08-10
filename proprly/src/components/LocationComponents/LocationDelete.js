@@ -1,6 +1,9 @@
 import React,{
     useContext
 } from 'react';
+import {
+    useHistory
+} from 'react-router-dom';
 import AlertContext from "../../context/AlertContext";
 import {
     Grid,
@@ -8,17 +11,19 @@ import {
 } from '@material-ui/core'
 import ProprlyApi from '../../api'
 
-const LocationDelete = ({refreshLots,refreshFeature,id}) => {
+const LocationDelete = ({refreshLocs,refreshFeature,id}) => {
     const {setAlerts} = useContext(AlertContext)
+    const history = useHistory()
 
 
     const handleClick = async (evt)=>{
         evt.preventDefault()
         try {
             
-            const resp = await ProprlyApi.deleteLot(id)
+            const resp = await ProprlyApi.deleteLoc(id)
             console.log(resp)
-            refreshLots()
+            history.push("/locations")
+            refreshLocs()
             refreshFeature()
             setAlerts([{variant:"success",msg:`Locatiion #${id} has been deleted`}])
         } catch (err) {

@@ -28,6 +28,8 @@ const LoggedInRoutes = ({username}) => {
     <Route exact path="/">
       <Dashboard />
     </Route>
+
+    <Route exact path="/productions" />
     <Route exact path="/productions/:id" />
 
     <Route exact path="/lots">
@@ -45,7 +47,7 @@ const LoggedInRoutes = ({username}) => {
       </CardWrapper>
     </Route>
 
-    <Route exact path="/productions" />
+   
 
     <Route exact path="/locations">
       <CardWrapper title="Locations">
@@ -54,7 +56,7 @@ const LoggedInRoutes = ({username}) => {
         />
       </CardWrapper>
     </Route>  
-    <Route exact path="/locations/:featureId">
+    <Route exact path="/locations/:featuredId">
       <CardWrapper title="Locations">
         <LocationDashboard 
         id={queryObj.id} 
@@ -62,7 +64,6 @@ const LoggedInRoutes = ({username}) => {
       </CardWrapper>
     </Route> 
    
-    {/* <Route exact path="/locations/:id" /> */}
 
     <Route exact path="/profile">
         <CardWrapper title={`${username}'s profile`} >

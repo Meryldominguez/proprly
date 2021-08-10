@@ -10,7 +10,7 @@ import {
     TextField
  } from '@material-ui/core'
  
-const LotSearchForm = ({query,featuredId,searchLots}) => {
+const LocationSearchForm = ({query,featuredId,searchLocations}) => {
     const history = useHistory()
     const [formData, setFormData] = useState(
         {
@@ -20,12 +20,12 @@ const LotSearchForm = ({query,featuredId,searchLots}) => {
     const handleSubmit = async (evt)=> {
         evt.preventDefault();
         formData.searchTerm !=="" ?
-            searchLots(`?${querystring.stringify(formData)}`)
-            :searchLots("")
+            searchLocations(`?${querystring.stringify(formData)}`)
+            :searchLocations("")
         featuredId?
-            history.push(`/lots/${featuredId}?${querystring.stringify(formData)}`)
+            history.push(`/locations/${featuredId}?${querystring.stringify(formData)}`)
             :
-            history.push(`/lots?${querystring.stringify(formData)}`)
+            history.push(`/locations?${querystring.stringify(formData)}`)
       };
 
     const handleChange = evt => {
@@ -47,7 +47,7 @@ const LotSearchForm = ({query,featuredId,searchLots}) => {
                 <TextField
                     fullWidth
                     placeholder="Keyword search"
-                    aria-label="Search lots"
+                    aria-label="Search locations"
                     aria-describedby="basic-addon2"
                     name="searchTerm"
                     value={formData.searchTerm}
@@ -58,4 +58,4 @@ const LotSearchForm = ({query,featuredId,searchLots}) => {
   )
 }
  
-export default LotSearchForm
+export default LocationSearchForm
