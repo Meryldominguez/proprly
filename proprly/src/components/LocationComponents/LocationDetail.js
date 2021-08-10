@@ -11,9 +11,9 @@ import {
   Grid
 } from '@material-ui/core'
 // import RoomIcon from '@material-ui/icons/Room';
-import { useFetchLocation } from '../hooks/useFetch'
-import LoadingSpinner from './Spinner';
-import CardWrapper from './CardWrapper';
+import { useFetchLocation } from '../../hooks/useFetch'
+import LoadingSpinner from '../Spinner';
+import CardWrapper from '../CardWrapper';
 
 
 // const LocList = ({currentFeature,feature,locations})=>{ 

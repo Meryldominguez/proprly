@@ -1,7 +1,6 @@
 import React from 'react'
 import {v4 as uuid} from "uuid";
 import {
-  Box,
   List,
   ListSubheader,
   ListItemButton,
@@ -11,9 +10,9 @@ import {
   Grid
 } from '@material-ui/core'
 import RoomIcon from '@material-ui/icons/Room';
-import { useFetchLocation, useFetchLocations } from '../hooks/useFetch'
-import LoadingSpinner from './Spinner';
-import CardWrapper from './CardWrapper';
+import { useFetchLocation, useFetchLocations } from '../../hooks/useFetch'
+import LoadingSpinner from '../Spinner';
+import CardWrapper from '../CardWrapper';
 
 
 const LocList = ({currentFeature,feature,locations})=>{ 
