@@ -25,8 +25,6 @@ const LocationDashboard = ({id}) => {
   const [featured, locLoading, setFeature] = useFetchLocation(featuredId?featuredId:null)
   console.log(locations,featured)
 
-
-
   return (!locsLoading && !locLoading && locations)?
   (<Grid 
     container 
