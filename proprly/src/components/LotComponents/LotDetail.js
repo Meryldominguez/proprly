@@ -34,12 +34,10 @@ const LotDetail = ({item}) => {
           <ListItemText>Location</ListItemText>
           <ListItemText align="right">{item.location}</ListItemText>
       </ListItemButton>
-      {item.price && 
       <ListItemButton>
         <ListItemText>Price</ListItemText>
         <ListItemText align="right">{item.price}</ListItemText>
       </ListItemButton>
-      }
       <ListItemButton>
         <ListItemText>Quantity</ListItemText>
         <ListItemText align="right">{item.quantity===null? "N/A": item.quantity}</ListItemText>

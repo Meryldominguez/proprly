@@ -45,6 +45,7 @@ const LotDashboard = ({searchTerm}) => {
     </Grid>
     <Divider spacing={4} />
     <Grid item xs={4}>
+      
       {lots.length>0?
       <LotList 
         currentFeature={featured.id}

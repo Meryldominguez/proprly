@@ -17,7 +17,7 @@ const LotFeature = ({setLots,setFeature,item}) => {
           [
             {title:"Details", component:<LotDetail item={item} />},
             {title:"Edit", component:
-              <LotDetail item={item} />},
+              <span>Working on it!</span>},
             // {title:"Edit", component:<LotEditForm item={item} />},
             {title:"Delete", component:
               <LotDelete
