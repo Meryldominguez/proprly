@@ -10,16 +10,16 @@ import {
     TextField
  } from '@material-ui/core'
  
-const LotSearchForm = ({featuredId,resetFeature,searchLots}) => {
+const LotSearchForm = ({query,featuredId,resetFeature,searchLots}) => {
     const history = useHistory()
     const [formData, setFormData] = useState(
         {
-            searchTerm:""
+            searchTerm:query
         });
 
     const handleSubmit = async (evt)=> {
         evt.preventDefault();
-        formData.searchterm !=="" ?
+        formData.searchTerm !=="" ?
             searchLots(`?${querystring.stringify(formData)}`)
             :searchLots("")
         featuredId?
@@ -50,7 +50,7 @@ const LotSearchForm = ({featuredId,resetFeature,searchLots}) => {
                     aria-label="Search lots"
                     aria-describedby="basic-addon2"
                     name="searchTerm"
-                    value={formData.search}
+                    value={formData.searchTerm}
                     onChange={handleChange}
                 />
             </Grid>

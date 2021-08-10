@@ -41,7 +41,7 @@ const LotDashboard = ({searchTerm}) => {
       columnSpacing={{ xs: 1, sm: 2, md: 3 }}
       justifyContent="center">
     <Grid item xs={12}>
-      <SearchForm featuredId={featuredId} resetFeature={(i)=>setFeature(i)} searchLots={q=>search(q)}/>
+      <SearchForm query={searchTerm} featuredId={featuredId} resetFeature={(i)=>setFeature(i)} searchLots={q=>search(q)}/>
     </Grid>
     <Divider spacing={4} />
     <Grid item xs={4}>
@@ -64,7 +64,7 @@ const LotDashboard = ({searchTerm}) => {
       }
     </Grid>
     <Grid item xs={8}>
-      <LotFeature setLots={setLots} setFeature={setFeature} item={featured} />
+      <LotFeature query={queryString} setLots={setLots} setFeature={setFeature} item={featured} />
     </Grid>
   </Grid>
   )

@@ -74,7 +74,8 @@ const LotDetail = ({item}) => {
           >
             <ListItemText 
               style={{ flex: 1 }} 
-              align="left" 
+              align="left"
+              key={uuid()} 
               primaryTypographyProps={{
                 noWrap:true
               }}
@@ -85,7 +86,7 @@ const LotDetail = ({item}) => {
             
           </ListItemButton>
             {prod.notes && 
-            <List dense disablePadding>
+            <List key={uuid()} dense disablePadding>
               <ListItemText align="left" secondary={prod.notes} />
             </List>}
           </>
