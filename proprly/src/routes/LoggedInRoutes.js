@@ -12,7 +12,7 @@ import {
   Container
 } from '@material-ui/core'
 import CardWrapper from '../components/CardWrapper'
-import LocationDashboard from '../components/LocationDashboard'
+import LocationDashboard from '../components/LocationComponents/LocationDashboard'
 import LotDashboard from '../components/LotComponents/LotDashboard'
 import ProfileForm from "../forms/ProfileForm"
 import Dashboard from '../components/Dashboard'
@@ -53,7 +53,7 @@ const LoggedInRoutes = ({username}) => {
         id={queryObj.id} 
         />
       </CardWrapper>
-    </Route> 
+    </Route>  
     <Route exact path="/locations/:featureId">
       <CardWrapper title="Locations">
         <LocationDashboard 
