@@ -127,24 +127,22 @@ describe("findAll", function () {
         price:"$10.99"
       },
     ]);
+    lots = await Lot.findAll({searchTerm:"Item"});
+    expect(lots.length).toEqual(3)
   });
+
   test("works: search by description", async function () {
     let lots = await Lot.findAll({searchTerm:"desc"});
     expect(lots.length).toEqual(3)
   });
 
-  test("works: search by location", async function () {
-    let lots = await Lot.findAll({searchTerm:"first"});
-    expect(lots.length).toEqual(2)
-  });
-  test("works: search by tag", async function () {
-    let lots = await Lot.findAll({searchTerm:"set"});
-    expect(lots.length).toEqual(2)
-  });
-
   test("works: empty list on nothing found", async function () {
     let lots = await Lot.findAll({searchTerm:"nope"});
     expect(lots).toEqual([]);
+  });
+  test("work: bad search params gives whole list", async function () {
+    const lots = await Lot.findAll({q:"nope"});
+    expect(lots.length).toEqual(3)
   });
 
 });
@@ -160,6 +158,8 @@ describe("get", function () {
         id: expect.any(Number),
         name: "item1",
         locId: expect.any(Number),
+        location: "First Location",
+        active: expect.any(Array),
         description: "Desc1",
         available: 1,
         quantity: 1,
@@ -175,6 +175,8 @@ describe("get", function () {
         id: expect.any(Number),
         name: "item2",
         locId: expect.any(Number),
+        active: expect.any(Array),
+        location:"First Location",
         description: "Desc2",
         quantity: null,
         price:"$5.50",
@@ -188,6 +190,8 @@ describe("get", function () {
         id: expect.any(Number),
         name: "item3",
         locId: expect.any(Number),
+        active: expect.any(Array),
+        location:"Second Location",
         available:2,
         description: "Desc3",
         quantity: 3,

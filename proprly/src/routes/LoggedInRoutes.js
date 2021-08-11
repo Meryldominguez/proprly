@@ -12,8 +12,8 @@ import {
   Container
 } from '@material-ui/core'
 import CardWrapper from '../components/CardWrapper'
-import LocationDashboard from '../components/LocationDashboard'
-import LotDashboard from '../components/LotDashboard'
+import LocationDashboard from '../components/LocationComponents/LocationDashboard'
+import LotDashboard from '../components/LotComponents/LotDashboard'
 import ProfileForm from "../forms/ProfileForm"
 import Dashboard from '../components/Dashboard'
 
@@ -28,6 +28,8 @@ const LoggedInRoutes = ({username}) => {
     <Route exact path="/">
       <Dashboard />
     </Route>
+
+    <Route exact path="/productions" />
     <Route exact path="/productions/:id" />
 
     <Route exact path="/lots">
@@ -45,7 +47,7 @@ const LoggedInRoutes = ({username}) => {
       </CardWrapper>
     </Route>
 
-    <Route exact path="/productions" />
+   
 
     <Route exact path="/locations">
       <CardWrapper title="Locations">
@@ -53,8 +55,8 @@ const LoggedInRoutes = ({username}) => {
         id={queryObj.id} 
         />
       </CardWrapper>
-    </Route> 
-    <Route exact path="/locations/:featureId">
+    </Route>  
+    <Route exact path="/locations/:featuredId">
       <CardWrapper title="Locations">
         <LocationDashboard 
         id={queryObj.id} 
@@ -62,7 +64,6 @@ const LoggedInRoutes = ({username}) => {
       </CardWrapper>
     </Route> 
    
-    {/* <Route exact path="/locations/:id" /> */}
 
     <Route exact path="/profile">
         <CardWrapper title={`${username}'s profile`} >

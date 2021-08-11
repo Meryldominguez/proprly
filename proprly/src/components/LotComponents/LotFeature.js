@@ -1,12 +1,12 @@
 import React,{useContext} from 'react'
-import UserContext from '../context/UserContext';
-import CardWrapper from './CardWrapper';
-import TabBar from './TabBar';
+import UserContext from '../../context/UserContext';
+import CardWrapper from '../CardWrapper';
+import TabBar from '../TabBar';
 import LotDetail from './LotDetail'
 // import LotEditForm from '../forms/LotEditForm'
 import LotDelete from './LotDelete'
 
-const LotFeature = ({setFeature,item}) => {
+const LotFeature = ({setLots,setFeature,item}) => {
   const {profile} = useContext(UserContext)
 
   return (item.id)?
@@ -17,10 +17,11 @@ const LotFeature = ({setFeature,item}) => {
           [
             {title:"Details", component:<LotDetail item={item} />},
             {title:"Edit", component:
-              <LotDetail item={item} />},
+              <span>Working on it!</span>},
             // {title:"Edit", component:<LotEditForm item={item} />},
             {title:"Delete", component:
-              <LotDelete 
+              <LotDelete
+                refreshLots={(i)=>setLots([i])} 
                 refreshFeature={(id)=>setFeature(id)} 
                 id={item.id} />}
           ]

@@ -69,22 +69,16 @@ class Lot {
     `; 
     let whereExpressions = [];
     let queryValues = [];
-
-    //for searching by tags
-    // if (params['tags']){
-    // }
     
     // For each possible search term, add to whereExpressions and queryValues so
     // we can generate the right SQL
     if (params['searchTerm']) {
-      query += "JOIN lot_tag AS x ON x.lot_id=lot.id \n"
-      query += "JOIN tag ON x.tag_id=tag.id \n"
       
-      queryValues.push(`%${params.searchTerm}%`);
+      queryValues.push(`%${params.searchTerm.toLowerCase()}%`);
+
       whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
       whereExpressions.push(`lot.description ILIKE $${queryValues.length}`)
-      whereExpressions.push(`location.name ILIKE $${queryValues.length} `)
-      whereExpressions.push(`tag.title ILIKE $${queryValues.length} \n`)
+
       query += "WHERE " + whereExpressions.join(" OR ")
     }
       query += "GROUP BY lot.id, location.id\n";

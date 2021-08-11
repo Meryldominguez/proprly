@@ -20,7 +20,7 @@ export default function TabBar({tabsArr,}) {
   return (
     <Box sx={{ height:'100%',width: '100%', typography: 'body1' }}>
       <TabContext value={activeTab}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{ padding:1, borderBottom: 1, borderColor: 'divider' }}>
           <TabList variant="scrollable" onChange={handleChange} aria-label="tabs">
             {tabsArr.map((tab,idx)=><Tab key={uuid()} label={tab.title} value={`${idx}`} />)}
           </TabList>
