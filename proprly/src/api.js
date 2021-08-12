@@ -143,6 +143,38 @@ class ProprlyApi {
     let res = await this.request(`users/${username}`,data, "patch");
     return res;
   }
+    // Lots API routes
+
+  /** create a new Lot. */
+
+  static async newProd(data) {
+    let res = await this.request(`lots/`,{data},"post");
+    return res.lot;
+  }
+  /** Get details on a lot by id. */
+
+  static async getProd(id) {
+    let res = await this.request(`lots/${id}`);
+    return res.lot;
+  }
+
+  /** Get all lots. Searching can be accomplished by query string*/
+  static async searchProds(queryString="") {
+    let res = await this.request(`lots${queryString}`);
+    return res.lots;
+  }
+
+  /** Get all lots. Searching can be accomplished by query string*/
+  static async updateProd(id, data) {
+    let res = await this.request(`lots/`,{data},"patch");
+    return res.lot;
+  }
+  /** Get details on a lot by id. */
+  static async deleteProd(id) {
+    const method="delete"
+    let res = await this.request(`lots/${id}`,{},method);
+    return res;
+  }
 
 }
 
