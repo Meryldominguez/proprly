@@ -14,6 +14,7 @@ import {
 import CardWrapper from '../components/CardWrapper'
 import LocationDashboard from '../components/LocationComponents/LocationDashboard'
 import LotDashboard from '../components/LotComponents/LotDashboard'
+import ProductionDashboard from '../components/ProductionComponents/ProductionDashboard'
 import ProfileForm from "../forms/ProfileForm"
 import Dashboard from '../components/Dashboard'
 
@@ -29,8 +30,24 @@ const LoggedInRoutes = ({username}) => {
       <Dashboard />
     </Route>
 
-    <Route exact path="/productions" />
-    <Route exact path="/productions/:id" />
+    <Route exact path="/productions" >
+      <CardWrapper>
+        <ProductionDashboard 
+          isActive={queryObj.isActive}
+          search={queryObj.search}
+          year={queryObj.year}
+          />
+      </CardWrapper>
+    </Route>
+    <Route exact path="/productions/:featuredId" >
+      <CardWrapper>
+        <ProductionDashboard 
+          isActive={queryObj.isActive}
+          search={queryObj.search}
+          year={queryObj.year}
+          />
+      </CardWrapper>
+    </Route>
 
     <Route exact path="/lots">
       <CardWrapper title="Items">

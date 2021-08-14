@@ -2,44 +2,46 @@ import React,{useContext} from 'react'
 import UserContext from '../../context/UserContext';
 import CardWrapper from '../CardWrapper';
 import TabBar from '../TabBar';
-import LocDetail from './ProductionDetail'
-// import LotEditForm from '../forms/LotEditForm'
-import LocDelete from './ProductionDelete'
+import ProdDetail from './ProductionDetail'
+import ProdDelete from './ProductionDelete'
+import ProdEditForm from '../../forms/ProductionEditForm';
 
-const LocFeature = ({setLocs,setFeature,location}) => {
+const ProductionFeature = ({setProds,setFeature,production}) => {
   const {profile} = useContext(UserContext)
 
-  return (location.id)?
+  return (profile && production.id)?
   (
-    <CardWrapper title={location.name}>
+    <CardWrapper title={production.title}>
       <TabBar
         tabsArr={profile.isAdmin?
           [
-            {title:"Details", component:<LocDetail location={location} />},
+            {title:"Details", component:<ProdDetail production={production} />},
             {title:"Edit", component:
-              <LocDetail location={location} />},
-            // {title:"Edit", component:<LotEditForm location={location} />},
-            {title:"Delete", component:
-              <LocDelete
-                refreshLocs={(i)=>setLocs([i])} 
+              <ProdEditForm 
+                refreshProds={(i)=>setProds([i])} 
                 refreshFeature={(id)=>setFeature(id)} 
-                id={location.id} />}
+                production={production} />},
+            {title:"Delete", component:
+              <ProdDelete
+                refreshProds={(i)=>setProds([i])} 
+                refreshFeature={(id)=>setFeature(id)} 
+                id={production.id} />}
           ]
           :
           [
-            {title:"Details", component:<LocDetail location={location} />},
-            {title:"Edit", component:<LocDetail location={location} />},
-            // {title:"Edit", component:<LotEditForm location={location} />},
+            {title:"Details", component:<ProdDetail production={production} />},
+            {title:"Edit", component:<ProdDetail production={production} />},
+            // {title:"Edit", component:<LotEditForm production={production} />},
           ]
         }/>
     </CardWrapper>
   )
   :
-    <CardWrapper title={location.name}>
+    <CardWrapper title={production.name}>
       <span>        
-        {location.notes}
+        {production.notes}
       </span>
     </CardWrapper>
 }
  
-export default LocFeature
+export default ProductionFeature

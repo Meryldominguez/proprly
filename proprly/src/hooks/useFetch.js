@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react"
 import ProprlyApi from "../api"
 
+const formatDate = (date)=>{
+    const year = String(date.getFullYear())
+    const month = String(date.getMonth()+1).length <2? `0${date.getMonth()+1}` : String(date.getMonth()+1)
+    const day = String(date.getDate()).length <2? `0${date.getDate()}` : String(date.getDate())
+  
+    return `${year}-${month}-${day}`
+  }
+
 const useFetchLots = (q) => {
     const [query, setQuery] = useState(q)
     const [lots, setLots] = useState([])
@@ -105,18 +113,67 @@ const useFetchLocation = (locId) => {
     return [location, isLoading, setFeature]
 }
 
-// const useFetchJobs = () => {
-//     const [jobs, setJobs] = useState()
-//     useEffect(()=>{
-//         async function load(){
-//             const resp = await ProprlyApi.getJobs()
-//             setJobs(resp)
-//             return resp
-//         }
-//         if (!jobs) load()
-//     },[jobs])
-//     return [jobs, setJobs]
-// }
+const useFetchProductions = (q) => {
+    const [query, setQuery] = useState(q)
+    const [prods, setProds] = useState([])
+    const [isLoading,setIsLoading] = useState(true)
+    useEffect(()=>{
+        async function load(){
+            try {
+                const resp = await ProprlyApi.searchProds(query)
+                setProds(resp)
+                setIsLoading(false)
+                return resp
+            } catch (err) {
+                console.error(err)
+            }
+        }
+        load()
+    },[query, isLoading])
+
+    const search = (data)=>{
+        setIsLoading(true)
+        setQuery(data)
+    }
+    return [prods, isLoading, search, setQuery]
+}
+const useFetchProduction = (prodId) => {
+    const [id, setId] = useState(prodId)
+    const [prod, setProd] = useState()
+    const [isLoading,setIsLoading] = useState(true)
+
+    useEffect(()=>{
+        async function load(){
+            try {
+                const resp = (id)?
+                    await ProprlyApi.getProd(id)
+                    : {
+                        id:null,
+                        name: "Featured Production",
+                        description: "Select an production on the side for more information"
+                    }
+                setProd({
+                    ...resp,
+                    dateStart:resp.dateStart?formatDate(new Date(resp.dateStart)):null,
+                    dateEnd:resp.dateEnd?formatDate(new Date(resp.dateEnd)):null
+                })
+                setIsLoading(false)
+                return resp
+            } catch (err) {
+                setId(null)
+                console.log(err)
+            }
+        }
+        load()
+    },[id, isLoading])
+
+    const setFeature = (id)=>{
+        setIsLoading(true)
+        setId(id)
+    }
+    return [prod, isLoading, setFeature]
+}
+
 const useGetUserProfile = (username) => {
     const [profile, setProfile] = useState()
     const [isLoading, setIsLoading] = useState(true)
@@ -153,4 +210,4 @@ const useGetUserProfile = (username) => {
     return [[profile,setProfile], isLoading, authProfile, updateProfile, Apply]
 }
 
-export {useFetchLots,useFetchLot, useFetchLocations, useFetchLocation, useGetUserProfile}
+export {useFetchLots,useFetchLot, useFetchLocations, useFetchLocation, useFetchProductions, useFetchProduction, useGetUserProfile}

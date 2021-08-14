@@ -4,7 +4,7 @@ import {
 } from 'react-router-dom';
 import {v4 as uuid} from "uuid";
 import {
-  List,
+  Box,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -12,59 +12,75 @@ import {
 } from '@material-ui/core'
 // import RoomIcon from '@material-ui/icons/Room';
 import ArrowIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import { FixedSizeList } from 'react-window';
 
 
 
-const LocList = ({currentFeature,feature,locations, defaultDepth=0, color= "primary",step=7})=>{ 
-  const nextDepth = defaultDepth + step
-  return (
-    <List
-      style={{ marginLeft: defaultDepth === 0 ? 0 : nextDepth, border:"1px black solid",bgcolor:color }}
-      disablePadding
-      dense
-    >
-  {locations.map(loc=> (
-    <>
-      <SingleLoc 
+const ProductionList = ({currentFeature,feature,productions})=>{ 
+  const renderList = ({index,style})=>{
+    return (
+      <SingleProd 
+        style={style}
         key={uuid()} 
-        featured={currentFeature===loc.locationId} 
+        featured={currentFeature===productions[index].id} 
         feature={feature} 
-        loc={loc} 
+        prod={productions[index]} 
       />
-        {loc.children && 
-        <LocList 
-          color={color==="primary"?"secondary":"primary"}
-          feature={feature} 
-          locations={loc.children}
-          defaultDepth={nextDepth}
-        />}
-    </>
-  ))}
-    </List>)
+    )
+  }
+
+  return productions.length>0? (
+    <Box
+      sx={{ bgcolor: 'background.paper' }}
+    >
+        <FixedSizeList
+          height={700}
+          itemSize={80}
+          itemCount={productions.length}
+          overscanCount={3}
+        >
+          {renderList}
+        </FixedSizeList>
+    </Box>
+  ):(
+    <Box
+      sx={{ bgcolor: 'background.paper' }}
+    >
+    </Box>
+  )
 }
 
-const SingleLoc = ({featured,feature,loc})=>{
+const SingleProd = ({featured,feature,prod, style})=>{
   const history=useHistory()
 
   const handleFeature = (evt)=>{
-    console.log(loc)
+    console.log(prod)
     evt.preventDefault()
-    feature(loc.locationId)
-    history.push(`/locations/${loc.locationId}`)
+    feature(prod.id)
+    history.push(`/productions/${prod.id}`)
   }
   return (
-
-  <ListItemButton
-    onClick={handleFeature}
-    sx={{ pl: 4 }}
-    disabled={featured}>
-    <ListItemIcon>
-      <ArrowIcon />
-    </ListItemIcon>
-    <ListItemText primary={loc.locationName} />
-  </ListItemButton>
+    <ListItemButton
+      style={style}
+      onClick={handleFeature}
+      sx={{ pl: 1 }}
+      disabled={featured}>
+      <ListItemIcon>
+        <ArrowIcon />
+      </ListItemIcon>
+      <ListItemText
+        primaryTypographyProps={{
+          noWrap:true
+        }}
+        primary={prod.title} 
+        secondary={
+          `${prod.dateEnd? 
+              new Date(prod.dateEnd).getFullYear()
+              : "N/A"} ${prod.active?"[ACTIVE]":""}`}
+      />
+    </ListItemButton>
 
   )
 }
 
-export default LocList
+export default ProductionList

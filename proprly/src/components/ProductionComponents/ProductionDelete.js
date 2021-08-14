@@ -7,11 +7,13 @@ import {
 import AlertContext from "../../context/AlertContext";
 import {
     Grid,
-    Button
+    Button,
+    Alert,
+    AlertTitle
 } from '@material-ui/core'
 import ProprlyApi from '../../api'
 
-const LocationDelete = ({refreshLocs,refreshFeature,id}) => {
+const ProductionDelete = ({refreshProds,refreshFeature,id}) => {
     const {setAlerts} = useContext(AlertContext)
     const history = useHistory()
 
@@ -20,10 +22,10 @@ const LocationDelete = ({refreshLocs,refreshFeature,id}) => {
         evt.preventDefault()
         try {
             
-            const resp = await ProprlyApi.deleteLoc(id)
+            const resp = await ProprlyApi.deleteProd(id)
             console.log(resp)
-            history.push("/locations")
-            refreshLocs()
+            history.push("/productions")
+            refreshProds()
             refreshFeature()
             setAlerts([{variant:"success",msg:`Locatiion #${id} has been deleted`}])
         } catch (err) {
@@ -32,17 +34,23 @@ const LocationDelete = ({refreshLocs,refreshFeature,id}) => {
     }
 
   return (
-    <Grid style={{height:'100%'}} justifyContent='center' container>
+    <Grid spacing={6} justifyContent='center' container>
+        <Grid  item>
+            <Alert severity="info" >
+                <AlertTitle>Deleting a production is not reccomended!</AlertTitle> 
+                Consider 'Archiving' a production instead.
+            </Alert>
+        </Grid>
         <Grid item>
             <Button 
                 onClick={handleClick}
                 variant="contained" 
                 color="secondary"> 
-            Permanently Delete this Location and all the Items in it? 
+            Permanently Delete this Production? 
             </Button>
         </Grid>
     </Grid>
   )
 }
  
-export default LocationDelete
+export default ProductionDelete

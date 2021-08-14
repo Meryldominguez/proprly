@@ -3,51 +3,49 @@ import {
   useParams,
   // Redirect
 } from 'react-router-dom';
-import {v4 as uuid} from "uuid";
 import {
   List,
   ListSubheader,
   Grid,
   Typography
 } from '@material-ui/core'
-import { useFetchLocation, useFetchLocations } from '../../hooks/useFetch'
 import LoadingSpinner from '../Spinner';
 import CardWrapper from '../CardWrapper';
-import LocList from './LocationList';
-import LocFeature from './ProductionFeature';
+import ProdList from './ProductionList';
+import ProdFeature from './ProductionFeature';
+import { useFetchProduction, useFetchProductions } from '../../hooks/useFetch';
 
 
-const LocationDashboard = ({id}) => {
+const ProductionDashboard = ({isActive, search, year}) => {
   const { featuredId } = useParams()
-  const queryString = id?`?id=${id}`:""
+  const queryString = ""
 
-  const [locations,locsLoading, setLocs] = useFetchLocations(queryString)
-  const [featured, locLoading, setFeature] = useFetchLocation(featuredId?featuredId:null)
-  console.log(locations,featured)
+  const [productions,prodsLoading, setProds] = useFetchProductions(queryString)
+  const [featured, prodLoading, setFeature] = useFetchProduction(featuredId)
 
-  return (!locsLoading && !locLoading && locations)?
+  return (!prodsLoading && !prodLoading && productions)?
   (<Grid 
     container 
     rowSpacing={3} 
     columnSpacing={{ xs: 1, sm: 2, md: 3 }}
     justifyContent="center"
     >
-    <Grid item xs={6}>
+    <Grid item xs={3}>
       <List
         sx={{ border:'1',  width: '100%', bgcolor: 'background.paper' }}
         component="nav"
         aria-labelledby="nested-list-subheader"
         subheader={
         <ListSubheader component="div" id="nested-list-subheader">
-          Locations
+          Productions
         </ListSubheader>
         }
       >
-      {locations.length>0?
-      <LocList 
+      {productions.length>0?
+      <ProdList 
         currentFeature={featured.id}
         feature={(id)=>setFeature(id)}
-        locations={locations}
+        productions={productions}
       />
       :
       <CardWrapper>
@@ -58,12 +56,12 @@ const LocationDashboard = ({id}) => {
       }
     </List>
     </Grid>
-    <Grid item xs={6}>
-      <LocFeature 
-        location={featured}
+    <Grid item xs={9}>
+      <ProdFeature 
+        production={featured}
         query={queryString}
         setFeature={setFeature} 
-        setLocs={setLocs} 
+        setProds={setProds} 
          />
     </Grid>
   </Grid>
@@ -72,4 +70,4 @@ const LocationDashboard = ({id}) => {
   <LoadingSpinner />
 }
  
-export default LocationDashboard
+export default ProductionDashboard

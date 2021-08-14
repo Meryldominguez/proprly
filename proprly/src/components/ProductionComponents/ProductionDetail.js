@@ -23,19 +23,19 @@ import {
   ExpandLess
 } from '@material-ui/icons'
 
-const LocationDetail = ({location}) => {
-  const [openItems, setOpenitems] = useState(false);
+const ProductionDetail = ({production}) => {
+  const [openProps, setOpenProps] = useState(false);
   const [openNotes, setOpenNotes] = useState(false);
   const handleClickItems = () => {
-    setOpenitems(!openItems);
+    setOpenProps(!openProps);
   };
   const handleClickNotes = () => {
     setOpenNotes(!openNotes);
   };
-  console.log(location)
+  console.log(production)
   return (
     <List>
-      {location.notes?
+      {production.notes?
       <Collapse in={!openNotes} timeout="auto" collapsedSize={60}>
         <Grid container onClick={handleClickNotes}>
           <Grid item xs={12}>
@@ -44,7 +44,7 @@ const LocationDetail = ({location}) => {
               noWrap={openNotes}
               variant='subtitle1'
             >
-              {location.notes}
+              {production.notes}
             </Typography>
           </Grid>
           <Grid item xs={12}>
@@ -60,36 +60,28 @@ const LocationDetail = ({location}) => {
         No Notes for this Location
       </Typography>
       }
-      <ListItemButton disabled={location.items.length< 1 } onClick={handleClickItems}>
-        <ListItemText align='right'>[{location.items.length} Items]</ListItemText>
-        {openItems ? <ExpandLess /> : <ExpandMore />}
+      <ListItemButton>
+        <ListItemText primary="Dates"/>
+        <ListItemText align="right">
+          {production.dateStart? 
+            new Date(production.dateStart).toDateString()
+            : "N/A"}
+            {" - "}  
+          {production.dateEnd?
+            new Date(production.dateEnd).toDateString()
+          :"N/A" }</ListItemText>
       </ListItemButton>
-      <Collapse in={openItems} timeout="auto" >
-        {/* <List component="div" disableGutters disablePadding>
-          {location.items.map(item=>(
-              <ListItemButton 
-              component={Link} 
-              to={`/lots/${item.id}`}
-              key={uuid()} 
-            >
-              <ListItemText
-                align="left"
-                secondaryTypographyProps={{
-                  noWrap:true
-                }}
-                primary={item.name}
-                secondary={item.description}
-              />
-            </ListItemButton>
-            
-          ))}
-        </List> */}
-        <ItemList items={location.items} />
+      <ListItemButton disabled={production.props.length< 1 } onClick={handleClickItems}>
+        <ListItemText align='right'>[{production.props.length} Props]</ListItemText>
+        {openProps ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={openProps} timeout="auto" >
+        <PropList items={production.props} />
       </Collapse>
     </ List>
   )
 }
-const ItemList= ({items}) =>{
+const PropList= ({items}) =>{
   const renderList = ({index,style})=>{
   return (
     <ListItemButton 
@@ -104,7 +96,11 @@ const ItemList= ({items}) =>{
         noWrap:true
       }}
       primary={items[index].name}
-      secondary={items[index].description}
+      secondary={items[index].notes?items[index].notes:"No notes on this prop"}
+    />
+    <ListItemText
+      align="right"
+      primary={`Quantity: ${items[index].quantity? items[index].quantity:"N/A"}`}
     />
   </ListItemButton>
   )
@@ -125,4 +121,4 @@ const ItemList= ({items}) =>{
   )
 }
  
-export default LocationDetail
+export default ProductionDetail

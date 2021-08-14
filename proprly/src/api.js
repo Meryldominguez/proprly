@@ -119,6 +119,43 @@ class ProprlyApi {
   }
 
 
+    // Prods API routes
+
+  /** create a new Lot. */
+
+  static async newProd(data) {
+    let res = await this.request(`productions/`,{data},"post");
+    return res.production;
+  }
+  /** Get details on a lot by id. */
+
+  static async getProd(id) {
+    let res = await this.request(`productions/${id}`);
+    return res.production;
+  }
+
+  /** Get all lots. Searching can be accomplished by query string*/
+  static async searchProds(queryString="") {
+    let res = await this.request(`productions${queryString}`);
+    return res.productions;
+  }
+
+  /** update a Production by id*/
+  static async updateProd(id, data) {
+    data.dateStart=data.dateStart?new Date(data.dateStart).toUTCString():null
+    data.dateEnd=data.dateEnd?new Date(data.dateEnd).toUTCString():null
+
+    ProprlyApi.token = window.localStorage.token
+    let res = await this.request(`productions/${id}`,{...data},"patch");
+    return res.production;
+  }
+  /** delete a Production by id. */
+  static async deleteProd(id) {
+    const method="delete"
+    let res = await this.request(`productions/${id}`,{},method);
+    return res;
+  }
+
 // User API routes
   /** User Login */
   static async Login(formData) {
@@ -143,39 +180,6 @@ class ProprlyApi {
     let res = await this.request(`users/${username}`,data, "patch");
     return res;
   }
-    // Lots API routes
-
-  /** create a new Lot. */
-
-  static async newProd(data) {
-    let res = await this.request(`lots/`,{data},"post");
-    return res.lot;
-  }
-  /** Get details on a lot by id. */
-
-  static async getProd(id) {
-    let res = await this.request(`lots/${id}`);
-    return res.lot;
-  }
-
-  /** Get all lots. Searching can be accomplished by query string*/
-  static async searchProds(queryString="") {
-    let res = await this.request(`lots${queryString}`);
-    return res.lots;
-  }
-
-  /** Get all lots. Searching can be accomplished by query string*/
-  static async updateProd(id, data) {
-    let res = await this.request(`lots/`,{data},"patch");
-    return res.lot;
-  }
-  /** Get details on a lot by id. */
-  static async deleteProd(id) {
-    const method="delete"
-    let res = await this.request(`lots/${id}`,{},method);
-    return res;
-  }
-
 }
 
 
