@@ -1,6 +1,5 @@
 import React, {
   useContext, 
-  useEffect, 
   useState
 } from 'react'
 import {
@@ -30,13 +29,7 @@ const ProdEditForm = ({production, refreshProds, refreshFeature, setView}) => {
   }  
   const history = useHistory()
     const [formData, setFormData] = useState(initial);
-  console.log(formData)
     const {alerts, setAlerts} = useContext(AlertContext)
-    
-    useEffect(()=>{
-      setFormData(initial)
-    },[production])
-
 
     const handleSubmit = async (evt)=> {
         evt.preventDefault();
