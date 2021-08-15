@@ -6,7 +6,7 @@ import ProdDetail from './ProductionDetail'
 import ProdDelete from './ProductionDelete'
 import ProdEditForm from '../../forms/ProductionEditForm';
 
-const ProductionFeature = ({setProds,setFeature,production}) => {
+const ProductionFeature = ({setProds,setFeature,setView,production}) => {
   const {profile} = useContext(UserContext)
 
   return (profile && production.id)?
@@ -20,17 +20,24 @@ const ProductionFeature = ({setProds,setFeature,production}) => {
               <ProdEditForm 
                 refreshProds={(i)=>setProds([i])} 
                 refreshFeature={(id)=>setFeature(id)} 
-                production={production} />},
+                production={production}
+                setView={setView} />},
             {title:"Delete", component:
               <ProdDelete
                 refreshProds={(i)=>setProds([i])} 
                 refreshFeature={(id)=>setFeature(id)} 
-                id={production.id} />}
+                id={production.id}
+                setView={setView} />}
           ]
           :
           [
-            {title:"Details", component:<ProdDetail production={production} />},
-            {title:"Edit", component:<ProdDetail production={production} />},
+            {title:"Details", 
+              component:<ProdDetail production={production} />},
+            {title:"Edit", 
+              component:<ProdDetail 
+                refreshProds={(i)=>setProds([i])} 
+                refreshFeature={(id)=>setFeature(id)} 
+                production={production} />},
             // {title:"Edit", component:<LotEditForm production={production} />},
           ]
         }/>

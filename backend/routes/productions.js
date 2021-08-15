@@ -33,8 +33,8 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
     }
-    req.body.dateStart = new Date(req.body.dateStart)
-    req.body.dateEnd = new Date(req.body.dateEnd)
+    req.body.dateStart = req.body.dateStart? new Date(req.body.dateStart): null
+    req.body.dateEnd = req.body.dateEnd? new Date(req.body.dateEnd): null
     const production = await Production.create(req.body);
 
     return res.status(201).json({ production });

@@ -10,9 +10,9 @@ import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 
-export default function TabBar({tabsArr,}) {
+export default function TabBar({tabsArr, startingTab="0"}) {
 
-  const [activeTab, setActiveTab] = useState("0");
+  const [activeTab, setActiveTab] = useState(startingTab);
 
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);

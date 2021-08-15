@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core'
 import ProprlyApi from '../../api'
 
-const ProductionDelete = ({refreshProds,refreshFeature,id}) => {
+const ProductionDelete = ({refreshProds,refreshFeature,setView,id}) => {
     const {setAlerts} = useContext(AlertContext)
     const history = useHistory()
 
@@ -26,6 +26,7 @@ const ProductionDelete = ({refreshProds,refreshFeature,id}) => {
             console.log(resp)
             history.push("/productions")
             refreshProds()
+            setView("0")
             refreshFeature()
             setAlerts([{variant:"success",msg:`Locatiion #${id} has been deleted`}])
         } catch (err) {

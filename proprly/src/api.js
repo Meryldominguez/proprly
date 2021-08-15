@@ -118,13 +118,16 @@ class ProprlyApi {
     return res;
   }
 
-
     // Prods API routes
 
   /** create a new Lot. */
 
   static async newProd(data) {
-    let res = await this.request(`productions/`,{data},"post");
+    data.dateStart=data.dateStart?new Date(data.dateStart).toUTCString():null
+    data.dateEnd=data.dateEnd?new Date(data.dateEnd).toUTCString():null
+
+    ProprlyApi.token = window.localStorage.token
+    let res = await this.request(`productions/`,{...data},"post");
     return res.production;
   }
   /** Get details on a lot by id. */

@@ -1,4 +1,6 @@
-import React from 'react'
+import React,{
+  useState
+} from 'react'
 import {
   useParams,
   // Redirect
@@ -10,15 +12,18 @@ import {
   Typography
 } from '@material-ui/core'
 import LoadingSpinner from '../Spinner';
+import TabBar from '../TabBar';
 import CardWrapper from '../CardWrapper';
 import ProdList from './ProductionList';
 import ProdFeature from './ProductionFeature';
 import { useFetchProduction, useFetchProductions } from '../../hooks/useFetch';
+import ProdNewForm from '../../forms/ProductionNewForm';
 
 
 const ProductionDashboard = ({isActive, search, year}) => {
   const { featuredId } = useParams()
   const queryString = ""
+  const [currentTab, setCurrentTab] = useState(featuredId?"1":"0")
 
   const [productions,prodsLoading, setProds] = useFetchProductions(queryString)
   const [featured, prodLoading, setFeature] = useFetchProduction(featuredId)
@@ -57,12 +62,25 @@ const ProductionDashboard = ({isActive, search, year}) => {
     </List>
     </Grid>
     <Grid item xs={9}>
-      <ProdFeature 
-        production={featured}
-        query={queryString}
-        setFeature={setFeature} 
-        setProds={setProds} 
-         />
+      <TabBar 
+      startingTab={currentTab}
+      tabsArr={[
+        {title:"New Production",
+        component:<ProdNewForm 
+          refreshFeature={(i)=>setFeature(i)} 
+          refreshProds={(i)=>setProds(i)}
+          setView={(i)=>setCurrentTab(i)}
+          />},
+        {title:"Detail", 
+        component:<ProdFeature 
+          production={featured}
+          query={queryString}
+          setFeature={setFeature} 
+          setProds={setProds}
+          setView={(i)=>setCurrentTab(i)} 
+          />}
+        ]}
+        />
     </Grid>
   </Grid>
   )

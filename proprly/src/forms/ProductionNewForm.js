@@ -1,6 +1,5 @@
 import React, {
   useContext, 
-  useEffect, 
   useState
 } from 'react'
 import {
@@ -16,42 +15,39 @@ import {
  } from "@material-ui/core";
 
 import ProprlyApi from '../api';
-import LoadingSpinner from '../components/Spinner'
 import AlertContext from '../context/AlertContext'
 
 
-const ProdEditForm = ({production, refreshProds, refreshFeature, setView}) => {
+const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
   const initial= {
-    title:production.title,
-    notes:production.notes,
-    active:production.active,
-    dateStart:production.dateStart? production.dateStart:"",
-    dateEnd:production.dateEnd?production.dateEnd:""
+    title:"",
+    notes:"",
+    active:true,
+    dateStart:"",
+    dateEnd:""
   }  
-  const history = useHistory()
+    const history = useHistory()
     const [formData, setFormData] = useState(initial);
-  console.log(formData)
-    const {alerts, setAlerts} = useContext(AlertContext)
-    
-    useEffect(()=>{
-      setFormData(initial)
-    },[production])
 
+    const {alerts, setAlerts} = useContext(AlertContext)
 
     const handleSubmit = async (evt)=> {
+      console.log(formData)
         evt.preventDefault();
         try {
             const trimmedData = {
               title:formData.title.trim(),
-              notes:formData.notes.trim()
+              notes:formData.notes.trim(),
+              dateStart:formData.dateStart|| null,
+              dateEnd:formData.dateEnd|| null,
             }
            console.log({...formData,...trimmedData})
-            await ProprlyApi.updateProd(production.id,{...formData,...trimmedData})
-            history.push(`/productions/${production.id}`)
-            setView("1")
+            const newProd = await ProprlyApi.newProd({...formData,...trimmedData})
+            history.push(`/productions/${newProd.id}`)
+            refreshFeature(newProd.id)
             refreshProds()
-            refreshFeature(production.id)
-            setAlerts([...alerts,{severity:"success", msg:"Production updated!"}])
+            setView("1")
+            setAlerts([...alerts,{severity:"success", msg:"Production create!"}])
         } catch (error) {
             console.log(error)
             setFormData({...formData})
@@ -68,27 +64,19 @@ const ProdEditForm = ({production, refreshProds, refreshFeature, setView}) => {
         });
     };
 
-    const isFormDirty = ()=>{
-        return (
-          production.title === formData.title.trim() &&
-          production.notes === formData.notes.trim() &&
-          production.active === formData.active &&
-          production.dateStart === formData.dateStart &&
-          production.dateEnd === formData.dateEnd)? 
-        false : true
-    }
     const resetForm = ()=>{
-        setFormData(production)
+        setFormData(initial)
     }
+
     return(
-        <>
-    { production?
-    <Box component="form" onSubmit={handleSubmit} spacing={8}>
+    <Box component="form"  onSubmit={handleSubmit} >
     <Grid 
         container 
         rowSpacing={{xs:4}} 
-        spacing={2} >
-      <Grid item>
+        spacing={2} 
+        justifyContent="center"
+        >
+      <Grid item xs={12}>
         <FormControlLabel 
           control={
             <Switch 
@@ -99,10 +87,10 @@ const ProdEditForm = ({production, refreshProds, refreshFeature, setView}) => {
               />
           }
           color="secondary"
-          labelPlacement="top" 
-          label={formData.active?"Active":"Inactive"} />
+          labelPlacement="end" 
+          label={formData.active?"Active Production":"Inactive Production"} />
       </Grid>
-      <Grid xs={12} item> 
+      <Grid xs={8} item align="center"> 
         <TextField
           fullWidth
           id="title-input"
@@ -114,69 +102,71 @@ const ProdEditForm = ({production, refreshProds, refreshFeature, setView}) => {
           onChange={handleChange}
         />
       </Grid>
-      <Grid item xs={12}> 
-
-          <TextField 
-            type="date"
-            name="dateStart"
-            label="Start Date"
-            variant="outlined"
-            InputLabelProps={{ shrink: true }}
-            value={formData.dateStart||""}
-            onChange={handleChange}
-          />
-          <TextField 
-            type="date"
-            name="dateEnd"
-            label="End Date"
-            InputLabelProps={{ shrink: true }}
-            variant="outlined"
-            value={formData.dateEnd||""}
-            onChange={handleChange}
-          />    
+      <Grid item xs={8}> 
+        <Grid container spacing={3} justifyContent="center">
+          <Grid xs={6} item>
+            <TextField 
+              fullWidth
+              type="date"
+              name="dateStart"
+              label="Start Date"
+              variant="outlined"
+              InputLabelProps={{ shrink: true }}
+              value={formData.dateStart||""}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid xs={6} item>
+            <TextField 
+              fullWidth
+              type="date"
+              name="dateEnd"
+              label="End Date"
+              InputLabelProps={{ shrink: true }}
+              variant="outlined"
+              value={formData.dateEnd||""}
+              onChange={handleChange}
+            />    
+          </Grid>
+        </Grid>
       </Grid> 
-      <Grid xs={12} item>
+      <Grid xs={8} item>
         <TextField 
           fullWidth
           type="text"
           name="notes"
           multiline
           maxRows={4}
+          minRows={4}
           label="Notes"
           variant="outlined"
           value={formData.notes}
           onChange={handleChange}
         />   
       </Grid> 
-      <Grid item xs={12}>
+      <Grid item xs={10}>
         <Grid spacing={2} container>
           <Grid item xs={6}>
             <Button 
-              disabled={isFormDirty()?false:true}
               variant="outlined" color='primary'  
               fullWidth 
               onClick={resetForm}>
-                Reset
+                Clear Form
             </Button>
           </Grid>
           <Grid item xs={6}>
             <Button 
-              disabled={isFormDirty()?false:true}
               variant="contained" 
               color='primary'  
               fullWidth 
               onClick={handleSubmit}>
-                Update Production
+                Add Production
             </Button>
           </Grid>
         </Grid>    
       </Grid>    
     </Grid>
-  </Box>
-    :
-    <LoadingSpinner />}
-    </>
-    )
+  </Box>)
 }
  
-export default ProdEditForm
+export default ProdNewForm
