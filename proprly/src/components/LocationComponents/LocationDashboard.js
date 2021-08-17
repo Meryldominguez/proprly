@@ -1,9 +1,10 @@
-import React from 'react'
+import React,{
+  useState
+} from 'react'
 import {
   useParams,
   // Redirect
 } from 'react-router-dom';
-import {v4 as uuid} from "uuid";
 import {
   List,
   ListSubheader,
@@ -12,14 +13,18 @@ import {
 } from '@material-ui/core'
 import { useFetchLocation, useFetchLocations } from '../../hooks/useFetch'
 import LoadingSpinner from '../Spinner';
+import TabBar from '../TabBar';
 import CardWrapper from '../CardWrapper';
 import LocList from './LocationList';
 import LocFeature from './LocationFeature';
+import LocNewForm from '../../forms/LocationNewForm';
 
 
 const LocationDashboard = ({id}) => {
   const { featuredId } = useParams()
   const queryString = id?`?id=${id}`:""
+  const [currentTab, setCurrentTab] = useState(featuredId?"1":"0")
+
 
   const [locations,locsLoading, setLocs] = useFetchLocations(queryString)
   const [featured, locLoading, setFeature] = useFetchLocation(featuredId?featuredId:null)
@@ -32,7 +37,7 @@ const LocationDashboard = ({id}) => {
     columnSpacing={{ xs: 1, sm: 2, md: 3 }}
     justifyContent="center"
     >
-    <Grid item xs={6}>
+    <Grid item xs={4}>
       <List
         sx={{ border:'1',  width: '100%', bgcolor: 'background.paper' }}
         component="nav"
@@ -47,6 +52,7 @@ const LocationDashboard = ({id}) => {
       <LocList 
         currentFeature={featured.id}
         feature={(id)=>setFeature(id)}
+        setView={(num)=>setCurrentTab(num)}
         locations={locations}
       />
       :
@@ -58,13 +64,26 @@ const LocationDashboard = ({id}) => {
       }
     </List>
     </Grid>
-    <Grid item xs={6}>
-      <LocFeature 
+    <Grid item xs={8}>
+      <TabBar 
+      startingTab={currentTab}
+      tabsArr={[
+        {title:"New Location",
+        component:<LocNewForm 
+          locations={locations}
+          refreshFeature={(i)=>setFeature(i)} 
+          refreshLocs={(i)=>setLocs(i)}
+          setView={(i)=>setCurrentTab(i)}
+          />},
+        {title:"Detail", 
+        component:<LocFeature 
         location={featured}
         query={queryString}
         setFeature={setFeature} 
         setLocs={setLocs} 
-         />
+         />}
+        ]}
+        />
     </Grid>
   </Grid>
   )

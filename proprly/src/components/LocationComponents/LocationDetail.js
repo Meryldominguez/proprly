@@ -65,25 +65,6 @@ const LocationDetail = ({location}) => {
         {openItems ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={openItems} timeout="auto" >
-        {/* <List component="div" disableGutters disablePadding>
-          {location.items.map(item=>(
-              <ListItemButton 
-              component={Link} 
-              to={`/lots/${item.id}`}
-              key={uuid()} 
-            >
-              <ListItemText
-                align="left"
-                secondaryTypographyProps={{
-                  noWrap:true
-                }}
-                primary={item.name}
-                secondary={item.description}
-              />
-            </ListItemButton>
-            
-          ))}
-        </List> */}
         <ItemList items={location.items} />
       </Collapse>
     </ List>
@@ -101,10 +82,18 @@ const ItemList= ({items}) =>{
     <ListItemText
       align="left"
       secondaryTypographyProps={{
-        noWrap:true
+        noWrap:true,
+        width:"80%"
       }}
       primary={items[index].name}
       secondary={items[index].description}
+    />
+    <ListItemText
+      align="right"
+      primaryTypographyProps={{
+        minWidth:'100%'
+      }}
+      primary={items[index].location}
     />
   </ListItemButton>
   )
