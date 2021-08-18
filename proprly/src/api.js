@@ -92,7 +92,7 @@ class ProprlyApi {
 
   /** Get all location. Searching can be accomplished by query string*/
   static async updateLoc(id, data) {
-    let res = await this.request(`locations/${id}`,{data},"patch");
+    let res = await this.request(`locations/${id}`,{...data},"patch");
     return res.location;
   }
   /** delete a location by id. */

@@ -39,6 +39,7 @@ const LoggedInRoutes = ({username}) => {
           />
       </CardWrapper>
     </Route>
+    
     <Route exact path="/productions/:featuredId" >
       <CardWrapper>
         <ProductionDashboard 
