@@ -1,18 +1,28 @@
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
+import {
+  Card,
+  CardHeader,
+  CardContent
+} from '@material-ui/core'
 
 
 
-export default function CardWrapper({children, title}) {
+
+export default function CardWrapper({children, title, subtitle=""}) {
 
   return (
     <Card sx={{height:'100%'}} title={title} >
+      <CardHeader
+        // avatar={
+          // <Avatar aria-label="recipe" className={classes.avatar}>
+          //   R
+          // </Avatar>
+        // }
+
+        title={title}
+        subheader={subtitle}
+      />
       <CardContent>
-        <Typography fontSize={24} variant="h6" color="textPrimary" gutterBottom>
-          {title}
-        </Typography>
           {children}
         </CardContent>
     </Card>

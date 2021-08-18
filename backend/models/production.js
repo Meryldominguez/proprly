@@ -94,7 +94,7 @@ class Production {
 
     // Finalize query and return results
 
-    query += "\nORDER BY title";
+    query += "\nORDER BY active DESC, title";
     if (queryValues.length>0){
       const jobsRes = await db.query(query,queryValues);
       return jobsRes.rows;

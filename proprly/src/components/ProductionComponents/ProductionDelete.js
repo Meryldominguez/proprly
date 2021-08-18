@@ -7,12 +7,13 @@ import {
 import AlertContext from "../../context/AlertContext";
 import {
     Grid,
-    Button
+    Button,
+    Alert,
+    AlertTitle
 } from '@material-ui/core'
 import ProprlyApi from '../../api'
-import CardWrapper from '../CardWrapper';
 
-const LocationDelete = ({setFeature,location, refreshLocs}) => {
+const ProductionDelete = ({refreshProds,refreshFeature,setView,id}) => {
     const {setAlerts} = useContext(AlertContext)
     const history = useHistory()
 
@@ -20,31 +21,37 @@ const LocationDelete = ({setFeature,location, refreshLocs}) => {
     const handleClick = async (evt)=>{
         evt.preventDefault()
         try {
-            const resp = await ProprlyApi.deleteLoc(location.id)
+            
+            const resp = await ProprlyApi.deleteProd(id)
             console.log(resp)
-            history.push("/locations")
-            setFeature()
-            refreshLocs()
-            setAlerts([{variant:"success",msg:`Locatiion #${location.id} has been deleted`}])
+            history.push("/productions")
+            refreshProds()
+            setView("0")
+            refreshFeature()
+            setAlerts([{variant:"success",msg:`Locatiion #${id} has been deleted`}])
         } catch (err) {
             setAlerts([...err.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
         }
     }
 
   return (
-    <CardWrapper title={location.name}>
-    <Grid style={{height:'100%'}} justifyContent='center' container>
+    <Grid spacing={6} justifyContent='center' container>
+        <Grid  item>
+            <Alert severity="info" >
+                <AlertTitle>Deleting a production is not reccomended!</AlertTitle> 
+                Consider 'Archiving' a production instead.
+            </Alert>
+        </Grid>
         <Grid item>
             <Button 
                 onClick={handleClick}
                 variant="contained" 
                 color="secondary"> 
-            Permanently Delete this Location and all the Items in it? 
+            Permanently Delete this Production? 
             </Button>
         </Grid>
     </Grid>
-    </CardWrapper>
   )
 }
  
-export default LocationDelete
+export default ProductionDelete

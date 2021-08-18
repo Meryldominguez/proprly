@@ -72,7 +72,7 @@ class ProprlyApi {
   /** create a new Loc. */
 
   static async newLoc(data) {
-    let res = await this.request(`locations/`,{data},"post");
+    let res = await this.request(`locations/`,{...data},"post");
     return res.location;
   }
   /** Get details on a location by id. */
@@ -84,31 +84,15 @@ class ProprlyApi {
 
   /** Get all locations nested with children. Searching by id can be accomplished by query string*/
   static async getLocs(query="") {
+    ProprlyApi.token = window.localStorage.token
+
     let res = await this.request(`locations${query}`);
-    const recursiveLoc = (arr)=>{
-      const child = arr.pop()
-      const parsed = arr.every((loc,idx) => {
-        if (loc.locationId=== child.parentId) {
-          loc.children=loc.children?
-            [...loc.children,child]:[child]
-          return false
-        }
-        return true
-      })
-      if (parsed){
-        arr.push(child)
-        return arr
-      }
-      return recursiveLoc(arr)
-    }
-    const parsedLocations =recursiveLoc(res.locations)
-    return parsedLocations
-    // return res.locations
+    return res.locations
   }
 
   /** Get all location. Searching can be accomplished by query string*/
   static async updateLoc(id, data) {
-    let res = await this.request(`locations/${id}`,{data},"patch");
+    let res = await this.request(`locations/${id}`,{...data},"patch");
     return res.location;
   }
   /** delete a location by id. */
@@ -118,6 +102,44 @@ class ProprlyApi {
     return res;
   }
 
+    // Prods API routes
+
+  /** create a new Lot. */
+
+  static async newProd(data) {
+    data.dateStart=data.dateStart?new Date(data.dateStart).toUTCString():null
+    data.dateEnd=data.dateEnd?new Date(data.dateEnd).toUTCString():null
+
+    let res = await this.request(`productions/`,{...data},"post");
+    return res.production;
+  }
+  /** Get details on a lot by id. */
+
+  static async getProd(id) {
+    let res = await this.request(`productions/${id}`);
+    return res.production;
+  }
+
+  /** Get all lots. Searching can be accomplished by query string*/
+  static async searchProds(queryString="") {
+    let res = await this.request(`productions${queryString}`);
+    return res.productions;
+  }
+
+  /** update a Production by id*/
+  static async updateProd(id, data) {
+    data.dateStart=data.dateStart?new Date(data.dateStart).toUTCString():null
+    data.dateEnd=data.dateEnd?new Date(data.dateEnd).toUTCString():null
+
+    let res = await this.request(`productions/${id}`,{...data},"patch");
+    return res.production;
+  }
+  /** delete a Production by id. */
+  static async deleteProd(id) {
+    const method="delete"
+    let res = await this.request(`productions/${id}`,{},method);
+    return res;
+  }
 
 // User API routes
   /** User Login */
@@ -133,17 +155,14 @@ class ProprlyApi {
   }
   /** User profile load */
   static async getProfile(username) {
-    ProprlyApi.token = window.localStorage.token
     let res = await this.request(`users/${username}`);
     return res;
   }
   /** User profile edit */
   static async patchProfile(username,{password,...data}) {
-    ProprlyApi.token = window.localStorage.token
     let res = await this.request(`users/${username}`,data, "patch");
     return res;
   }
-
 }
 
 

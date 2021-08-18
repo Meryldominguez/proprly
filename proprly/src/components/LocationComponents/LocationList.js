@@ -1,70 +1,122 @@
-import React from 'react'
+import React,{
+  useState,
+  Fragment
+} from 'react'
 import {
   useHistory
 } from 'react-router-dom';
 import {v4 as uuid} from "uuid";
 import {
   List,
+  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  
+  Collapse
 } from '@material-ui/core'
-// import RoomIcon from '@material-ui/icons/Room';
+import {
+  ExpandMore,
+  ExpandLess
+} from '@material-ui/icons'
+
 import ArrowIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import LoadingSpinner from '../Spinner';
 
 
-
-const LocList = ({currentFeature,feature,locations, defaultDepth=0, color= "primary",step=7})=>{ 
+const RecursiveList = ({ locations, currentFeature,feature,color="secondary", defaultDepth=0,step=7})=>{ 
   const nextDepth = defaultDepth + step
+  const [openId, setOpenId] = useState(null)
+
+  const handleOpen = (id)=>{
+    console.log(id, openId, "handle open")
+    return id===openId?
+      setOpenId(null)
+      :
+      setOpenId(id)
+  }
   return (
     <List
-      style={{ marginLeft: defaultDepth === 0 ? 0 : nextDepth, border:"1px black solid",bgcolor:color }}
+      style={{ 
+        marginLeft: defaultDepth === 0 ? 0 : nextDepth}}
+      sx={{
+        backgroundColor:`divider`
+      }}
+      key={uuid()} 
       disablePadding
       dense
     >
   {locations.map(loc=> (
-    <>
+    <Fragment key={uuid()} >
       <SingleLoc 
-        key={uuid()} 
         featured={currentFeature===loc.locationId} 
         feature={feature} 
-        loc={loc} 
+        loc={loc}
+        open={(id)=>handleOpen(id)}
+        openId={openId}
       />
         {loc.children && 
-        <LocList 
-          color={color==="primary"?"secondary":"primary"}
+        <Collapse         
+          key={uuid()} 
+          in={openId===loc.locationId} 
+          timeout="auto">
+        <RecursiveList 
+          key={uuid()} 
+          color={color==="secondary"?"disabled":"secondary"}
+          currentFeature={currentFeature}
           feature={feature} 
           locations={loc.children}
           defaultDepth={nextDepth}
-        />}
-    </>
-  ))}
-    </List>)
+        />
+        </Collapse>
+      }
+    </ Fragment>)
+    )
+  }
+  </List>) 
+
 }
 
-const SingleLoc = ({featured,feature,loc})=>{
+const SingleLoc = ({featured,feature,loc, openId, open})=>{
   const history=useHistory()
 
   const handleFeature = (evt)=>{
-    console.log(loc)
     evt.preventDefault()
     feature(loc.locationId)
     history.push(`/locations/${loc.locationId}`)
   }
   return (
-
-  <ListItemButton
-    onClick={handleFeature}
-    sx={{ pl: 4 }}
-    disabled={featured}>
-    <ListItemIcon>
+    <ListItem       
+      key={uuid()} 
+    >
+  <ListItemButton 
+    disabled={featured}
+    onClick={handleFeature}>
+    <ListItemIcon   >
       <ArrowIcon />
     </ListItemIcon>
     <ListItemText primary={loc.locationName} />
-  </ListItemButton>
+    </ListItemButton>
+   {loc.children && 
+   <ListItemIcon 
+      disabled={false}
+      align='right' 
+      onClick={()=>open(loc.locationId)}>
+      {`[${loc.children.length}]`}
+      {loc.locationId===openId? <ExpandLess /> :<ExpandMore />}
+    </ListItemIcon>}
+  </ListItem>
 
   )
 }
 
+const LocList = ({locations, isLoading,currentFeature,feature})=> {
+  return !isLoading?
+   <RecursiveList 
+    isLoading={isLoading}
+    locations={locations} 
+    currentFeature={currentFeature} 
+    feature={feature} />
+    : 
+    <LoadingSpinner />
+}
 export default LocList

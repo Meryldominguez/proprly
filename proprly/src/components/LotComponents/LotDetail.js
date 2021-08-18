@@ -68,7 +68,7 @@ const LotDetail = ({item}) => {
             <>
           <ListItemButton 
             component={Link} 
-            to={`productions/${prod.id}`}
+            to={`/productions/${prod.id}`}
             key={uuid()} 
             sx={{ pl: 4 }}
           >

@@ -1,45 +1,90 @@
-import React,{useContext} from 'react'
-import UserContext from '../../context/UserContext';
-import CardWrapper from '../CardWrapper';
+import React from 'react'
 import TabBar from '../TabBar';
 import LocDetail from './LocationDetail'
-// import LotEditForm from '../forms/LotEditForm'
+import LocEditForm from '../../forms/LocationEditForm'
+import LocNewForm from '../../forms/LocationNewForm';
 import LocDelete from './LocationDelete'
+import LoadingSpinner from '../Spinner';
 
-const LocFeature = ({setLocs,setFeature,location}) => {
-  const {profile} = useContext(UserContext)
-
-  return (location.id)?
+const LocFeature = (
+  { 
+    currentTab,
+    setTab,
+    location, 
+    locLoading,
+    locations, 
+    locsLoading, 
+    profile, 
+    setFeature,
+    refreshLocs
+  }) => {
+  if (location.id) return (!locLoading && !locsLoading && profile)?
   (
-    <CardWrapper title={location.name}>
       <TabBar
+        startingTab={currentTab}
         tabsArr={profile.isAdmin?
           [
-            {title:"Details", component:<LocDetail location={location} />},
-            {title:"Edit", component:
+            {title:"New Location",component:
+              <LocNewForm 
+                locations={locations} 
+                locsLoading={locsLoading} 
+                setFeature={setFeature}
+                setTab={setTab}
+                refreshLocs={refreshLocs}
+                />},
+            {title:"Details", component:
               <LocDetail location={location} />},
-            // {title:"Edit", component:<LotEditForm location={location} />},
+            {title:"Edit", component:
+              <LocEditForm 
+                locations={locations} 
+                locsLoading={locsLoading} 
+                location={location}
+                setTab={setTab}
+                refreshLocs={refreshLocs}
+                />},
             {title:"Delete", component:
               <LocDelete
-                refreshLocs={(i)=>setLocs([i])} 
-                refreshFeature={(id)=>setFeature(id)} 
-                id={location.id} />}
+                setFeature={setFeature} 
+                location={location} 
+                setTab={setTab}
+                refreshLocs={refreshLocs}
+                />}
           ]
           :
-          [
-            {title:"Details", component:<LocDetail location={location} />},
-            {title:"Edit", component:<LocDetail location={location} />},
-            // {title:"Edit", component:<LotEditForm location={location} />},
+          [ {title:"New Location",component:
+              <LocNewForm 
+                locations={locations} 
+                locsLoading={locsLoading} 
+                setFeature={setFeature}
+                setTab={setTab}
+                refreshLocs={refreshLocs} 
+              />},
+            {title:"Details", component:
+              <LocDetail location={location} />},
+            {title:"Edit", component:
+              <LocEditForm 
+                locations={locations} 
+                locsLoading={locsLoading} 
+                location={location}
+                setTab={setTab}
+                refreshLocs={refreshLocs}
+              />},
           ]
         }/>
-    </CardWrapper>
   )
   :
-    <CardWrapper title={location.name}>
-      <span>        
-        {location.notes}
-      </span>
-    </CardWrapper>
+    <LoadingSpinner />
+
+  return (!locLoading && !locsLoading && profile) ?(
+    <TabBar
+      tabsArr={
+        [
+          {title:"New Location",component:
+            <LocNewForm locations={locations} locsLoading={locsLoading} setFeature={setFeature} />},
+          {title:"Details", component:
+            <LocDetail location={location} />},
+        ]}
+    />) : <LoadingSpinner />
 }
  
 export default LocFeature

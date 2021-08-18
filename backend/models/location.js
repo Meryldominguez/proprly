@@ -56,8 +56,29 @@ class Location {
 
     SELECT * FROM findchildren
     GROUP BY "parentId", "locationId", "locationName"
-    ORDER BY "locationId" `
+    ORDER BY "parentId" NULLS FIRST`
+
     const result = await db.query(query)
+    console.log(result.rows)
+    const recursiveLoc = (arr)=>{
+      const child = arr.pop()
+      const parsed = arr.every((loc,idx) => {
+        if (loc.locationId === child.parentId) {
+          loc.children=loc.children?
+            [...loc.children,child]:[child]
+          return false
+        }
+        return true
+      })
+      if (parsed){
+        arr.push(child)
+        return arr
+      }
+      return recursiveLoc(arr)
+    }
+    
+    const parsedLocations = recursiveLoc(result.rows)
+    console.log(parsedLocations)
     return result.rows
   }
 
@@ -71,7 +92,7 @@ class Location {
     if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
     
     let {rows:[loc]} = await db.query(
-      `SELECT id, name, notes
+      `SELECT id, name, notes, parent_id as "parentId"
         FROM location
         WHERE id=$1
         `,
