@@ -92,7 +92,7 @@ class Location {
     if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
     
     let {rows:[loc]} = await db.query(
-      `SELECT id, name, notes
+      `SELECT id, name, notes, parent_id as "parentId"
         FROM location
         WHERE id=$1
         `,
