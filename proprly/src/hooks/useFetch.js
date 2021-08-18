@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import ProprlyApi from "../api"
+import AlertContext from "../context/AlertContext"
 
 const formatDate = (date)=>{
     const year = String(date.getFullYear())
@@ -53,6 +54,7 @@ const useFetchLot = (lotId) => {
                 return resp
             } catch (err) {
                 setId(null)
+                setIsLoading(false)
                 console.log(err)
             }
         }
@@ -66,8 +68,8 @@ const useFetchLot = (lotId) => {
     return [lot, isLoading, setFeature]
 }
 
-const useFetchLocations = (q) => {
-    const [query, setQuery] = useState(q)
+const useFetchLocations = () => {
+    const [query, setQuery] = useState()
     const [isLoading,setIsLoading] = useState(true)
     const [locations, setLocations] = useState()
     useEffect(()=>{
@@ -78,11 +80,16 @@ const useFetchLocations = (q) => {
             return resp
         }
         load()
-    },[query])
-    return [locations, isLoading, setQuery]
+    },[query, isLoading])
+
+    const triggerRefresh = ()=>{
+        setIsLoading(true)
+    }
+    return [locations, isLoading, triggerRefresh]
 }
 
-const useFetchLocation = (locId) => {
+const useFetchLocation = (locId) => {   
+    const {setAlerts} = useContext(AlertContext)
   
     const [id, setId] = useState(locId)
     const [isLoading, setIsLoading] = useState(true)
@@ -90,20 +97,24 @@ const useFetchLocation = (locId) => {
 
     useEffect(()=>{
         async function load(){
-            
-            const resp= id?
+            try {
+                const resp = id?
                 await ProprlyApi.getLoc(id)
                 : {
                     id:null,
                     name: "Featured location",
                     notes: "Select a location on the side for more information"
                 }
-            setLocation(resp)
-            setIsLoading(false)
-            return resp   
+                setLocation(resp)
+                setIsLoading(false)
+                return resp   
+            } catch (err) {
+                setFeature(null)
+                setAlerts([...err.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
+            } 
         }
         load()
-    },[id, isLoading])
+    },[id])
 
     const setFeature = (id)=>{
         setIsLoading(true)

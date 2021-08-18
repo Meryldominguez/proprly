@@ -1,6 +1,5 @@
 import React, {
   useContext, 
-  useEffect, 
   useState
 } from 'react'
 import {
@@ -9,173 +8,175 @@ import {
 import { 
   Box, 
   Grid, 
-  TextField, 
-  Button,
-  FormControlLabel,
-  Switch
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem, 
+  Button
  } from "@material-ui/core";
 
 import ProprlyApi from '../api';
-import LoadingSpinner from '../components/Spinner'
 import AlertContext from '../context/AlertContext'
+import { useFetchLocations } from '../hooks/useFetch';
+import CardWrapper from '../components/CardWrapper';
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
-const ProdEditForm = ({production, refreshProds, refreshFeature}) => {
+const LocEditForm = ({locations,isLoading,location,refreshLocs, refreshFeature, setView}) => {
   const initial= {
-    title:production.title,
-    notes:production.notes,
-    active:production.active,
-    dateStart:production.dateStart? production.dateStart:"",
-    dateEnd:production.dateEnd?production.dateEnd:""
+    name:location.name,
+    notes:location.notes,
+    parentId:location.parentId?location.parentId:0
   }  
-  const history = useHistory()
+    const history = useHistory()
     const [formData, setFormData] = useState(initial);
+   
 
     const {alerts, setAlerts} = useContext(AlertContext)
-    
-    useEffect(()=>{
-      setFormData(initial)
-    },[production])
-
 
     const handleSubmit = async (evt)=> {
+      console.log(formData)
         evt.preventDefault();
         try {
             const trimmedData = {
-              title:formData.title.trim(),
-              notes:formData.notes.trim()
+              name:formData.name.trim(),
+              notes:formData.notes.trim(),
+              parentId: formData.parentId===0? null : formData.parentId
             }
            console.log({...formData,...trimmedData})
-            await ProprlyApi.updateProd(production.id,{...formData,...trimmedData})
-            history.push(`/productions/${production.id}`)
-            refreshProds()
-            refreshFeature(production.id)
-            setAlerts([...alerts,{severity:"success", msg:"Production updated!"}])
+            const newLoc = await ProprlyApi.updateLoc(location.id,{...formData,...trimmedData})
+            
+            setView("1")
+            refreshLocs()
+            refreshFeature(newLoc.id)
+            history.push(`/locations/${newLoc.id}`)
+            setAlerts([...alerts,{severity:"success", msg:"Location created!"}])
         } catch (error) {
             console.log(error)
-            setFormData({...formData, password:""})
+            setFormData({...formData})
             setAlerts([...error.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
         }
     };
-    
+    const isFormDirty = ()=>{
+      return (initial.name === formData.name.trim() &&
+        initial.notes===formData.notes.trim() &&
+        initial.parentId ===formData.parentId)? true: false
+    }
 
     const handleChange = evt => {
-        const {name,value,checked} = evt.target;
+        const {name,value} = evt.target;
+        console.log(name, value)
         setFormData({
             ...formData,
-            [name]:value||checked,
+            [name]: value
         });
         console.log(formData)
     };
 
-    const isFormDirty = ()=>{
-        return (
-          // (formData.title==="" || (production.title === formData.title) &&
-          // (formData.notes==="" || production.notes === formData.notes) &&
-            production.active === formData.active &&
-            production.dateStart === formData.dateStart &&
-            production.dateEnd === formData.dateEnd)? false : true
-    }
     const resetForm = ()=>{
-        setFormData(production)
+        setFormData(initial)
     }
+    const renderMenuList = (list, defaultDepth=0, step=10)=>{
+      const nextDepth = defaultDepth + step
+
+      return list.map(item=>[<MenuItem 
+        style={{ 
+        marginLeft: defaultDepth === 0 ? 0 : nextDepth}}
+        value={item.locationId}
+      >
+        {item.locationName}
+      </MenuItem>,
+     item.children && renderMenuList(item.children, defaultDepth=nextDepth)]
+     )
+    }
+
     return(
-        <>
-    { production?
-    <Box component="form" onSubmit={handleSubmit} spacing={8}>
+    <CardWrapper title={location.name}>
+    <Box component="form"  onSubmit={handleSubmit} >
     <Grid 
         container 
         rowSpacing={{xs:4}} 
-        spacing={2} >
-      <Grid item>
-        <FormControlLabel 
-          control={
-            <Switch 
-              checked={formData.active}
-              name="active"
-              onChange={handleChange}
-              inputProps={{ 'aria-label': 'controlled' }} 
-              />
-          }
-          color="secondary"
-          labelPlacement="top" 
-          label={formData.active?"Active":"Inactive"} />
-      </Grid>
-      <Grid xs={12} item> 
+        spacing={2} 
+        justifyContent="center"
+        >
+      <Grid xs={8} item align="center"> 
         <TextField
           fullWidth
           id="title-input"
-          name="title"
-          label="Title"
+          name="name"
+          label="Name"
           type="text"
           variant="outlined"
-          value={formData.title}
+          value={formData.name}
           onChange={handleChange}
         />
       </Grid>
-      <Grid item xs={12}> 
-
-          <TextField 
-            type="date"
-            name="dateStart"
-            label="Start Date"
-            variant="outlined"
-            InputLabelProps={{ shrink: true }}
-            value={formData.dateStart||""}
-            onChange={handleChange}
-          />
-          <TextField 
-            type="date"
-            name="dateEnd"
-            label="End Date"
-            InputLabelProps={{ shrink: true }}
-            variant="outlined"
-            value={formData.dateEnd||""}
-            onChange={handleChange}
-          />    
+      <Grid item xs={8} > 
+      <FormControl sx={{minWidth: 300 }}>
+        <InputLabel htmlFor="parentId">Parent Location</InputLabel>
+        <Select 
+          value={formData.parentId} 
+          name="parentId" id="parentId" 
+          label="Parent Location"
+          onChange={handleChange}
+          MenuProps={MenuProps}>
+          <MenuItem value={0}>
+            No Parent
+          </MenuItem>
+          {!isLoading && renderMenuList(locations)}
+        </Select>
+      </FormControl>
       </Grid> 
-      <Grid xs={12} item>
+      <Grid xs={8} item>
         <TextField 
           fullWidth
           type="text"
           name="notes"
           multiline
           maxRows={4}
+          minRows={4}
           label="Notes"
           variant="outlined"
           value={formData.notes}
           onChange={handleChange}
         />   
       </Grid> 
-      <Grid item xs={12}>
+      <Grid item xs={10}>
         <Grid spacing={2} container>
           <Grid item xs={6}>
             <Button 
-              disabled={isFormDirty()?false:true}
               variant="outlined" color='primary'  
               fullWidth 
+              disabled={isFormDirty()}
               onClick={resetForm}>
                 Reset
             </Button>
           </Grid>
           <Grid item xs={6}>
             <Button 
-              disabled={isFormDirty()?false:true}
+              disabled={isFormDirty()}
               variant="contained" 
               color='primary'  
               fullWidth 
               onClick={handleSubmit}>
-                Update Production
+                Edit Location 
             </Button>
           </Grid>
         </Grid>    
       </Grid>    
     </Grid>
   </Box>
-    :
-    <LoadingSpinner />}
-    </>
-    )
+  </CardWrapper>)
 }
  
-export default ProdEditForm
+export default LocEditForm

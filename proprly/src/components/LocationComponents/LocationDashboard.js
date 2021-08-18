@@ -1,94 +1,61 @@
 import React,{
-  useState
+  useState,
+  useContext
 } from 'react'
+import UserContext from '../../context/UserContext';
 import {
   useParams,
   // Redirect
 } from 'react-router-dom';
 import {
-  List,
-  ListSubheader,
   Grid,
-  Typography
 } from '@material-ui/core'
-import { useFetchLocation, useFetchLocations } from '../../hooks/useFetch'
-import LoadingSpinner from '../Spinner';
-import TabBar from '../TabBar';
-import CardWrapper from '../CardWrapper';
 import LocList from './LocationList';
 import LocFeature from './LocationFeature';
-import LocNewForm from '../../forms/LocationNewForm';
+import LoadingSpinner from '../Spinner';
+import { useFetchLocations, useFetchLocation } from '../../hooks/useFetch';
+
 
 
 const LocationDashboard = ({id}) => {
+  const {profile, isLoading} = useContext(UserContext)
   const { featuredId } = useParams()
-  const queryString = id?`?id=${id}`:""
-  const [currentTab, setCurrentTab] = useState(featuredId?"1":"0")
 
+  const [view, setView] = useState("1")
+  
+  const [locations, locsLoading, refreshLocs] = useFetchLocations()
+  const [location, locLoading, setFeature] = useFetchLocation(featuredId || null)
 
-  const [locations,locsLoading, setLocs] = useFetchLocations(queryString)
-  const [featured, locLoading, setFeature] = useFetchLocation(featuredId?featuredId:null)
-  console.log(locations,featured)
-
-  return (!locsLoading && !locLoading && locations)?
-  (<Grid 
+  return !isLoading && !locLoading ?(
+  <Grid 
     container 
     rowSpacing={3} 
     columnSpacing={{ xs: 1, sm: 2, md: 3 }}
     justifyContent="center"
     >
     <Grid item xs={4}>
-      <List
-        sx={{ border:'1',  width: '100%', bgcolor: 'background.paper' }}
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-        subheader={
-        <ListSubheader component="div" id="nested-list-subheader">
-          Locations
-        </ListSubheader>
-        }
-      >
-      {locations.length>0?
       <LocList 
-        currentFeature={featured.id}
-        feature={(id)=>setFeature(id)}
-        setView={(num)=>setCurrentTab(num)}
+        currentFeature={location.id}
         locations={locations}
+        isLoading={locsLoading}
+        setTab={(idx)=>setView(idx)}
+        feature={(id)=>setFeature(id)}
       />
-      :
-      <CardWrapper>
-        <Typography spacing={3}>
-          No results for your search
-        </Typography> 
-      </CardWrapper>
-      }
-    </List>
     </Grid>
     <Grid item xs={8}>
-      <TabBar 
-      startingTab={currentTab}
-      tabsArr={[
-        {title:"New Location",
-        component:<LocNewForm 
-          locations={locations}
-          refreshFeature={(i)=>setFeature(i)} 
-          refreshLocs={(i)=>setLocs(i)}
-          setView={(i)=>setCurrentTab(i)}
-          />},
-        {title:"Detail", 
-        component:<LocFeature 
-        location={featured}
-        query={queryString}
-        setFeature={setFeature} 
-        setLocs={setLocs} 
-         />}
-        ]}
-        />
+     <LocFeature
+      locations={locations}
+      isLoading={locsLoading}
+      profile={profile}
+      location={location}
+      currentTab={view}
+      setTab={(idx)=>setView(idx)}
+      setFeature={(i)=>setFeature(i)} 
+      refreshLocs={refreshLocs}
+      />
     </Grid>
   </Grid>
-  )
-  :
-  <LoadingSpinner />
+) : <LoadingSpinner />
 }
  
 export default LocationDashboard

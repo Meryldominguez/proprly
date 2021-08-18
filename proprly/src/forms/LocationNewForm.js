@@ -18,6 +18,7 @@ import {
 
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext'
+import LoadingSpinner from '../components/Spinner';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -30,7 +31,7 @@ const MenuProps = {
   },
 };
 
-const LocNewForm = ({locations,refreshLocs, refreshFeature, setView}) => {
+const LocNewForm = ({locations, isLoading, setFeature, setTab, refreshLocs}) => {
   const initial= {
     name:"",
     notes:"",
@@ -38,6 +39,7 @@ const LocNewForm = ({locations,refreshLocs, refreshFeature, setView}) => {
   }  
     const history = useHistory()
     const [formData, setFormData] = useState(initial);
+    
 
     const {alerts, setAlerts} = useContext(AlertContext)
 
@@ -52,10 +54,9 @@ const LocNewForm = ({locations,refreshLocs, refreshFeature, setView}) => {
             }
            console.log({...formData,...trimmedData})
             const newLoc = await ProprlyApi.newLoc({...formData,...trimmedData})
-            
-            setView("1")
+            setTab("0")
+            setFeature(newLoc.id)
             refreshLocs()
-            refreshFeature(newLoc.id)
             history.push(`/locations/${newLoc.id}`)
             setAlerts([...alerts,{severity:"success", msg:"Location created!"}])
         } catch (error) {
@@ -64,7 +65,6 @@ const LocNewForm = ({locations,refreshLocs, refreshFeature, setView}) => {
             setAlerts([...error.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
         }
     };
-    
 
     const handleChange = evt => {
         const {name,value} = evt.target;
@@ -93,7 +93,7 @@ const LocNewForm = ({locations,refreshLocs, refreshFeature, setView}) => {
      )
     }
 
-    return(
+    return locations && !isLoading ? (
     <Box component="form"  onSubmit={handleSubmit} >
     <Grid 
         container 
@@ -165,7 +165,7 @@ const LocNewForm = ({locations,refreshLocs, refreshFeature, setView}) => {
         </Grid>    
       </Grid>    
     </Grid>
-  </Box>)
+  </Box>) : <LoadingSpinner />
 }
  
 export default LocNewForm

@@ -10,8 +10,9 @@ import {
     Button
 } from '@material-ui/core'
 import ProprlyApi from '../../api'
+import CardWrapper from '../CardWrapper';
 
-const LocationDelete = ({refreshLocs,refreshFeature,id}) => {
+const LocationDelete = ({setFeature,location, refreshLocs}) => {
     const {setAlerts} = useContext(AlertContext)
     const history = useHistory()
 
@@ -19,19 +20,19 @@ const LocationDelete = ({refreshLocs,refreshFeature,id}) => {
     const handleClick = async (evt)=>{
         evt.preventDefault()
         try {
-            
-            const resp = await ProprlyApi.deleteLoc(id)
+            const resp = await ProprlyApi.deleteLoc(location.id)
             console.log(resp)
             history.push("/locations")
+            setFeature()
             refreshLocs()
-            refreshFeature()
-            setAlerts([{variant:"success",msg:`Locatiion #${id} has been deleted`}])
+            setAlerts([{variant:"success",msg:`Locatiion #${location.id} has been deleted`}])
         } catch (err) {
             setAlerts([...err.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
         }
     }
 
   return (
+    <CardWrapper title={location.name}>
     <Grid style={{height:'100%'}} justifyContent='center' container>
         <Grid item>
             <Button 
@@ -42,6 +43,7 @@ const LocationDelete = ({refreshLocs,refreshFeature,id}) => {
             </Button>
         </Grid>
     </Grid>
+    </CardWrapper>
   )
 }
  

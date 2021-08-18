@@ -1,5 +1,6 @@
 import React,{
-  useState
+  useState,
+  Fragment
 } from 'react'
 import {
   useHistory
@@ -19,10 +20,10 @@ import {
 } from '@material-ui/icons'
 
 import ArrowIcon from '@material-ui/icons/SubdirectoryArrowRight';
+import LoadingSpinner from '../Spinner';
 
 
-
-const LocList = ({currentFeature,feature,locations,setView, defaultDepth=0, color="secondary",step=7})=>{ 
+const RecursiveList = ({ locations, currentFeature,feature,color="secondary", defaultDepth=0,step=7})=>{ 
   const nextDepth = defaultDepth + step
   const [openId, setOpenId] = useState(null)
 
@@ -40,23 +41,26 @@ const LocList = ({currentFeature,feature,locations,setView, defaultDepth=0, colo
       sx={{
         backgroundColor:`divider`
       }}
+      key={uuid()} 
       disablePadding
       dense
     >
   {locations.map(loc=> (
-    <>
+    <Fragment key={uuid()} >
       <SingleLoc 
-        key={uuid()} 
         featured={currentFeature===loc.locationId} 
         feature={feature} 
-        setView={setView}
         loc={loc}
         open={(id)=>handleOpen(id)}
         openId={openId}
       />
         {loc.children && 
-        <Collapse in={openId===loc.locationId} timeout="auto">
-        <LocList 
+        <Collapse         
+          key={uuid()} 
+          in={openId===loc.locationId} 
+          timeout="auto">
+        <RecursiveList 
+          key={uuid()} 
           color={color==="secondary"?"disabled":"secondary"}
           currentFeature={currentFeature}
           feature={feature} 
@@ -65,12 +69,14 @@ const LocList = ({currentFeature,feature,locations,setView, defaultDepth=0, colo
         />
         </Collapse>
       }
-    </>
-  ))}
-    </List>)
+    </ Fragment>)
+    )
+  }
+  </List>) 
+
 }
 
-const SingleLoc = ({featured,feature,loc,setView, openId, open})=>{
+const SingleLoc = ({featured,feature,loc, openId, open})=>{
   const history=useHistory()
 
   const handleFeature = (evt)=>{
@@ -79,7 +85,9 @@ const SingleLoc = ({featured,feature,loc,setView, openId, open})=>{
     history.push(`/locations/${loc.locationId}`)
   }
   return (
-    <ListItem>
+    <ListItem       
+      key={uuid()} 
+    >
   <ListItemButton 
     disabled={featured}
     onClick={handleFeature}>
@@ -101,4 +109,14 @@ const SingleLoc = ({featured,feature,loc,setView, openId, open})=>{
   )
 }
 
+const LocList = ({locations, isLoading,currentFeature,feature})=> {
+  return !isLoading?
+   <RecursiveList 
+    isLoading={isLoading}
+    locations={locations} 
+    currentFeature={currentFeature} 
+    feature={feature} />
+    : 
+    <LoadingSpinner />
+}
 export default LocList

@@ -22,6 +22,7 @@ import {
   ExpandMore,
   ExpandLess
 } from '@material-ui/icons'
+import CardWrapper from '../CardWrapper';
 
 const LocationDetail = ({location}) => {
   const [openItems, setOpenitems] = useState(false);
@@ -34,6 +35,7 @@ const LocationDetail = ({location}) => {
   };
   console.log(location)
   return (
+    <CardWrapper title={location.name}>
     <List>
       {location.notes?
       <Collapse in={!openNotes} timeout="auto" collapsedSize={60}>
@@ -48,7 +50,7 @@ const LocationDetail = ({location}) => {
             </Typography>
           </Grid>
           <Grid item xs={12}>
-            {openNotes ? <ExpandLess /> : <ExpandMore/>}
+            {location.id && (openNotes ? <ExpandLess /> : <ExpandMore/>)}
           </Grid>
         </Grid>
       </Collapse>
@@ -60,6 +62,8 @@ const LocationDetail = ({location}) => {
         No Notes for this Location
       </Typography>
       }
+      {location['items'] && (
+      <>
       <ListItemButton disabled={location.items.length< 1 } onClick={handleClickItems}>
         <ListItemText align='right'>[{location.items.length} Items]</ListItemText>
         {openItems ? <ExpandLess /> : <ExpandMore />}
@@ -67,7 +71,10 @@ const LocationDetail = ({location}) => {
       <Collapse in={openItems} timeout="auto" >
         <ItemList items={location.items} />
       </Collapse>
+      </>
+      )}
     </ List>
+    </CardWrapper>
   )
 }
 const ItemList= ({items}) =>{
