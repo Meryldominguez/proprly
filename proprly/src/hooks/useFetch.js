@@ -106,22 +106,20 @@ const useFetchLocation = (locId) => {
                     notes: "Select a location on the side for more information"
                 }
                 setLocation(resp)
-                setIsLoading(false)
-                return resp   
+                setIsLoading(false)  
             } catch (err) {
-                setFeature(null)
+                refreshFeature(null)
                 setAlerts([...err.map(e=> e={severity:e.severity||'error', msg:e.msg})]);
             } 
         }
         load()
     },[id])
 
-    const setFeature = (id)=>{
-        setIsLoading(true)
+    const refreshFeature = (id)=>{
         setId(id)
     }
     
-    return [location, isLoading, setFeature]
+    return [location, isLoading, refreshFeature,]
 }
 
 const useFetchProductions = (q) => {

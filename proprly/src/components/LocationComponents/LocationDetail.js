@@ -33,12 +33,12 @@ const LocationDetail = ({location}) => {
   const handleClickNotes = () => {
     setOpenNotes(!openNotes);
   };
-  console.log(location)
   return (
     <CardWrapper title={location.name}>
     <List>
       {location.notes?
-      <Collapse in={!openNotes} timeout="auto" collapsedSize={60}>
+      <>
+      <Collapse in={!openNotes} timeout="auto" collapsedSize={30}>
         <Grid container onClick={handleClickNotes}>
           <Grid item xs={12}>
             <Typography 
@@ -49,11 +49,13 @@ const LocationDetail = ({location}) => {
               {location.notes}
             </Typography>
           </Grid>
-          <Grid item xs={12}>
-            {location.id && (openNotes ? <ExpandLess /> : <ExpandMore/>)}
-          </Grid>
         </Grid>
       </Collapse>
+      <ListItemText 
+        onClick={handleClickNotes} 
+        primary={openNotes ? <ExpandLess /> : <ExpandMore/>} 
+      />
+      </>
       :
       <Typography 
       width="100%"
@@ -66,7 +68,7 @@ const LocationDetail = ({location}) => {
       <>
       <ListItemButton disabled={location.items.length< 1 } onClick={handleClickItems}>
         <ListItemText align='right'>[{location.items.length} Items]</ListItemText>
-        {openItems ? <ExpandLess /> : <ExpandMore />}
+        {openItems ? <ExpandMore />:<ExpandLess /> }
       </ListItemButton>
       <Collapse in={openItems} timeout="auto" >
         <ItemList items={location.items} />
@@ -88,9 +90,13 @@ const ItemList= ({items}) =>{
   >
     <ListItemText
       align="left"
+      sx={{width:"80%"}}
       secondaryTypographyProps={{
         noWrap:true,
-        width:"80%"
+        maxWidth:"75%"
+      }}
+      primaryTypographyProps={{
+        maxWidth:"75%"
       }}
       primary={items[index].name}
       secondary={items[index].description}

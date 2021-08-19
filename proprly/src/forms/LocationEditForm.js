@@ -18,7 +18,6 @@ import {
 
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext'
-import { useFetchLocations } from '../hooks/useFetch';
 import CardWrapper from '../components/CardWrapper';
 
 const ITEM_HEIGHT = 48;
@@ -32,16 +31,16 @@ const MenuProps = {
   },
 };
 
-const LocEditForm = ({locations,isLoading,location,refreshLocs, refreshFeature, setView}) => {
+const LocEditForm = ({locations,isLoading,location,refreshLocs, setTab}) => {
   const initial= {
-    name:location.name,
-    notes:location.notes,
+    name:location.name || "",
+    notes:location.notes || "",
     parentId:location.parentId?location.parentId:0
   }  
     const history = useHistory()
     const [formData, setFormData] = useState(initial);
    
-
+console.log(initial)
     const {alerts, setAlerts} = useContext(AlertContext)
 
     const handleSubmit = async (evt)=> {
@@ -55,10 +54,8 @@ const LocEditForm = ({locations,isLoading,location,refreshLocs, refreshFeature, 
             }
            console.log({...formData,...trimmedData})
             const newLoc = await ProprlyApi.updateLoc(location.id,{...formData,...trimmedData})
-            
-            setView("1")
+            setTab("1")
             refreshLocs()
-            refreshFeature(newLoc.id)
             history.push(`/locations/${newLoc.id}`)
             setAlerts([...alerts,{severity:"success", msg:"Location created!"}])
         } catch (error) {
@@ -100,7 +97,7 @@ const LocEditForm = ({locations,isLoading,location,refreshLocs, refreshFeature, 
      )
     }
 
-    return(
+    return (
     <CardWrapper title={location.name}>
     <Box component="form"  onSubmit={handleSubmit} >
     <Grid 
@@ -122,9 +119,12 @@ const LocEditForm = ({locations,isLoading,location,refreshLocs, refreshFeature, 
         />
       </Grid>
       <Grid item xs={8} > 
-      <FormControl sx={{minWidth: 300 }}>
+      <FormControl 
+        fullWidth
+        sx={{minWidth: 300 }}>
         <InputLabel htmlFor="parentId">Parent Location</InputLabel>
         <Select 
+          fullWidth
           value={formData.parentId} 
           name="parentId" id="parentId" 
           label="Parent Location"

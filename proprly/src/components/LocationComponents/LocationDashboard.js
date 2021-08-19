@@ -17,16 +17,16 @@ import { useFetchLocations, useFetchLocation } from '../../hooks/useFetch';
 
 
 
-const LocationDashboard = ({id}) => {
+const LocationDashboard = () => {
   const {profile, isLoading} = useContext(UserContext)
   const { featuredId } = useParams()
 
   const [view, setView] = useState("1")
+  const [id, setId] = useState(featuredId)
   
   const [locations, locsLoading, refreshLocs] = useFetchLocations()
-  const [location, locLoading, setFeature] = useFetchLocation(featuredId || null)
 
-  return !isLoading && !locLoading ?(
+  return !isLoading && !locsLoading ?(
   <Grid 
     container 
     rowSpacing={3} 
@@ -35,24 +35,23 @@ const LocationDashboard = ({id}) => {
     >
     <Grid item xs={4}>
       <LocList 
-        currentFeature={location.id}
+        currentFeature={id}
         locations={locations}
         isLoading={locsLoading}
         setTab={(idx)=>setView(idx)}
-        feature={(id)=>setFeature(id)}
+        feature={(id)=>setId(id)}
       />
     </Grid>
     <Grid item xs={8}>
      <LocFeature
-      locations={locations}
-      isLoading={locsLoading}
-      profile={profile}
-      location={location}
+      currentFeature={id}
       currentTab={view}
       setTab={(idx)=>setView(idx)}
-      setFeature={(i)=>setFeature(i)} 
+      locations={locations}
+      profile={profile}
+      setFeature={(i)=>setId(i)} 
       refreshLocs={refreshLocs}
-      />
+    />
     </Grid>
   </Grid>
 ) : <LoadingSpinner />

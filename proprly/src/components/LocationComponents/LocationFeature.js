@@ -1,24 +1,29 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import TabBar from '../TabBar';
 import LocDetail from './LocationDetail'
 import LocEditForm from '../../forms/LocationEditForm'
 import LocNewForm from '../../forms/LocationNewForm';
 import LocDelete from './LocationDelete'
 import LoadingSpinner from '../Spinner';
+import { useFetchLocation } from '../../hooks/useFetch';
 
 const LocFeature = (
-  { 
+  { currentFeature,
     currentTab,
     setTab,
-    location, 
-    locLoading,
     locations, 
     locsLoading, 
     profile, 
     setFeature,
     refreshLocs
   }) => {
-  if (location.id) return (!locLoading && !locsLoading && profile)?
+
+  const [location, locLoading, refreshFeature] = useFetchLocation(currentFeature)
+  console.log(location, locLoading, locsLoading, profile)
+
+  useEffect(()=>refreshFeature(currentFeature),[currentFeature])
+
+  if (location && location.id) return (!locLoading && profile)?
   (
       <TabBar
         startingTab={currentTab}
@@ -27,7 +32,6 @@ const LocFeature = (
             {title:"New Location",component:
               <LocNewForm 
                 locations={locations} 
-                locsLoading={locsLoading} 
                 setFeature={setFeature}
                 setTab={setTab}
                 refreshLocs={refreshLocs}
@@ -37,7 +41,6 @@ const LocFeature = (
             {title:"Edit", component:
               <LocEditForm 
                 locations={locations} 
-                locsLoading={locsLoading} 
                 location={location}
                 setTab={setTab}
                 refreshLocs={refreshLocs}
@@ -54,7 +57,6 @@ const LocFeature = (
           [ {title:"New Location",component:
               <LocNewForm 
                 locations={locations} 
-                locsLoading={locsLoading} 
                 setFeature={setFeature}
                 setTab={setTab}
                 refreshLocs={refreshLocs} 
@@ -64,7 +66,6 @@ const LocFeature = (
             {title:"Edit", component:
               <LocEditForm 
                 locations={locations} 
-                locsLoading={locsLoading} 
                 location={location}
                 setTab={setTab}
                 refreshLocs={refreshLocs}
@@ -75,7 +76,7 @@ const LocFeature = (
   :
     <LoadingSpinner />
 
-  return (!locLoading && !locsLoading && profile) ?(
+  return (!locLoading && profile) ?(
     <TabBar
       tabsArr={
         [

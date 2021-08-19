@@ -19,6 +19,7 @@ import {
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext'
 import LoadingSpinner from '../components/Spinner';
+import CardWrapper from '../components/CardWrapper';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -94,6 +95,7 @@ const LocNewForm = ({locations, isLoading, setFeature, setTab, refreshLocs}) => 
     }
 
     return locations && !isLoading ? (
+      <CardWrapper title="New Location">
     <Box component="form"  onSubmit={handleSubmit} >
     <Grid 
         container 
@@ -114,7 +116,7 @@ const LocNewForm = ({locations, isLoading, setFeature, setTab, refreshLocs}) => 
         />
       </Grid>
       <Grid item xs={8} > 
-      <FormControl sx={{minWidth: 300 }}>
+      <FormControl fullWidth sx={{minWidth: 300 }}>
         <InputLabel htmlFor="parentId">Parent Location</InputLabel>
         <Select 
           value={formData.parentId} 
@@ -165,7 +167,8 @@ const LocNewForm = ({locations, isLoading, setFeature, setTab, refreshLocs}) => 
         </Grid>    
       </Grid>    
     </Grid>
-  </Box>) : <LoadingSpinner />
+  </Box>
+  </CardWrapper>) : <LoadingSpinner />
 }
  
 export default LocNewForm
