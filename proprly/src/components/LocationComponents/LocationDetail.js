@@ -74,8 +74,8 @@ const LocationDetail = ({location}) => {
         variant='subtitle1'
         paddingBottom={3} >
       No Notes for this Location.
-      </Typography>
-      }
+      </Typography>}
+
       {location['items'] && (
       <>
       <ListItemButton disabled={location.items.length< 1 } onClick={handleClickItems}>
