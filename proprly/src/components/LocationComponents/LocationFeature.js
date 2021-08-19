@@ -19,7 +19,6 @@ const LocFeature = (
   }) => {
 
   const [location, locLoading, refreshFeature] = useFetchLocation(currentFeature)
-  console.log(location, locLoading, locsLoading, profile)
 
   useEffect(()=>refreshFeature(currentFeature),[currentFeature])
 

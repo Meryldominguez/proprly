@@ -77,7 +77,6 @@ console.log(initial)
             ...formData,
             [name]: value
         });
-        console.log(formData)
     };
 
     const resetForm = ()=>{

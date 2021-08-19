@@ -1,5 +1,7 @@
 import React,{
-  useState
+  useState,
+  useRef,
+  useEffect
 } from 'react'
 import {
   Link
@@ -25,34 +27,45 @@ import {
 import CardWrapper from '../CardWrapper';
 
 const LocationDetail = ({location}) => {
+  // const notesRef = useRef()
   const [openItems, setOpenitems] = useState(false);
-  const [openNotes, setOpenNotes] = useState(false);
+  const [openNotes, setOpenNotes] = useState(true);
+
+  // const dropdownButton = () => {
+  //   if (notesRef.current){
+  //     return notesRef.current.scrollWidth > notesRef.current.clientWidth
+  //   }
+  //   return false
+  // };
+
+  // const [notesButton, setNotesButton] = useState(dropdownButton())
+  
   const handleClickItems = () => {
     setOpenitems(!openItems);
   };
   const handleClickNotes = () => {
     setOpenNotes(!openNotes);
   };
+
   return (
     <CardWrapper title={location.name}>
     <List>
       {location.notes?
       <>
       <Collapse in={!openNotes} timeout="auto" collapsedSize={30}>
-        <Grid container onClick={handleClickNotes}>
-          <Grid item xs={12}>
-            <Typography 
-              width="100%"
-              noWrap={openNotes}
-              variant='subtitle1'
-            >
-              {location.notes}
-            </Typography>
-          </Grid>
-        </Grid>
+        <ListItemText
+          onClick={handleClickNotes}
+          variant='subtitle1'
+          primary={location.notes}
+          primaryTypographyProps={{
+            // ref:notesRef,
+            noWrap:openNotes,
+            px:3
+          }} 
+        />
       </Collapse>
-      <ListItemText 
-        onClick={handleClickNotes} 
+      <ListItemText
+        onClick={handleClickNotes}
         primary={openNotes ? <ExpandLess /> : <ExpandMore/>} 
       />
       </>
