@@ -1,45 +1,109 @@
-import React,{useContext} from 'react'
-import UserContext from '../../context/UserContext';
-import CardWrapper from '../CardWrapper';
+import React, {
+  useEffect,
+} from 'react';
 import TabBar from '../TabBar';
-import LotDetail from './LotDetail'
+import LotDetail from './LotDetail';
 // import LotEditForm from '../forms/LotEditForm'
-import LotDelete from './LotDelete'
+import LotNewForm from '../../forms/LotNewForm';
+import LotDelete from './LotDelete';
+import { useFetchLocations, useFetchLot } from '../../hooks/useFetch';
+import LoadingSpinner from '../Spinner';
 
-const LotFeature = ({setLots,setFeature,item}) => {
-  const {profile} = useContext(UserContext)
+const LotFeature = (
+  {
+    query,
+    currentTab,
+    setTab,
+    currentFeature,
+    profile,
+    setFeature,
+    refreshLots,
+  },
+) => {
+  const [item, itemLoading, refreshFeature] = useFetchLot(currentFeature);
 
-  return (item.id)?
-  (
-    <CardWrapper title={item.name}>
-      <TabBar
-        tabsArr={profile.isAdmin?
-          [
-            {title:"Details", component:<LotDetail item={item} />},
-            {title:"Edit", component:
-              <span>Working on it!</span>},
-            // {title:"Edit", component:<LotEditForm item={item} />},
-            {title:"Delete", component:
+  const [locations, locsLoading] = useFetchLocations();
+
+  useEffect(() => refreshFeature(currentFeature), [currentFeature]);
+
+  if (item && item.id) {
+    return (!itemLoading && !locsLoading)
+      ? (
+        <TabBar
+          startingTab={currentTab}
+          tabsArr={profile.isAdmin
+            ? [
+              {
+                title: 'New Item',
+                component:
+              <LotNewForm
+                setFeature={setFeature}
+                setTab={setTab}
+                refreshLots={refreshLots}
+                locations={locations}
+              />,
+              },
+              {
+                title: 'Details',
+                component:
+              <LotDetail item={item} />,
+              },
+              {
+                title: 'Edit',
+                component:
+              <span>Working on it!</span>,
+              },
+              {
+                title: 'Delete',
+                component:
               <LotDelete
-                refreshLots={(i)=>setLots([i])} 
-                refreshFeature={(id)=>setFeature(id)} 
-                id={item.id} />}
-          ]
-          :
-          [
-            {title:"Details", component:<LotDetail item={item} />},
-            {title:"Edit", component:<LotDetail item={item} />},
-            // {title:"Edit", component:<LotEditForm item={item} />},
-          ]
-        }/>
-    </CardWrapper>
-  )
-  :
-    <CardWrapper title={item.name}>
-      <span>        
-        {item.description}
-      </span>
-    </CardWrapper>
+                setFeature={setFeature}
+                refreshLots={refreshLots}
+                setTab={setTab}
+                item={item}
+              />,
+              },
+            ]
+            : [
+              {
+                title: 'New Item',
+                component:
+              <span>Working on it!</span>,
+              },
+              {
+                title: 'Details',
+                component:
+              <LotDetail item={item} />,
+              },
+              {
+                title: 'Edit',
+                component:
+              <LotDetail
+                item={item}
+              />,
+              },
+              // {title:"Edit", component:<LotEditForm item={item} />},
+            ]}
+        />
+      )
+      : <LoadingSpinner />;
+  }
+  return (!itemLoading && profile)
+    ? (
+      <TabBar
+        startingTab={currentTab}
+        tabsArr={
+        [
+          { title: 'New Item', component: <span>Working on it!</span> },
+          {
+            title: 'Details',
+            component:
+        <LotDetail item={item} />,
+          },
+        ]
 }
- 
-export default LotFeature
+      />
+    ) : <LoadingSpinner />;
+};
+
+export default LotFeature;
