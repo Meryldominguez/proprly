@@ -71,10 +71,9 @@ const LocationDetail = ({location}) => {
       </>
       :
       <Typography 
-      width="100%"
-      variant='subtitle1'
-      >
-        No Notes for this Location
+        variant='subtitle1'
+        paddingBottom={3} >
+      No Notes for this Location.
       </Typography>
       }
       {location['items'] && (
