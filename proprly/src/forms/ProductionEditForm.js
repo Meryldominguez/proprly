@@ -30,7 +30,7 @@ const ProdEditForm = ({
   };
   const history = useHistory();
   const [formData, setFormData] = useState(initial);
-  const { alerts, setAlerts } = useContext(AlertContext);
+  const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
@@ -39,22 +39,27 @@ const ProdEditForm = ({
         title: formData.title.trim(),
         notes: formData.notes.trim(),
       };
-      console.log({ ...formData, ...trimmedData });
-      await ProprlyApi.updateProd(production.id, { ...formData, ...trimmedData });
+      console.log({...formData, ...trimmedData});
+      await ProprlyApi.updateProd(production.id, {...formData, ...trimmedData});
       history.push(`/productions/${production.id}`);
       setView('1');
       refreshProds();
       refreshFeature(production.id);
-      setAlerts([...alerts, { severity: 'success', msg: 'Production updated!' }]);
+      setAlerts([...alerts, {severity: 'success', msg: 'Production updated!'}]);
     } catch (error) {
       console.log(error);
-      setFormData({ ...formData });
-      setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setFormData({...formData});
+      setAlerts([
+        ...error.map((e) => {
+          const err = {severity: e.severity || 'error', msg: e.msg};
+          return err;
+        })],
+      );
     }
   };
 
   const handleChange = (evt) => {
-    const { name, value, checked } = evt.target;
+    const {name, value, checked} = evt.target;
     setFormData({
       ...formData,
       [name]: name === 'active' ? checked : value,
@@ -62,22 +67,22 @@ const ProdEditForm = ({
   };
 
   const isFormDirty = () => !((
-    production.title === formData.title.trim()
-          && production.notes === formData.notes.trim()
-          && production.active === formData.active
-          && production.dateStart === formData.dateStart
-          && production.dateEnd === formData.dateEnd));
+    production.title === formData.title.trim() &&
+          production.notes === formData.notes.trim() &&
+          production.active === formData.active &&
+          production.dateStart === formData.dateStart &&
+          production.dateEnd === formData.dateEnd));
   const resetForm = () => {
     setFormData(production);
   };
   return (
     <>
-      { production
-        ? (
+      { production ?
+        (
           <Box component="form" onSubmit={handleSubmit} spacing={8}>
             <Grid
               container
-              rowSpacing={{ xs: 4 }}
+              rowSpacing={{xs: 4}}
               spacing={2}
             >
               <Grid item>
@@ -87,9 +92,9 @@ const ProdEditForm = ({
                       checked={formData.active}
                       name="active"
                       onChange={handleChange}
-                      inputProps={{ 'aria-label': 'controlled' }}
+                      inputProps={{'aria-label': 'controlled'}}
                     />
-          )}
+                  )}
                   color="secondary"
                   labelPlacement="top"
                   label={formData.active ? 'Active' : 'Inactive'}
@@ -114,7 +119,7 @@ const ProdEditForm = ({
                   name="dateStart"
                   label="Start Date"
                   variant="outlined"
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{shrink: true}}
                   value={formData.dateStart || ''}
                   onChange={handleChange}
                 />
@@ -122,7 +127,7 @@ const ProdEditForm = ({
                   type="date"
                   name="dateEnd"
                   label="End Date"
-                  InputLabelProps={{ shrink: true }}
+                  InputLabelProps={{shrink: true}}
                   variant="outlined"
                   value={formData.dateEnd || ''}
                   onChange={handleChange}
@@ -169,8 +174,8 @@ const ProdEditForm = ({
               </Grid>
             </Grid>
           </Box>
-        )
-        : <LoadingSpinner />}
+        ) :
+        <LoadingSpinner />}
     </>
   );
 };

@@ -5,16 +5,15 @@ import {
   CardContent,
 } from '@material-ui/core';
 
-export default function CardWrapper({ children, title, subtitle = '' }) {
+export default function CardWrapper({children, title, subtitle = ''}) {
   return (
-    <Card sx={{ height: '100%' }} title={title}>
+    <Card sx={{height: '100%'}} title={title}>
       <CardHeader
         // avatar={
-          // <Avatar aria-label="recipe" className={classes.avatar}>
-          //   R
-          // </Avatar>
+        // <Avatar aria-label="recipe" className={classes.avatar}>
+        //   R
+        // </Avatar>
         // }
-
         title={title}
         subheader={subtitle}
       />

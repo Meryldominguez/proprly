@@ -8,7 +8,7 @@ import {
   FixedSizeList,
 } from 'react-window';
 
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 import {
   List,
   ListItemButton,
@@ -23,7 +23,7 @@ import {
   ExpandLess,
 } from '@material-ui/icons';
 
-const ProductionDetail = ({ production }) => {
+const ProductionDetail = ({production}) => {
   const [openProps, setOpenProps] = useState(false);
   const [openNotes, setOpenNotes] = useState(false);
   const handleClickItems = () => {
@@ -35,8 +35,8 @@ const ProductionDetail = ({ production }) => {
   console.log(production);
   return (
     <List>
-      {production.notes
-        ? (
+      {production.notes ?
+        (
           <Collapse in={!openNotes} timeout="auto" collapsedSize={60}>
             <Grid container onClick={handleClickNotes}>
               <Grid item xs={12}>
@@ -53,8 +53,8 @@ const ProductionDetail = ({ production }) => {
               </Grid>
             </Grid>
           </Collapse>
-        )
-        : (
+        ) :
+        (
           <Typography
             width="100%"
             variant="subtitle1"
@@ -65,13 +65,13 @@ const ProductionDetail = ({ production }) => {
       <ListItemButton>
         <ListItemText primary="Dates" />
         <ListItemText align="right">
-          {production.dateStart
-            ? new Date(production.dateStart).toDateString()
-            : 'N/A'}
+          {production.dateStart ?
+            new Date(production.dateStart).toDateString() :
+            'N/A'}
           {' - '}
-          {production.dateEnd
-            ? new Date(production.dateEnd).toDateString()
-            : 'N/A' }
+          {production.dateEnd ?
+            new Date(production.dateEnd).toDateString() :
+            'N/A' }
         </ListItemText>
       </ListItemButton>
       <ListItemButton disabled={production.props.length < 1} onClick={handleClickItems}>
@@ -89,8 +89,8 @@ const ProductionDetail = ({ production }) => {
     </List>
   );
 };
-const PropList = ({ items }) => {
-  const renderList = ({ index, style }) => (
+const PropList = ({items}) => {
+  const renderList = ({index, style}) => (
     <ListItemButton
       style={style}
       component={Link}
@@ -113,7 +113,7 @@ const PropList = ({ items }) => {
   );
   return (
     <Box
-      sx={{ bgcolor: 'background.paper' }}
+      sx={{bgcolor: 'background.paper'}}
     >
       <FixedSizeList
         height={400}

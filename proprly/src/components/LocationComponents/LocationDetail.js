@@ -1,7 +1,5 @@
 import React, {
   useState,
-  useRef,
-  useEffect,
 } from 'react';
 import {
   Link,
@@ -10,7 +8,7 @@ import {
   FixedSizeList,
 } from 'react-window';
 
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 import {
   List,
   ListItemButton,
@@ -18,7 +16,6 @@ import {
   Collapse,
   Typography,
   Box,
-  Grid,
 } from '@material-ui/core';
 import {
   ExpandMore,
@@ -26,7 +23,7 @@ import {
 } from '@material-ui/icons';
 import CardWrapper from '../CardWrapper';
 
-const LocationDetail = ({ location }) => {
+const LocationDetail = ({location}) => {
   // const notesRef = useRef()
   const [openItems, setOpenitems] = useState(false);
   const [openNotes, setOpenNotes] = useState(true);
@@ -50,8 +47,8 @@ const LocationDetail = ({ location }) => {
   return (
     <CardWrapper title={location.name}>
       <List>
-        {location.notes
-          ? (
+        {location.notes ?
+          (
             <>
               <Collapse in={!openNotes} timeout="auto" collapsedSize={30}>
                 <ListItemText
@@ -70,8 +67,8 @@ const LocationDetail = ({ location }) => {
                 primary={openNotes ? <ExpandLess /> : <ExpandMore />}
               />
             </>
-          )
-          : (
+          ) :
+          (
             <Typography
               variant="subtitle1"
               paddingBottom={3}
@@ -81,27 +78,27 @@ const LocationDetail = ({ location }) => {
           )}
 
         {location.items && (
-        <>
-          <ListItemButton disabled={location.items.length < 1} onClick={handleClickItems}>
-            <ListItemText align="right">
+          <>
+            <ListItemButton disabled={location.items.length < 1} onClick={handleClickItems}>
+              <ListItemText align="right">
               [
-              {location.items.length}
-              {' '}
+                {location.items.length}
+                {' '}
               Items]
-            </ListItemText>
-            {openItems ? <ExpandMore /> : <ExpandLess /> }
-          </ListItemButton>
-          <Collapse in={openItems} timeout="auto">
-            <ItemList items={location.items} />
-          </Collapse>
-        </>
+              </ListItemText>
+              {openItems ? <ExpandMore /> : <ExpandLess /> }
+            </ListItemButton>
+            <Collapse in={openItems} timeout="auto">
+              <ItemList items={location.items} />
+            </Collapse>
+          </>
         )}
       </List>
     </CardWrapper>
   );
 };
-const ItemList = ({ items }) => {
-  const renderList = ({ index, style }) => (
+const ItemList = ({items}) => {
+  const renderList = ({index, style}) => (
     <ListItemButton
       style={style}
       component={Link}
@@ -110,7 +107,7 @@ const ItemList = ({ items }) => {
     >
       <ListItemText
         align="left"
-        sx={{ width: '80%' }}
+        sx={{width: '80%'}}
         secondaryTypographyProps={{
           noWrap: true,
           maxWidth: '75%',
@@ -132,7 +129,7 @@ const ItemList = ({ items }) => {
   );
   return (
     <Box
-      sx={{ bgcolor: 'background.paper' }}
+      sx={{bgcolor: 'background.paper'}}
     >
       <FixedSizeList
         height={400}

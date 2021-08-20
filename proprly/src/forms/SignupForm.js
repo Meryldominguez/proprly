@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext} from 'react';
 
 import {
   TextField,
@@ -6,10 +6,10 @@ import {
   Grid,
   Button,
 } from '@material-ui/core';
-import { useHistory } from 'react-router';
+import {useHistory} from 'react-router';
 import AlertContext from '../context/AlertContext';
 
-const SignupForm = ({ userSignup }) => {
+const SignupForm = ({userSignup}) => {
   const initialState = {
     username: '',
     firstName: '',
@@ -19,14 +19,16 @@ const SignupForm = ({ userSignup }) => {
     confirmPassword: '',
   };
 
-  const { setAlerts } = useContext(AlertContext);
+  const {setAlerts} = useContext(AlertContext);
   const [formData, setFormData] = useState(initialState);
   const history = useHistory();
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     try {
-      if (formData.password !== formData.confirmPassword) throw new Error('Passwords must match');
+      if (formData.password !== formData.confirmPassword) {
+        throw new Error('Passwords must match');
+      };
       const trimmedData = {
         email: formData.email.trim(),
         firstName: formData.firstName.trim(),
@@ -35,15 +37,20 @@ const SignupForm = ({ userSignup }) => {
         username: formData.username.trim(),
       };
       await userSignup(trimmedData);
-      setAlerts([{ variant: 'success', msg: 'You have successfully signed up!' }]);
+      setAlerts([
+        {variant: 'success', msg: 'You have successfully signed up!'}]);
       history.push('/');
     } catch (error) {
-      setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setAlerts([
+        ...error.map((e) => {
+          const err = {severity: e.severity || 'error', msg: e.msg};
+          return err;
+        })]);
     }
   };
 
   const handleChange = (evt) => {
-    const { name, value } = evt.target;
+    const {name, value} = evt.target;
     setFormData({
       ...formData,
       [name]: value,
@@ -51,7 +58,7 @@ const SignupForm = ({ userSignup }) => {
   };
   return (
     <Box component="form" onSubmit={handleSubmit}>
-      <Grid container rowSpacing={{ xs: 2 }} spacing={2}>
+      <Grid container rowSpacing={{xs: 2}} spacing={2}>
         <Grid item xs={6}>
           <TextField
             id="firstName-input"
@@ -116,7 +123,14 @@ const SignupForm = ({ userSignup }) => {
           />
         </Grid>
         <Grid item xs={12} justifyContent="center">
-          <Button variant="contained" color="primary" xs={10} fullWidth onClick={handleSubmit}> Sign up!</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            xs={10}
+            fullWidth
+            onClick={handleSubmit}>
+          Sign up!
+          </Button>
         </Grid>
       </Grid>
     </Box>

@@ -12,8 +12,8 @@ import AlertContext from '../../context/AlertContext';
 import ProprlyApi from '../../api';
 import CardWrapper from '../CardWrapper';
 
-const LocationDelete = ({ setFeature, location, refreshLocs }) => {
-  const { setAlerts } = useContext(AlertContext);
+const LocationDelete = ({setFeature, location, refreshLocs}) => {
+  const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
 
   const handleClick = async (evt) => {
@@ -24,15 +24,15 @@ const LocationDelete = ({ setFeature, location, refreshLocs }) => {
       history.push('/locations');
       setFeature();
       refreshLocs();
-      setAlerts([{ variant: 'success', msg: `Locatiion #${location.id} has been deleted` }]);
+      setAlerts([{variant: 'success', msg: `Locatiion #${location.id} has been deleted`}]);
     } catch (err) {
-      setAlerts([...err.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };
 
   return (
     <CardWrapper title={location.name}>
-      <Grid style={{ height: '100%' }} justifyContent="center" container>
+      <Grid style={{height: '100%'}} justifyContent="center" container>
         <Grid item>
           <Button
             onClick={handleClick}

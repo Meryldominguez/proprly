@@ -2,7 +2,7 @@ import React from 'react';
 import {
   useHistory,
 } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 import {
   Box,
   ListItemButton,
@@ -12,10 +12,10 @@ import {
 } from '@material-ui/core';
 // import RoomIcon from '@material-ui/icons/Room';
 import ArrowIcon from '@material-ui/icons/SubdirectoryArrowRight';
-import { FixedSizeList } from 'react-window';
+import {FixedSizeList} from 'react-window';
 
-const ProductionList = ({ currentFeature, feature, productions }) => {
-  const renderList = ({ index, style }) => (
+const ProductionList = ({currentFeature, feature, productions}) => {
+  const renderList = ({index, style}) => (
     <SingleProd
       style={style}
       key={uuid()}
@@ -27,7 +27,7 @@ const ProductionList = ({ currentFeature, feature, productions }) => {
 
   return productions.length > 0 ? (
     <Box
-      sx={{ bgcolor: 'background.paper' }}
+      sx={{bgcolor: 'background.paper'}}
     >
       <FixedSizeList
         height={700}
@@ -40,7 +40,7 @@ const ProductionList = ({ currentFeature, feature, productions }) => {
     </Box>
   ) : (
     <Box
-      sx={{ bgcolor: 'background.paper' }}
+      sx={{bgcolor: 'background.paper'}}
     />
   );
 };
@@ -60,7 +60,7 @@ const SingleProd = ({
     <ListItemButton
       style={style}
       onClick={handleFeature}
-      sx={{ pl: 1 }}
+      sx={{pl: 1}}
       disabled={featured}
     >
       <ListItemIcon>
@@ -72,10 +72,10 @@ const SingleProd = ({
         }}
         primary={prod.title}
         secondary={
-          `${prod.dateEnd
-            ? new Date(prod.dateEnd).getFullYear()
-            : 'N/A'} ${prod.active ? '[ACTIVE]' : ''}`
-}
+          `${prod.dateEnd ?
+            new Date(prod.dateEnd).getFullYear() :
+            'N/A'} ${prod.active ? '[ACTIVE]' : ''}`
+        }
       />
     </ListItemButton>
 

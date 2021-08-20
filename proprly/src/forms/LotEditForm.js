@@ -42,7 +42,7 @@ const LocEditForm = ({
   const history = useHistory();
   const [formData, setFormData] = useState(initial);
 
-  const { alerts, setAlerts } = useContext(AlertContext);
+  const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
@@ -52,22 +52,26 @@ const LocEditForm = ({
         notes: formData.notes.trim(),
         parentId: formData.parentId === 0 ? null : formData.parentId,
       };
-      const newLoc = await ProprlyApi.updateLoc(location.id, { ...formData, ...trimmedData });
+      const newLoc = await ProprlyApi.updateLoc(
+          location.id, {...formData, ...trimmedData});
       setTab('1');
       refreshLocs();
       history.push(`/locations/${newLoc.id}`);
-      setAlerts([...alerts, { severity: 'success', msg: 'Location created!' }]);
+      setAlerts([...alerts, {severity: 'success', msg: 'Location created!'}]);
     } catch (error) {
-      setFormData({ ...formData });
-      setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setFormData({...formData});
+      setAlerts([...error.map((e) => {
+        const err = {severity: e.severity || 'error', msg: e.msg};
+        return err;
+      })]);
     }
   };
-  const isFormDirty = () => !!((initial.name === formData.name.trim()
-        && initial.notes === formData.notes.trim()
-        && initial.parentId === formData.parentId));
+  const isFormDirty = () => !!((initial.name === formData.name.trim() &&
+        initial.notes === formData.notes.trim() &&
+        initial.parentId === formData.parentId));
 
   const handleChange = (evt) => {
-    const { name, value } = evt.target;
+    const {name, value} = evt.target;
     console.log(name, value);
     setFormData({
       ...formData,
@@ -82,7 +86,8 @@ const LocEditForm = ({
     const nextDepth = defaultDepth + step;
 
     return list.map((item) => [<MenuItem
-      style={{ marginLeft: defaultDepth === 0 ? 0 : nextDepth }}
+      key={uuid()}
+      style={{marginLeft: defaultDepth === 0 ? 0 : nextDepth}}
       value={item.locationId}
     >
       {item.locationName}
@@ -95,7 +100,7 @@ const LocEditForm = ({
       <Box component="form" onSubmit={handleSubmit}>
         <Grid
           container
-          rowSpacing={{ xs: 4 }}
+          rowSpacing={{xs: 4}}
           spacing={2}
           justifyContent="center"
         >
@@ -114,7 +119,7 @@ const LocEditForm = ({
           <Grid item xs={8}>
             <FormControl
               fullWidth
-              sx={{ minWidth: 300 }}
+              sx={{minWidth: 300}}
             >
               <InputLabel htmlFor="parentId">Parent Location</InputLabel>
               <Select

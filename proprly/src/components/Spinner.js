@@ -1,5 +1,5 @@
 import React from 'react';
-import { CircularProgress, Box } from '@material-ui/core';
+import {CircularProgress, Box} from '@material-ui/core';
 
 const LoadingSpinner = () => (
   <Box>

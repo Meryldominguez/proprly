@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Box, Grid, TextField, Button,
 } from '@material-ui/core';
@@ -13,7 +13,7 @@ const ProfileForm = () => {
   } = useContext(UserContext);
   const [formData, setFormData] = useState(profile);
 
-  const { alerts, setAlerts } = useContext(AlertContext);
+  const {alerts, setAlerts} = useContext(AlertContext);
 
   useEffect(() => {
     let email; let firstName; let lastName; let
@@ -33,7 +33,12 @@ const ProfileForm = () => {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     try {
-      if (!formData.password) throw Object({ severity: 'info', msg: 'Password required to confirm changes!' });
+      if (!formData.password) {
+        throw Object(
+            {
+              severity: 'info',
+              msg: 'Password required to confirm changes!'});
+      };
       if (await authProfile(formData.password)) {
         const trimmedData = {
           email: formData.email.trim(),
@@ -42,49 +47,53 @@ const ProfileForm = () => {
           phone: formData.phone ? formData.phone.trim() : null,
         };
         await updateProfile(trimmedData);
-        setFormData({ ...trimmedData, password: '' });
+        setFormData({...trimmedData, password: ''});
       }
-      setAlerts([...alerts, { severity: 'success', msg: 'Profile updated!' }]);
+      setAlerts([...alerts, {severity: 'success', msg: 'Profile updated!'}]);
     } catch (error) {
       console.log(error);
-      setFormData({ ...formData, password: '' });
-      setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setFormData({...formData, password: ''});
+      setAlerts([
+        ...error.map((e) => {
+          const err = {severity: e.severity || 'error', msg: e.msg};
+          return err;
+        })]);
     }
   };
 
   const handleChange = (evt) => {
-    const { name, value } = evt.target;
+    const {name, value} = evt.target;
     setFormData({
       ...formData,
       [name]: value,
     });
   };
 
-  const isFormDirty = () => !((profile.email === formData.email
-            && profile.firstName === formData.firstName
-            && profile.lastName === formData.lastName
-            && profile.phone === formData.phone));
+  const isFormDirty = () => !((profile.email === formData.email &&
+            profile.firstName === formData.firstName &&
+            profile.lastName === formData.lastName &&
+            profile.phone === formData.phone));
   const resetForm = () => {
-    const { email, firstName, lastName } = profile;
+    const {email, firstName, lastName} = profile;
     setFormData({
       email,
       firstName,
       lastName,
       password: '',
     });
-    setProfile({ ...profile });
+    setProfile({...profile});
   };
   return (
     <>
-      {!isLoading && profile
+      {!isLoading && profile ?
 
-        ? (
+        (
           <Box component="form" onSubmit={handleSubmit} spacing={8}>
             <Grid
               container
               justifyContent="center"
               alignContent="center"
-              rowSpacing={{ xs: 4 }}
+              rowSpacing={{xs: 4}}
               spacing={2}
             >
               <Grid item xs={5}>
@@ -150,17 +159,39 @@ const ProfileForm = () => {
                 />
               </Grid>
               <Grid item xs={5} justifyContent="center">
-                {isFormDirty()
-                  ? <Button variant="outlined" color="primary" xs={10} fullWidth onClick={resetForm}>Reset</Button>
-                  : <Button disabled variant="outlined" color="primary" xs={10} fullWidth onClick={resetForm}>Reset</Button>}
+                {isFormDirty() ?
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    xs={10}
+                    fullWidth
+                    onClick={resetForm}>
+                    Reset
+                  </Button> :
+                  <Button
+                    disabled
+                    variant="outlined"
+                    color="primary"
+                    xs={10}
+                    fullWidth
+                    onClick={resetForm}>
+                    Reset
+                  </Button>}
               </Grid>
               <Grid item xs={5} justifyContent="center">
-                <Button variant="contained" color="primary" xs={10} fullWidth onClick={handleSubmit}>Update Profile</Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  xs={10}
+                  fullWidth
+                  onClick={handleSubmit}>
+                  Update Profile
+                </Button>
               </Grid>
             </Grid>
           </Box>
-        )
-        : <LoadingSpinner />}
+        ) :
+        <LoadingSpinner />}
     </>
   );
 };

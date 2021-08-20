@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import UserContext from '../../context/UserContext';
 
-import { useFetchLots } from '../../hooks/useFetch';
+import {useFetchLots} from '../../hooks/useFetch';
 import CardWrapper from '../CardWrapper';
 import LoadingSpinner from '../Spinner';
 
@@ -21,9 +21,9 @@ import SearchForm from '../../forms/LotSearchForm';
 import LotFeature from './LotFeature';
 import LotList from './LotList';
 
-const LotDashboard = ({ searchTerm }) => {
-  const { profile, isLoading } = useContext(UserContext);
-  const { featuredId } = useParams();
+const LotDashboard = ({searchTerm}) => {
+  const {profile, isLoading} = useContext(UserContext);
+  const {featuredId} = useParams();
 
   const queryString = searchTerm ? `?searchTerm=${searchTerm}` : '';
 
@@ -32,12 +32,12 @@ const LotDashboard = ({ searchTerm }) => {
 
   const [lots, lotsLoading, search, refreshLots] = useFetchLots(queryString);
 
-  return !isLoading && !lotsLoading
-    ? (
+  return !isLoading && !lotsLoading ?
+    (
       <Grid
         container
         rowSpacing={3}
-        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+        columnSpacing={{xs: 1, sm: 2, md: 3}}
         justifyContent="center"
       >
         <Grid item xs={12}>
@@ -51,16 +51,16 @@ const LotDashboard = ({ searchTerm }) => {
         <Divider spacing={4} />
         <Grid item xs={4}>
 
-          {lots.length > 0
-            ? (
+          {lots.length > 0 ?
+            (
               <LotList
                 currentFeature={id}
                 feature={(i) => setId(i)}
                 setTab={(idx) => setView(idx)}
                 lots={lots}
               />
-            )
-            : (
+            ) :
+            (
               <CardWrapper>
                 <Typography spacing={3}>
                   No results for your search
@@ -81,8 +81,8 @@ const LotDashboard = ({ searchTerm }) => {
           />
         </Grid>
       </Grid>
-    )
-    : <LoadingSpinner />;
+    ) :
+    <LoadingSpinner />;
 };
 
 export default LotDashboard;

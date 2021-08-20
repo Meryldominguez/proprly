@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import ProprlyApi from '../api';
 
 const useAuth = () => {
@@ -14,27 +14,27 @@ const useAuth = () => {
   }, [user]);
 
   const signup = async (formData) => {
-    const resp = await ProprlyApi.Signup(formData);
+    const resp = await ProprlyApi.signup(formData);
     if (!resp.error) {
       ProprlyApi.token = resp.token;
       window.localStorage.setItem('username', resp.username);
       window.localStorage.setItem('token', resp.token);
 
-      setUser({ ...resp });
+      setUser({...resp});
       return resp;
     }
     return resp.error;
   };
 
-  const login = async ({ username, password }) => {
-    const resp = await ProprlyApi.Login({ username, password });
+  const login = async ({username, password}) => {
+    const resp = await ProprlyApi.login({username, password});
     console.log(resp);
     if (!resp.error) {
       ProprlyApi.token = resp.token;
       window.localStorage.setItem('username', resp.username);
       window.localStorage.setItem('token', resp.token);
 
-      setUser({ ...resp, username });
+      setUser({...resp, username});
       return resp;
     }
     return resp.error;

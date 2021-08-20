@@ -17,7 +17,7 @@ import {
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
 
-const ProdNewForm = ({ refreshProds, refreshFeature, setView }) => {
+const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
   const initial = {
     title: '',
     notes: '',
@@ -28,7 +28,7 @@ const ProdNewForm = ({ refreshProds, refreshFeature, setView }) => {
   const history = useHistory();
   const [formData, setFormData] = useState(initial);
 
-  const { alerts, setAlerts } = useContext(AlertContext);
+  const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
     console.log(formData);
@@ -40,22 +40,28 @@ const ProdNewForm = ({ refreshProds, refreshFeature, setView }) => {
         dateStart: formData.dateStart || null,
         dateEnd: formData.dateEnd || null,
       };
-      console.log({ ...formData, ...trimmedData });
-      const newProd = await ProprlyApi.newProd({ ...formData, ...trimmedData });
+      console.log({...formData, ...trimmedData});
+      const newProd = await ProprlyApi.newProd({...formData, ...trimmedData});
       history.push(`/productions/${newProd.id}`);
       refreshFeature(newProd.id);
       refreshProds();
       setView('1');
-      setAlerts([...alerts, { severity: 'success', msg: 'Production create!' }]);
+      setAlerts([...alerts, {severity: 'success', msg: 'Production create!'}]);
     } catch (error) {
       console.log(error);
-      setFormData({ ...formData });
-      setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setFormData({...formData});
+      setAlerts([
+        ...error.map((e) => {
+          const err = {severity: e.severity || 'error', msg: e.msg};
+          return err;
+        }),
+      ],
+      );
     }
   };
 
   const handleChange = (evt) => {
-    const { name, value, checked } = evt.target;
+    const {name, value, checked} = evt.target;
     setFormData({
       ...formData,
       [name]: name === 'active' ? checked : value,
@@ -70,7 +76,7 @@ const ProdNewForm = ({ refreshProds, refreshFeature, setView }) => {
     <Box component="form" onSubmit={handleSubmit}>
       <Grid
         container
-        rowSpacing={{ xs: 4 }}
+        rowSpacing={{xs: 4}}
         spacing={2}
         justifyContent="center"
       >
@@ -81,12 +87,14 @@ const ProdNewForm = ({ refreshProds, refreshFeature, setView }) => {
                 checked={formData.active}
                 name="active"
                 onChange={handleChange}
-                inputProps={{ 'aria-label': 'controlled' }}
+                inputProps={{'aria-label': 'controlled'}}
               />
-          )}
+            )}
             color="secondary"
             labelPlacement="end"
-            label={formData.active ? 'Active Production' : 'Inactive Production'}
+            label={
+              formData.active ?
+                'Active Production' : 'Inactive Production'}
           />
         </Grid>
         <Grid xs={8} item align="center">
@@ -110,7 +118,7 @@ const ProdNewForm = ({ refreshProds, refreshFeature, setView }) => {
                 name="dateStart"
                 label="Start Date"
                 variant="outlined"
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{shrink: true}}
                 value={formData.dateStart || ''}
                 onChange={handleChange}
               />
@@ -121,7 +129,7 @@ const ProdNewForm = ({ refreshProds, refreshFeature, setView }) => {
                 type="date"
                 name="dateEnd"
                 label="End Date"
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{shrink: true}}
                 variant="outlined"
                 value={formData.dateEnd || ''}
                 onChange={handleChange}

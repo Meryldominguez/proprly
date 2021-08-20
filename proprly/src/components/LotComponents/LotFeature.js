@@ -1,38 +1,36 @@
 import React, {
   useEffect,
-  useState,
 } from 'react';
 import TabBar from '../TabBar';
 import LotDetail from './LotDetail';
 // import LotEditForm from '../forms/LotEditForm'
 import LotNewForm from '../../forms/LotNewForm';
 import LotDelete from './LotDelete';
-import { useFetchLot } from '../../hooks/useFetch';
+import {useFetchLot} from '../../hooks/useFetch';
 import LoadingSpinner from '../Spinner';
-import ProprlyApi from '../../api';
 
 const LotFeature = (
-  {
-    query,
-    currentTab,
-    setTab,
-    currentFeature,
-    profile,
-    setFeature,
-    refreshLots,
-  },
+    {
+      query,
+      currentTab,
+      setTab,
+      currentFeature,
+      profile,
+      setFeature,
+      refreshLots,
+    },
 ) => {
   const [item, itemLoading, refreshFeature] = useFetchLot(currentFeature);
 
   useEffect(() => refreshFeature(currentFeature), [currentFeature]);
 
   if (item && item.id) {
-    return (!itemLoading)
-      ? (
+    return (!itemLoading) ?
+      (
         <TabBar
           startingTab={currentTab}
-          tabsArr={profile.isAdmin
-            ? [
+          tabsArr={profile.isAdmin ?
+            [
               {
                 title: 'New Item',
                 component:
@@ -62,8 +60,8 @@ const LotFeature = (
                 item={item}
               />,
               },
-            ]
-            : [
+            ] :
+            [
               {
                 title: 'New Item',
                 component:
@@ -83,23 +81,23 @@ const LotFeature = (
               },
             ]}
         />
-      )
-      : <LoadingSpinner />;
+      ) :
+      <LoadingSpinner />;
   }
-  return (!itemLoading && profile)
-    ? (
+  return (!itemLoading && profile) ?
+    (
       <TabBar
         startingTab={currentTab}
         tabsArr={
-        [
-          { title: 'New Item', component: <span>Working on it!</span> },
-          {
-            title: 'Details',
-            component:
+          [
+            {title: 'New Item', component: <span>Working on it!</span>},
+            {
+              title: 'Details',
+              component:
         <LotDetail item={item} />,
-          },
-        ]
-}
+            },
+          ]
+        }
       />
     ) : <LoadingSpinner />;
 };

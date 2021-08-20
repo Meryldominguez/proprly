@@ -5,7 +5,7 @@ import React, {
 import {
   useHistory,
 } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 import {
   List,
   ListItem,
@@ -30,13 +30,13 @@ const RecursiveList = ({
 
   const handleOpen = (id) => {
     console.log(id, openId, 'handle open');
-    return id === openId
-      ? setOpenId(null)
-      : setOpenId(id);
+    return id === openId ?
+      setOpenId(null) :
+      setOpenId(id);
   };
   return (
     <List
-      style={{ marginLeft: defaultDepth === 0 ? 0 : nextDepth }}
+      style={{marginLeft: defaultDepth === 0 ? 0 : nextDepth}}
       sx={{
         backgroundColor: 'divider',
       }}
@@ -53,22 +53,22 @@ const RecursiveList = ({
             open={(id) => handleOpen(id)}
             openId={openId}
           />
-          {loc.children
-        && (
-        <Collapse
-          key={uuid()}
-          in={openId === loc.locationId}
-          timeout="auto"
-        >
-          <RecursiveList
+          {loc.children &&
+        (
+          <Collapse
             key={uuid()}
-            color={color === 'secondary' ? 'disabled' : 'secondary'}
-            currentFeature={currentFeature}
-            feature={feature}
-            locations={loc.children}
-            defaultDepth={nextDepth}
-          />
-        </Collapse>
+            in={openId === loc.locationId}
+            timeout="auto"
+          >
+            <RecursiveList
+              key={uuid()}
+              color={color === 'secondary' ? 'disabled' : 'secondary'}
+              currentFeature={currentFeature}
+              feature={feature}
+              locations={loc.children}
+              defaultDepth={nextDepth}
+            />
+          </Collapse>
         )}
         </Fragment>
       ))}
@@ -99,16 +99,16 @@ const SingleLoc = ({
         </ListItemIcon>
         <ListItemText primary={loc.locationName} />
       </ListItemButton>
-      {loc.children
-   && (
-   <ListItemIcon
-     disabled={false}
-     align="right"
-     onClick={() => open(loc.locationId)}
-   >
-     {`[${loc.children.length}]`}
-     {loc.locationId === openId ? <ExpandLess /> : <ExpandMore />}
-   </ListItemIcon>
+      {loc.children &&
+   (
+     <ListItemIcon
+       disabled={false}
+       align="right"
+       onClick={() => open(loc.locationId)}
+     >
+       {`[${loc.children.length}]`}
+       {loc.locationId === openId ? <ExpandLess /> : <ExpandMore />}
+     </ListItemIcon>
    )}
     </ListItem>
 
@@ -117,14 +117,14 @@ const SingleLoc = ({
 
 const LocList = ({
   locations, isLoading, currentFeature, feature,
-}) => (!isLoading
-  ? (
+}) => (!isLoading ?
+  (
     <RecursiveList
       isLoading={isLoading}
       locations={locations}
       currentFeature={currentFeature}
       feature={feature}
     />
-  )
-  : <LoadingSpinner />);
+  ) :
+  <LoadingSpinner />);
 export default LocList;

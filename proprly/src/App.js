@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import logo from './logo.png';
+import React, {useState} from 'react';
+import {BrowserRouter} from 'react-router-dom';
 import './App.css';
-
-import { ThemeProvider } from '@material-ui/core/styles';
-import { Container } from '@material-ui/core';
+import {ThemeProvider} from '@material-ui/core/styles';
+import {Container} from '@material-ui/core';
 import ProprlyTheme from './ProprlyTheme';
-
+import logo from './logo.png';
 import AlertContext from './context/AlertContext';
 import UserContext from './context/UserContext';
 import Navbar from './Navbar';
 import AlertContainer from './components/AlertContainer';
 
 import useAuth from './hooks/useAuth';
-import { useGetUserProfile } from './hooks/useFetch';
+import {useGetUserProfile} from './hooks/useFetch';
 import Routes from './routes/Routes';
 
+// eslint-disable-next-line require-jsdoc
 function App() {
   const [user, signup, login, logout] = useAuth();
 
@@ -34,11 +33,19 @@ function App() {
       <ThemeProvider theme={ProprlyTheme}>
         <Container className="App">
           <UserContext.Provider value={{
-            user, signup, login, profile, setProfile, isLoading, authProfile, updateProfile, apply,
+            user,
+            signup,
+            login,
+            profile,
+            setProfile,
+            isLoading,
+            authProfile,
+            updateProfile,
+            apply,
           }}
           >
             <BrowserRouter>
-              <AlertContext.Provider value={{ alerts, setAlerts }}>
+              <AlertContext.Provider value={{alerts, setAlerts}}>
                 <Navbar logout={logout} />
                 <AlertContainer alerts={alerts} setAlerts={setAlerts} />
                 {!isLoading && <Routes user={user} isLoading={isLoading} />}

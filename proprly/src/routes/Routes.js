@@ -4,14 +4,15 @@ import LoggedInRoutes from './LoggedInRoutes';
 import AnonRoutes from './AnonRoutes';
 import LoadingSpinner from '../components/Spinner';
 
-function Routes({ user, isLoading }) {
+// eslint-disable-next-line require-jsdoc
+function Routes({user, isLoading}) {
   return !isLoading ? (
     <>
-      {user
-        ? <LoggedInRoutes username={user.username} />
-        : <AnonRoutes />}
+      {user ?
+        <LoggedInRoutes username={user.username} /> :
+        <AnonRoutes />}
     </>
-  )
-    : <LoadingSpinner />;
+  ) :
+    <LoadingSpinner />;
 }
 export default Routes;

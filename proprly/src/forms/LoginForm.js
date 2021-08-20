@@ -1,19 +1,19 @@
-import React, { useContext, useState } from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Box, Grid, Button,
   TextField,
 } from '@material-ui/core';
 
-import { useHistory } from 'react-router';
+import {useHistory} from 'react-router';
 import AlertContext from '../context/AlertContext';
 
-const LoginForm = ({ userLogin }) => {
+const LoginForm = ({userLogin}) => {
   const initialState = {
     username: '',
     password: '',
   };
 
-  const { alerts, setAlerts } = useContext(AlertContext);
+  const {alerts, setAlerts} = useContext(AlertContext);
   const [formData, setFormData] = useState(initialState);
 
   const history = useHistory();
@@ -22,16 +22,19 @@ const LoginForm = ({ userLogin }) => {
     evt.preventDefault();
     try {
       await userLogin(formData);
-      setAlerts([...alerts, { severity: 'success', msg: 'Welcome back!' }]);
+      setAlerts([...alerts, {severity: 'success', msg: 'Welcome back!'}]);
       history.push('/');
     } catch (error) {
       console.log(error);
-      setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setAlerts([...error.map((e) => {
+        const err = {severity: e.severity || 'error', msg: e.msg};
+        return err;
+      })]);
     }
   };
 
   const handleChange = (evt) => {
-    const { name, value } = evt.target;
+    const {name, value} = evt.target;
     setFormData({
       ...formData,
       [name]: value,
@@ -40,7 +43,10 @@ const LoginForm = ({ userLogin }) => {
   };
   return (
     <Box component="form" onSubmit={handleSubmit} spacing={8}>
-      <Grid container justifyContent="space-around" alignContent="center" rowSpacing={{ xs: 4 }}>
+      <Grid container
+        justifyContent="space-around"
+        alignContent="center"
+        rowSpacing={{xs: 4}}>
         <Grid item xs={10}>
           <TextField
             id="username-input"
@@ -66,7 +72,14 @@ const LoginForm = ({ userLogin }) => {
           />
         </Grid>
         <Grid item xs={12} justifyContent="center">
-          <Button xs={10} variant="contained" color="primary" fullWidth onClick={handleSubmit}> Login!</Button>
+          <Button
+            xs={10}
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleSubmit}>
+            Login!
+          </Button>
         </Grid>
       </Grid>
     </Box>

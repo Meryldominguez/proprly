@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   AppBar,
   Toolbar,
@@ -16,7 +17,7 @@ import {
   Link,
 } from 'react-router-dom';
 
-function Navbar({ logout }) {
+function Navbar({logout}) {
   return (
     <Box>
       <AppBar position="sticky">
@@ -25,7 +26,7 @@ function Navbar({ logout }) {
             size="large"
             edge="start"
             color="inherit"
-            sx={{ mr: 2 }}
+            sx={{mr: 2}}
             component={Link}
             to="/"
           >
@@ -36,15 +37,15 @@ function Navbar({ logout }) {
               component="div"
               sx={{
                 pl: 2,
-                display: { xs: 'none', sm: 'block' },
+                display: {xs: 'none', sm: 'block'},
               }}
               noWrap
             >
               Proprly
             </Typography>
           </IconButton>
-          <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{flexGrow: 1}} />
+          <Box sx={{display: {xs: 'none', md: 'flex'}}}>
             <Button component={Link} to="/lots" color="inherit">Inventory</Button>
             <Button component={Link} to="/locations" color="inherit">Locations</Button>
             <Button component={Link} to="/productions" color="inherit">Productions</Button>

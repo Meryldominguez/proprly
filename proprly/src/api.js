@@ -12,16 +12,16 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://localhost:3001';
 
 class ProprlyApi {
   // the token for interactive with the API will be stored here.
-  static token;
+  // static token;
 
   static async request(endpoint, data = {}, method = 'get') {
     console.debug('API Call:', endpoint, '\nData:', data, '\nMethod:', method);
 
     const url = `${BASE_URL}/${endpoint}`;
-    const headers = { Authorization: `Bearer ${ProprlyApi.token}` };
-    const params = (method === 'get')
-      ? data
-      : {};
+    const headers = {Authorization: `Bearer ${ProprlyApi.token}`};
+    const params = (method === 'get') ?
+      data :
+      {};
 
     try {
       return (await axios({
@@ -29,10 +29,10 @@ class ProprlyApi {
       })).data;
     } catch (err) {
       console.error('API Error:', err);
-      const { message } = err.response.data.error;
-      throw Array.isArray(message)
-        ? message.map((m, inx) => message[inx] = { msg: m })
-        : [{ msg: message }];
+      const {message} = err.response.data.error;
+      throw Array.isArray(message) ?
+        message.map((m, inx) => message[inx] = {msg: m}) :
+        [{msg: message}];
     }
   }
 
@@ -41,7 +41,7 @@ class ProprlyApi {
   /** create a new Lot. */
 
   static async newLot(data) {
-    const res = await this.request('lots/', { ...data }, 'post');
+    const res = await this.request('lots/', {...data}, 'post');
     return res.lot;
   }
   /** Get details on a lot by id. */
@@ -59,7 +59,7 @@ class ProprlyApi {
 
   /** Get all lots. Searching can be accomplished by query string */
   static async updateLot(id, data) {
-    const res = await this.request('lots/', { data }, 'patch');
+    const res = await this.request('lots/', {data}, 'patch');
     return res.lot;
   }
 
@@ -75,7 +75,7 @@ class ProprlyApi {
   /** create a new Loc. */
 
   static async newLoc(data) {
-    const res = await this.request('locations/', { ...data }, 'post');
+    const res = await this.request('locations/', {...data}, 'post');
     return res.location;
   }
   /** Get details on a location by id. */
@@ -99,7 +99,7 @@ class ProprlyApi {
 
   /** Get all location. Searching can be accomplished by query string */
   static async updateLoc(id, data) {
-    const res = await this.request(`locations/${id}`, { ...data }, 'patch');
+    const res = await this.request(`locations/${id}`, {...data}, 'patch');
     return res.location;
   }
 
@@ -118,7 +118,7 @@ class ProprlyApi {
     data.dateStart = data.dateStart ? new Date(data.dateStart).toUTCString() : null;
     data.dateEnd = data.dateEnd ? new Date(data.dateEnd).toUTCString() : null;
 
-    const res = await this.request('productions/', { ...data }, 'post');
+    const res = await this.request('productions/', {...data}, 'post');
     return res.production;
   }
   /** Get details on a lot by id. */
@@ -139,7 +139,7 @@ class ProprlyApi {
     data.dateStart = data.dateStart ? new Date(data.dateStart).toUTCString() : null;
     data.dateEnd = data.dateEnd ? new Date(data.dateEnd).toUTCString() : null;
 
-    const res = await this.request(`productions/${id}`, { ...data }, 'patch');
+    const res = await this.request(`productions/${id}`, {...data}, 'patch');
     return res.production;
   }
 
@@ -170,7 +170,7 @@ class ProprlyApi {
   }
 
   /** User profile edit */
-  static async patchProfile(username, { password, ...data }) {
+  static async patchProfile(username, {password, ...data}) {
     const res = await this.request(`users/${username}`, data, 'patch');
     return res;
   }

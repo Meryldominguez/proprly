@@ -2,7 +2,7 @@ import React from 'react';
 import {
   useHistory,
 } from 'react-router-dom';
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 import {
   Box,
   ListItem,
@@ -11,10 +11,10 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import RedeemIcon from '@material-ui/icons/Redeem';
-import { FixedSizeList } from 'react-window';
+import {FixedSizeList} from 'react-window';
 
-const LotList = ({ currentFeature, feature, lots }) => {
-  const renderList = ({ index, style }) => (
+const LotList = ({currentFeature, feature, lots}) => {
+  const renderList = ({index, style}) => (
     <>
       <SingleLot
         style={style}
@@ -27,7 +27,7 @@ const LotList = ({ currentFeature, feature, lots }) => {
   );
   return lots.length > 0 ? (
     <Box
-      sx={{ bgcolor: 'background.paper' }}
+      sx={{bgcolor: 'background.paper'}}
     >
       <FixedSizeList
         height={700}
@@ -40,7 +40,7 @@ const LotList = ({ currentFeature, feature, lots }) => {
     </Box>
   ) : (
     <Box
-      sx={{ bgcolor: 'background.paper' }}
+      sx={{bgcolor: 'background.paper'}}
     />
   );
 };
@@ -60,7 +60,7 @@ const SingleLot = ({
     <ListItem component="div" style={style} disablePadding>
       <ListItemButton
         onClick={handleFeature}
-        sx={{ pl: 4 }}
+        sx={{pl: 4}}
         disabled={featured}
         selected={featured}
       >

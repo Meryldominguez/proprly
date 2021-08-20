@@ -2,6 +2,7 @@ import React, {
   useContext,
   useState,
 } from 'react';
+import {v4 as uuid} from 'uuid';
 import {
   useHistory,
 } from 'react-router-dom';
@@ -43,7 +44,7 @@ const LocNewForm = ({
   const history = useHistory();
   const [formData, setFormData] = useState(initial);
 
-  const { alerts, setAlerts } = useContext(AlertContext);
+  const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
     console.log(formData);
@@ -54,22 +55,22 @@ const LocNewForm = ({
         notes: formData.notes.trim(),
         parentId: formData.parentId === 0 ? null : formData.parentId,
       };
-      console.log({ ...formData, ...trimmedData });
-      const newLoc = await ProprlyApi.newLoc({ ...formData, ...trimmedData });
+      console.log({...formData, ...trimmedData});
+      const newLoc = await ProprlyApi.newLoc({...formData, ...trimmedData});
       setTab('0');
       setFeature(newLoc.id);
       refreshLocs();
       history.push(`/locations/${newLoc.id}`);
-      setAlerts([...alerts, { severity: 'success', msg: 'Location created!' }]);
+      setAlerts([...alerts, {severity: 'success', msg: 'Location created!'}]);
     } catch (error) {
       console.log(error);
-      setFormData({ ...formData });
-      setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setFormData({...formData});
+      setAlerts([...error.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };
 
   const handleChange = (evt) => {
-    const { name, value } = evt.target;
+    const {name, value} = evt.target;
     console.log(name, value);
     setFormData({
       ...formData,
@@ -85,7 +86,8 @@ const LocNewForm = ({
     const nextDepth = defaultDepth + step;
 
     return list.map((item) => [<MenuItem
-      style={{ marginLeft: defaultDepth === 0 ? 0 : nextDepth }}
+      key={uuid()}
+      style={{marginLeft: defaultDepth === 0 ? 0 : nextDepth}}
       value={item.locationId}
     >
       {item.locationName}
@@ -98,7 +100,7 @@ const LocNewForm = ({
       <Box component="form" onSubmit={handleSubmit}>
         <Grid
           container
-          rowSpacing={{ xs: 4 }}
+          rowSpacing={{xs: 4}}
           spacing={2}
           justifyContent="center"
         >
@@ -115,7 +117,7 @@ const LocNewForm = ({
             />
           </Grid>
           <Grid item xs={8}>
-            <FormControl fullWidth sx={{ minWidth: 300 }}>
+            <FormControl fullWidth sx={{minWidth: 300}}>
               <InputLabel htmlFor="parentId">Parent Location</InputLabel>
               <Select
                 value={formData.parentId}

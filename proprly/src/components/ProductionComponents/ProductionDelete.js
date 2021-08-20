@@ -16,7 +16,7 @@ import ProprlyApi from '../../api';
 const ProductionDelete = ({
   refreshProds, refreshFeature, setView, id,
 }) => {
-  const { setAlerts } = useContext(AlertContext);
+  const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
 
   const handleClick = async (evt) => {
@@ -28,9 +28,9 @@ const ProductionDelete = ({
       refreshProds();
       setView('0');
       refreshFeature();
-      setAlerts([{ variant: 'success', msg: `Locatiion #${id} has been deleted` }]);
+      setAlerts([{variant: 'success', msg: `Locatiion #${id} has been deleted`}]);
     } catch (err) {
-      setAlerts([...err.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };
 
@@ -39,7 +39,7 @@ const ProductionDelete = ({
       <Grid item>
         <Alert severity="info">
           <AlertTitle>Deleting a production is not reccomended!</AlertTitle>
-          Consider 'Archiving' a production instead.
+          Consider `&lsquo;`Archiving`&rsquo;` a production instead.
         </Alert>
       </Grid>
       <Grid item>

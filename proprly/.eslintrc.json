@@ -1,31 +1,28 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "node": true
     },
     "extends": [
         "plugin:react/recommended",
-        "airbnb"
+        "google"
     ],
-    
     "parserOptions": {
-        "babelOptions": {
-            "presets": [
-                "@babel/preset-react"
-            ]
-        },
         "ecmaFeatures": {
             "jsx": true
         },
         "ecmaVersion": 12,
-        "sourceType": "module",
-        "requireConfigFile":false
+        "sourceType": "module"
     },
-    "parser": "@babel/eslint-parser",
     "plugins": [
-        "react",
-        "@babel"
+        "react"
     ],
     "rules": {
+        "react/prop-types": "off",
+        "max-len": ["error", { "code": 100 }],
+        "valid-jsdoc":"off",
+        "require-jsdoc":"off",
+        "no-unused-vars":"warn"
     }
 }

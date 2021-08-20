@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, {useContext} from 'react';
 import UserContext from '../../context/UserContext';
 import CardWrapper from '../CardWrapper';
 import TabBar from '../TabBar';
@@ -9,15 +9,15 @@ import ProdEditForm from '../../forms/ProductionEditForm';
 const ProductionFeature = ({
   setProds, setFeature, setView, production,
 }) => {
-  const { profile } = useContext(UserContext);
+  const {profile} = useContext(UserContext);
 
-  return (profile && production.id)
-    ? (
+  return (profile && production.id) ?
+    (
       <CardWrapper title={production.title}>
         <TabBar
-          tabsArr={profile.isAdmin
-            ? [
-              { title: 'Details', component: <ProdDetail production={production} /> },
+          tabsArr={profile.isAdmin ?
+            [
+              {title: 'Details', component: <ProdDetail production={production} />},
               {
                 title: 'Edit',
                 component:
@@ -38,8 +38,8 @@ const ProductionFeature = ({
                 setView={setView}
               />,
               },
-            ]
-            : [
+            ] :
+            [
               {
                 title: 'Details',
                 component: <ProdDetail production={production} />,
@@ -56,8 +56,8 @@ const ProductionFeature = ({
             ]}
         />
       </CardWrapper>
-    )
-    : (
+    ) :
+    (
       <CardWrapper title={production.name}>
         <span>
           {production.notes}

@@ -1,10 +1,11 @@
-import { useEffect, useState, useContext } from 'react';
+import {useEffect, useState, useContext} from 'react';
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
 
 const formatDate = (date) => {
   const year = String(date.getFullYear());
-  const month = String(date.getMonth() + 1).length < 2 ? `0${date.getMonth() + 1}` : String(date.getMonth() + 1);
+  const month = String(date.getMonth() + 1).length < 2 ?
+   `0${date.getMonth() + 1}` : String(date.getMonth() + 1);
   const day = String(date.getDate()).length < 2 ? `0${date.getDate()}` : String(date.getDate());
 
   return `${year}-${month}-${day}`;
@@ -15,7 +16,7 @@ const useFetchLots = (q) => {
   const [lots, setLots] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    async function load() {
+    const load = async ()=>{
       try {
         const resp = await ProprlyApi.getLots(query);
         setLots(resp);
@@ -24,7 +25,7 @@ const useFetchLots = (q) => {
       } catch (err) {
         console.error(err);
       }
-    }
+    };
     load();
   }, [query, isLoading]);
 
@@ -44,12 +45,12 @@ const useFetchLot = (lotId) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
+    const load = async ()=>{
       setIsLoading(true);
       try {
-        const resp = (id)
-          ? await ProprlyApi.getLot(id)
-          : {
+        const resp = (id) ?
+          await ProprlyApi.getLot(id) :
+          {
             id: null,
             name: 'Featured Item',
             description: 'Select an item on the side for more information',
@@ -62,7 +63,7 @@ const useFetchLot = (lotId) => {
         setIsLoading(false);
         console.log(err);
       }
-    }
+    };
     load();
   }, [id]);
 
@@ -77,12 +78,12 @@ const useFetchLocations = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [locations, setLocations] = useState();
   useEffect(() => {
-    async function load() {
+    const load = async ()=>{
       const resp = await ProprlyApi.getLocs(query);
       setLocations(resp);
       setIsLoading(false);
       return resp;
-    }
+    };
     load();
   }, [query, isLoading]);
 
@@ -93,7 +94,7 @@ const useFetchLocations = () => {
 };
 
 const useFetchLocation = (locId) => {
-  const { setAlerts } = useContext(AlertContext);
+  const {setAlerts} = useContext(AlertContext);
 
   const [id, setId] = useState(locId);
   const [isLoading, setIsLoading] = useState(true);
@@ -104,12 +105,12 @@ const useFetchLocation = (locId) => {
   };
 
   useEffect(() => {
-    async function load() {
+    const load = async ()=> {
       setIsLoading(true);
       try {
-        const resp = id
-          ? await ProprlyApi.getLoc(id)
-          : {
+        const resp = id ?
+          await ProprlyApi.getLoc(id) :
+          {
             id: null,
             name: 'Featured location',
             notes: 'Select a location on the side for more information',
@@ -118,9 +119,9 @@ const useFetchLocation = (locId) => {
         setIsLoading(false);
       } catch (err) {
         refreshFeature(null);
-        setAlerts([...err.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+        setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
       }
-    }
+    };
     load();
   }, [id]);
 
@@ -132,7 +133,7 @@ const useFetchProductions = (q) => {
   const [prods, setProds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    async function load() {
+    const load = async ()=> {
       try {
         const resp = await ProprlyApi.searchProds(query);
         setProds(resp);
@@ -141,7 +142,7 @@ const useFetchProductions = (q) => {
       } catch (err) {
         console.error(err);
       }
-    }
+    };
     load();
   }, [query, isLoading]);
 
@@ -157,11 +158,11 @@ const useFetchProduction = (prodId) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
+    const load = async ()=>{
       try {
-        const resp = (id)
-          ? await ProprlyApi.getProd(id)
-          : {
+        const resp = (id) ?
+          await ProprlyApi.getProd(id) :
+          {
             id: null,
             name: 'Featured Production',
             description: 'Select an production on the side for more information',
@@ -177,7 +178,7 @@ const useFetchProduction = (prodId) => {
         setId(null);
         console.log(err);
       }
-    }
+    };
     load();
   }, [id, isLoading]);
 
@@ -194,12 +195,12 @@ const useGetUserProfile = (username) => {
 
   useEffect(() => {
     setIsLoading(true);
-    async function load() {
+    const load = async ()=>{
       const res = await ProprlyApi.getProfile(username);
       setProfile(res.user);
       setIsLoading(false);
       return res;
-    }
+    };
     if (username) load();
     setIsLoading(false);
   }, [username, isLoading]);
@@ -210,7 +211,7 @@ const useGetUserProfile = (username) => {
     return resp;
   };
   const authProfile = async (password) => {
-    const resp = await ProprlyApi.Login({ username, password });
+    const resp = await ProprlyApi.login({username, password});
     return !!resp.token;
   };
 
@@ -224,5 +225,11 @@ const useGetUserProfile = (username) => {
 };
 
 export {
-  useFetchLots, useFetchLot, useFetchLocations, useFetchLocation, useFetchProductions, useFetchProduction, useGetUserProfile,
+  useFetchLots,
+  useFetchLot,
+  useFetchLocations,
+  useFetchLocation,
+  useFetchProductions,
+  useFetchProduction,
+  useGetUserProfile,
 };

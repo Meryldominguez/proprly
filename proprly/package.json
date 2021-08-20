@@ -21,11 +21,13 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
     "react-window": "^1.8.6",
+    "uuid": "^8.3.2",
     "web-vitals": "^1.1.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "lint": "eslint src",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -48,13 +50,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.15.0",
-    "@babel/eslint-plugin": "^7.14.5",
     "eslint": "^7.32.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-plugin-import": "^2.24.1",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0"
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-react": "^7.24.0"
   }
 }

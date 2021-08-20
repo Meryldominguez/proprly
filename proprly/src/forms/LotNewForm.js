@@ -12,7 +12,6 @@ import {
   TextField,
   FormControl,
   InputAdornment,
-  MenuItem,
   Button,
   FormControlLabel,
   FormGroup,
@@ -22,21 +21,8 @@ import CurrencyIcon from '@material-ui/icons/AttachMoney';
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
 
-import LoadingSpinner from '../components/Spinner';
 import CardWrapper from '../components/CardWrapper';
-import Counter from '../components/Counter';
 import AutoCompleteList from '../components/AutoCompleteList';
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
 
 const LotNewForm = ({
   setFeature, setTab, refreshLots,
@@ -44,7 +30,7 @@ const LotNewForm = ({
   const initial = {
     name: '',
     description: '',
-    location: { id: 0, name: '' },
+    location: {id: 0, name: ''},
     price: null,
     quantity: null,
   };
@@ -58,15 +44,16 @@ const LotNewForm = ({
   const [locsLoading, setLocsLoading] = useState(true);
 
   useEffect(() => {
-    async function loadLocs() {
+    // eslint-disable-next-line require-jsdoc
+    const loadLocs= async ()=>{
       const loc = await ProprlyApi.listLocs();
       setLocations(loc);
       setLocsLoading(false);
-    }
+    };
     loadLocs();
   }, []);
 
-  const { alerts, setAlerts } = useContext(AlertContext);
+  const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
@@ -78,20 +65,25 @@ const LotNewForm = ({
         quantity: formData.quantity ? Number(formData.quantity) : null,
         price: formData.quantity ? Number(formData.price) : null,
       };
-      const newLot = await ProprlyApi.newLot({ ...trimmedData });
+      const newLot = await ProprlyApi.newLot({...trimmedData});
       setTab('0');
       setFeature(newLot.id);
       refreshLots();
       history.push(`/lots/${newLot.id}`);
-      setAlerts([...alerts, { severity: 'success', msg: 'Item created!' }]);
+      setAlerts([...alerts, {severity: 'success', msg: 'Item created!'}]);
     } catch (error) {
-      setFormData({ ...formData });
-      setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
+      setFormData({...formData});
+      setAlerts([
+        ...error.map((e) => {
+          const err = {severity: e.severity || 'error', msg: e.msg};
+          return err;
+        })],
+      );
     }
   };
 
   const handleChange = (evt) => {
-    const { name, value } = evt.target;
+    const {name, value} = evt.target;
     setFormData({
       ...formData,
       [name]: value,
@@ -99,14 +91,14 @@ const LotNewForm = ({
   };
 
   const handleCheck = (evt) => {
-    const { name } = evt.target;
+    const {name} = evt.target;
     if (name === 'quantityCheck') {
       setQuantityInput(!quantityInput);
-      setFormData({ ...formData, quantity: quantityInput ? null : 0 });
+      setFormData({...formData, quantity: quantityInput ? null : 0});
     }
     if (name === 'priceCheck') {
       setPriceInput(!priceInput);
-      setFormData({ ...formData, price: priceInput ? null : 0 });
+      setFormData({...formData, price: priceInput ? null : 0});
     }
   };
 
@@ -119,7 +111,7 @@ const LotNewForm = ({
       <Box component="form" onSubmit={handleSubmit}>
         <Grid
           container
-          rowSpacing={{ xs: 4 }}
+          rowSpacing={{xs: 4}}
           spacing={2}
           justifyContent="center"
         >
@@ -141,7 +133,7 @@ const LotNewForm = ({
                 required
                 options={locations}
                 value={formData.location}
-                setValue={(location) => setFormData({ ...formData, location })}
+                setValue={(location) => setFormData({...formData, location})}
                 title="name"
                 val="id"
                 label="Location"
@@ -153,44 +145,51 @@ const LotNewForm = ({
               <FormControlLabel
                 align="left"
                 control={
-                  <Checkbox checked={priceInput} name="priceCheck" onChange={handleCheck} />
+                  <Checkbox
+                    checked={priceInput}
+                    name="priceCheck"
+                    onChange={handleCheck} />
                 }
                 label="Price:"
                 labelPlacement="start"
               />
-              {priceInput
-              && (
-              <TextField
-                value={formData.price}
-                name="price"
-                type="number"
-                onChange={handleChange}
-                inputProps={{ min: 0 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CurrencyIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
+              {priceInput &&
+              (
+                <TextField
+                  value={formData.price}
+                  name="price"
+                  type="number"
+                  onChange={handleChange}
+                  inputProps={{min: 0}}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <CurrencyIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
               )}
               <FormControlLabel
                 control={
-                  <Checkbox checked={quantityInput} name="quantityCheck" onChange={handleCheck} />
+                  <Checkbox
+                    checked={quantityInput}
+                    name="quantityCheck"
+                    onChange={handleCheck}
+                  />
                 }
                 label="Quantity:"
                 labelPlacement="start"
               />
-              {quantityInput
-              && (
-              <TextField
-                value={formData.quantity}
-                name="quantity"
-                inputProps={{ min: 0 }}
-                type="number"
-                onChange={handleChange}
-              />
+              {quantityInput &&
+              (
+                <TextField
+                  value={formData.quantity}
+                  name="quantity"
+                  inputProps={{min: 0}}
+                  type="number"
+                  onChange={handleChange}
+                />
               )}
             </FormGroup>
           </Grid>

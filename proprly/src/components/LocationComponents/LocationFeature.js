@@ -7,31 +7,31 @@ import LocEditForm from '../../forms/LocationEditForm';
 import LocNewForm from '../../forms/LocationNewForm';
 import LocDelete from './LocationDelete';
 import LoadingSpinner from '../Spinner';
-import { useFetchLocation } from '../../hooks/useFetch';
+import {useFetchLocation} from '../../hooks/useFetch';
 
 const LocFeature = (
-  {
-    currentFeature,
-    currentTab,
-    setTab,
-    locations,
-    locsLoading,
-    profile,
-    setFeature,
-    refreshLocs,
-  },
+    {
+      currentFeature,
+      currentTab,
+      setTab,
+      locations,
+      locsLoading,
+      profile,
+      setFeature,
+      refreshLocs,
+    },
 ) => {
   const [location, locLoading, refreshFeature] = useFetchLocation(currentFeature);
 
   useEffect(() => refreshFeature(currentFeature), [currentFeature]);
 
   if (location && location.id) {
-    return (!locLoading)
-      ? (
+    return (!locLoading) ?
+      (
         <TabBar
           startingTab={currentTab}
-          tabsArr={profile.isAdmin
-            ? [
+          tabsArr={profile.isAdmin ?
+            [
               {
                 title: 'New Location',
                 component:
@@ -67,8 +67,8 @@ const LocFeature = (
                 refreshLocs={refreshLocs}
               />,
               },
-            ]
-            : [{
+            ] :
+            [{
               title: 'New Location',
               component:
               <LocNewForm
@@ -95,8 +95,8 @@ const LocFeature = (
             },
             ]}
         />
-      )
-      : <LoadingSpinner />;
+      ) :
+      <LoadingSpinner />;
   }
 
   return (!locLoading && profile) ? (
@@ -114,7 +114,7 @@ const LocFeature = (
       <LocDetail location={location} />,
           },
         ]
-}
+      }
     />
   ) : <LoadingSpinner />;
 };

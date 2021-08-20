@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
-import { v4 as uuid } from 'uuid';
-import { Alert, Container } from '@material-ui/core';
+import React, {useEffect} from 'react';
+import {v4 as uuid} from 'uuid';
+import {Alert, Container} from '@material-ui/core';
 
+// eslint-disable-next-line max-len
 // https://dev.to/hibaeldursi/creating-a-contact-form-with-validation-with-react-and-material-ui-1am0
 
-const AlertContainer = ({ alerts, setAlerts }) => {
+const AlertContainer = ({alerts, setAlerts}) => {
   useEffect(() => {
     let timer;
     if (alerts.length > 0) {

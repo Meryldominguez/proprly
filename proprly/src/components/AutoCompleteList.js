@@ -1,6 +1,7 @@
+import React from 'react';
 import TextField from '@material-ui/core/TextField';
-import Autocomplete, { createFilterOptions } from '@material-ui/core/Autocomplete';
-import { v4 as uuid } from 'uuid';
+import Autocomplete, {createFilterOptions} from '@material-ui/core/Autocomplete';
+import {v4 as uuid} from 'uuid';
 
 const filter = createFilterOptions();
 
@@ -15,7 +16,7 @@ const AutoCompleteList = ({
       const filtered = filter(options, params);
 
       if (suggestable) {
-        const { inputValue } = params;
+        const {inputValue} = params;
         // Suggest the creation of a new value
         const isExisting = options.some((option) => inputValue === option.title);
         if (inputValue !== '' && !isExisting) {
