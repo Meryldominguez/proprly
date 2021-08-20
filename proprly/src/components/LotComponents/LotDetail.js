@@ -1,5 +1,6 @@
 import React, {
   useState,
+  Fragment
 } from 'react';
 import { v4 as uuid } from 'uuid';
 import {
@@ -40,11 +41,11 @@ const LotDetail = ({ item }) => {
           </ListItemButton>
           <ListItemButton>
             <ListItemText>Price</ListItemText>
-            <ListItemText align="right">{item.price}</ListItemText>
+            <ListItemText align="right">{item.price || "N/A"}</ListItemText>
           </ListItemButton>
           <ListItemButton>
             <ListItemText>Quantity</ListItemText>
-            <ListItemText align="right">{item.quantity === null ? 'N/A' : item.quantity}</ListItemText>
+            <ListItemText align="right">{item.quantity || "N/A"}</ListItemText>
           </ListItemButton>
           {item.quantity
       && (
@@ -75,7 +76,8 @@ const LotDetail = ({ item }) => {
                 </Grid>
               </ListSubheader>
               {item.active.map((prod) => (
-                <>
+                <Fragment key={uuid()}
+                >
                   <ListItemButton
                     component={Link}
                     to={`/productions/${prod.id}`}
@@ -106,7 +108,7 @@ const LotDetail = ({ item }) => {
               <ListItemText align="left" secondary={prod.notes} />
             </List>
             )}
-                </>
+                </ Fragment>
               ))}
             </List>
           </Collapse>

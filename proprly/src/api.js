@@ -39,7 +39,7 @@ class ProprlyApi {
   /** create a new Lot. */
 
   static async newLot(data) {
-    let res = await this.request(`lots/`,{data},"post");
+    let res = await this.request(`lots/`,{...data},"post");
     return res.lot;
   }
   /** Get details on a lot by id. */
@@ -84,9 +84,13 @@ class ProprlyApi {
 
   /** Get all locations nested with children. Searching by id can be accomplished by query string*/
   static async getLocs(query="") {
-    ProprlyApi.token = window.localStorage.token
 
     let res = await this.request(`locations${query}`);
+    return res.locations
+  }
+  /** Get all locations nested with children. Searching by id can be accomplished by query string*/
+  static async listLocs() {
+    let res = await this.request(`locations/list`);
     return res.locations
   }
 

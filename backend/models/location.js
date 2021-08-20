@@ -113,24 +113,20 @@ class Location {
     loc.items = lotQuery.rows
     return loc;
   }
-  /** Given a location id, return location and items listed under it or its child locations.
+  /** get a list of all Locations.
    *
-   * Returns [loc:{children=[{loc},{loc}]}, loc, loc...] 
+   * Returns [loc, loc...] 
    *
    * Throws NotFoundError if not found.
-  //  **/
-  //  static async getAll() {
-  //   let locs = []
-  //   const childArrray = await Location.getChildren()
-  //   childArrray.forEach((row,idx)=>{
-  //     if (locs.indexOf(row['parentId'])===-1){
-  //       const loc = {id:row.locationId, name:locationName}
-  //       locs.push(loc)
-  //     }
-      
-  //   })
-  //   return locs;
-  // }
+   **/
+   static async getList() {
+   
+    const res = await db.query(
+      `SELECT id, name, notes
+        FROM location`)
+    
+    return res.rows;
+  }
 
   /** Update location data with `data`.
    *

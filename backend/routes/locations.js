@@ -52,7 +52,6 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", ensureLoggedIn, async function (req, res, next) {
-  
   try {
     const id = req.query.id? req.query.id : null
 
@@ -67,6 +66,19 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
     return next(err);
   }
 });
+
+/** GET /list => [location, location]
+ * 
+ * authorization: Logged in
+ */
+router.get("/list", ensureLoggedIn, async function (req, res, next){
+  try {
+    const locationsList = await Location.getList()
+    return res.json({locations:locationsList})
+  } catch (err){
+    return next(err);
+  }
+})
 
 /** GET /[id]  =>  { location }
  *

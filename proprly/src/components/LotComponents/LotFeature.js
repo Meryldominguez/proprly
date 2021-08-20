@@ -1,13 +1,15 @@
 import React, {
   useEffect,
+  useState
 } from 'react';
 import TabBar from '../TabBar';
 import LotDetail from './LotDetail';
 // import LotEditForm from '../forms/LotEditForm'
 import LotNewForm from '../../forms/LotNewForm';
 import LotDelete from './LotDelete';
-import { useFetchLocations, useFetchLot } from '../../hooks/useFetch';
+import { useFetchLot } from '../../hooks/useFetch';
 import LoadingSpinner from '../Spinner';
+import ProprlyApi from '../../api';
 
 const LotFeature = (
   {
@@ -22,25 +24,21 @@ const LotFeature = (
 ) => {
   const [item, itemLoading, refreshFeature] = useFetchLot(currentFeature);
 
-  const [locations, locsLoading] = useFetchLocations();
-
   useEffect(() => refreshFeature(currentFeature), [currentFeature]);
 
   if (item && item.id) {
-    return (!itemLoading && !locsLoading)
+    return (!itemLoading)
       ? (
         <TabBar
           startingTab={currentTab}
           tabsArr={profile.isAdmin
             ? [
-              {
-                title: 'New Item',
+              { title: 'New Item',
                 component:
               <LotNewForm
                 setFeature={setFeature}
                 setTab={setTab}
                 refreshLots={refreshLots}
-                locations={locations}
               />,
               },
               {
@@ -82,7 +80,6 @@ const LotFeature = (
                 item={item}
               />,
               },
-              // {title:"Edit", component:<LotEditForm item={item} />},
             ]}
         />
       )
@@ -95,8 +92,7 @@ const LotFeature = (
         tabsArr={
         [
           { title: 'New Item', component: <span>Working on it!</span> },
-          {
-            title: 'Details',
+          { title: 'Details',
             component:
         <LotDetail item={item} />,
           },

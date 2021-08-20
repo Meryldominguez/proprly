@@ -1,6 +1,7 @@
 import React, {
   useContext,
   useState,
+  useEffect,
 } from 'react';
 import {
   useHistory,
@@ -10,8 +11,7 @@ import {
   Grid,
   TextField,
   FormControl,
-  InputLabel,
-  Select,
+  InputAdornment,
   MenuItem,
   Button,
   FormControlLabel,
@@ -39,19 +39,32 @@ const MenuProps = {
 };
 
 const LotNewForm = ({
-  locations, setFeature, setTab, refreshLots,
+  setFeature, setTab, refreshLots,
 }) => {
   const initial = {
     name: '',
     description: '',
-    locId: '',
-    price: undefined,
-    quantity: undefined,
+    location: {id:0,name:""},
+    price: null,
+    quantity: null,
   };
   const history = useHistory();
+
   const [formData, setFormData] = useState(initial);
   const [priceInput, setPriceInput] = useState(false)
   const [quantityInput, setQuantityInput] = useState(false)
+  
+  const [locations, setLocations] = useState();
+  const [locsLoading, setLocsLoading] = useState(true);
+
+  useEffect(()=>{
+    async function loadLocs(){
+      const locations = await ProprlyApi.listLocs()
+      setLocations(locations)
+      setLocsLoading(false)
+    }
+    loadLocs()
+  },[])
 
   const { alerts, setAlerts } = useContext(AlertContext);
 
@@ -62,15 +75,16 @@ const LotNewForm = ({
       const trimmedData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        locId: formData.locId === '' ? null : formData.locId,
+        locId: formData.location.id,
+        quantity:formData.quantity? Number(formData.quantity):null,
+        price:formData.quantity? Number(formData.price):null
       };
-      console.log({ ...formData, ...trimmedData });
-      const newLot = await ProprlyApi.newLot({ ...formData, ...trimmedData });
+      const newLot = await ProprlyApi.newLot({...trimmedData });
       setTab('0');
       setFeature(newLot.id);
       refreshLots();
-      history.push(`/locations/${newLot.id}`);
-      setAlerts([...alerts, { severity: 'success', msg: 'Location created!' }]);
+      history.push(`/lots/${newLot.id}`);
+      setAlerts([...alerts, { severity: 'success', msg: 'Item created!' }]);
     } catch (error) {
       console.log(error);
       setFormData({ ...formData });
@@ -96,13 +110,9 @@ const LotNewForm = ({
     }
     if (name==="priceCheck"){
       setPriceInput(!priceInput)
-      setFormData({...formData,price:priceInput?null:""})
+      setFormData({...formData,price:priceInput?null:0})
     }
-
-    console.log(formData)
-    
   };
-  
 
   const resetForm = () => {
     setFormData(initial);
@@ -120,7 +130,7 @@ const LotNewForm = ({
     item.children && renderMenuList(item.children, defaultDepth = nextDepth)]);
   };
 
-  return (
+  return !locsLoading &&(
     <CardWrapper title="New Item">
       <Box component="form" onSubmit={handleSubmit}>
         <Grid
@@ -144,7 +154,13 @@ const LotNewForm = ({
           <Grid item xs={8}>
             <FormControl fullWidth >
               <AutoCompleteList 
-                options={locations}/>
+                required
+                options={locations}
+                value={formData.location}
+                setValue={(location)=>setFormData({...formData,location})}
+                title="name"
+                val="id"
+                label="Location"/>
             </FormControl>
           </Grid>
           <Grid item xs={8}>
@@ -161,7 +177,16 @@ const LotNewForm = ({
               <TextField
                 value={formData.price}
                 name="price"
+                type="number"
                 onChange={handleChange}
+                inputProps={{ min: 0 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CurrencyIcon/>
+                    </InputAdornment>
+                  ),
+                }}
               />}
               <FormControlLabel
                 control={
@@ -171,10 +196,13 @@ const LotNewForm = ({
                 labelPlacement="start"
               />
               {quantityInput &&
-              <Counter
+              <TextField
                 value={formData.quantity}
-                setValue={(value)=>setFormData({...formData,quantity:value})}
-                 />}
+                name="quantity"
+                inputProps={{ min: 0 }}
+                type="number"
+                onChange={handleChange}
+                />}
             </FormGroup>
           </Grid>
           <Grid xs={8} item>
