@@ -1,15 +1,12 @@
-import {useState, useCallback} from 'react';
-
+import { useState, useCallback } from 'react';
 
 export default function useToggle(initialValue = false) {
-
   const [value, setValue] = useState(initialValue);
 
   const toggle = useCallback(() => {
-    setValue(v => !v);
+    setValue((v) => !v);
   }, []);
   return [value, toggle];
 }
 
-
-//https://www.joshwcomeau.com/snippets/react-hooks/use-toggle/
+// https://www.joshwcomeau.com/snippets/react-hooks/use-toggle/

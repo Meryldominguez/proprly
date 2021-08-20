@@ -1,97 +1,92 @@
-import React from 'react'
+import React from 'react';
 import {
-  useLocation
-} from 'react-router-dom'
-import { parse } from "query-string";
-import { 
+  useLocation,
   Route, 
   Redirect, 
   Switch
-} from "react-router-dom"
+} from 'react-router-dom'
+import { parse } from "query-string";
 import {
-  Container
-} from '@material-ui/core'
-import CardWrapper from '../components/CardWrapper'
-import LocationDashboard from '../components/LocationComponents/LocationDashboard'
-import LotDashboard from '../components/LotComponents/LotDashboard'
-import ProductionDashboard from '../components/ProductionComponents/ProductionDashboard'
-import ProfileForm from "../forms/ProfileForm"
-import Dashboard from '../components/Dashboard'
-
+  Container,
+} from '@material-ui/core';
+import CardWrapper from '../components/CardWrapper';
+import LocationDashboard from '../components/LocationComponents/LocationDashboard';
+import LotDashboard from '../components/LotComponents/LotDashboard';
+import ProductionDashboard from '../components/ProductionComponents/ProductionDashboard';
+import ProfileForm from '../forms/ProfileForm'
+import Dashboard from '../components/Dashboard';
  
-const LoggedInRoutes = ({username}) => {
-  console.log("logged in routes")
-  let {search} = useLocation()
-  const queryObj= parse(search)
+const LoggedInRoutes = ({ username }) => {
+  console.log('logged in routes');
+  const {search} = useLocation()
+  const queryObj = parse(search);
   return (
     <Container>
-    <Switch >
-    <Route exact path="/">
+      <Switch>
+      <Route exact path="/">
       <Dashboard />
     </Route>
 
-    <Route exact path="/productions" >
+      <Route exact path="/productions">
       <CardWrapper>
-        <ProductionDashboard 
+        <ProductionDashboard
           isActive={queryObj.isActive}
           search={queryObj.search}
           year={queryObj.year}
-          />
+        />
       </CardWrapper>
     </Route>
-    
-    <Route exact path="/productions/:featuredId" >
+
+      <Route exact path="/productions/:featuredId">
       <CardWrapper>
-        <ProductionDashboard 
+        <ProductionDashboard
           isActive={queryObj.isActive}
           search={queryObj.search}
           year={queryObj.year}
-          />
+        />
       </CardWrapper>
     </Route>
 
-    <Route exact path="/lots">
+      <Route exact path="/lots">
       <CardWrapper title="Items">
-        <LotDashboard 
-        searchTerm={queryObj.searchTerm} 
+        <LotDashboard
+          searchTerm={queryObj.searchTerm}
         />
       </CardWrapper>
     </Route>
-    <Route exact path="/lots/:featuredId">
+      <Route exact path="/lots/:featuredId">
       <CardWrapper title="Items">
-        <LotDashboard 
-        searchTerm={queryObj.searchTerm} 
+        <LotDashboard
+          searchTerm={queryObj.searchTerm}
         />
       </CardWrapper>
     </Route>
 
-   
-
-    <Route exact path="/locations">
+      <Route exact path="/locations">
       <CardWrapper title="Locations">
-        <LocationDashboard 
-        id={queryObj.id} 
+        <LocationDashboard
+          id={queryObj.id}
         />
       </CardWrapper>
-    </Route>  
-    <Route exact path="/locations/:featuredId">
+    </Route>
+      <Route exact path="/locations/:featuredId">
       <CardWrapper title="Locations">
-        <LocationDashboard 
-        id={queryObj.id} 
+        <LocationDashboard
+          id={queryObj.id}
         />
       </CardWrapper>
-    </Route> 
-   
+    </Route>
 
-    <Route exact path="/profile">
-        <CardWrapper title={`${username}'s profile`} >
-            <ProfileForm />
+
+      <Route exact path="/profile">
+      <CardWrapper title={`${username}'s profile`}>
+          <ProfileForm />
         </CardWrapper>
     </Route>
-    <Redirect to="/" />
+      <Redirect to="/" />
     </Switch>
     </Container>
-  )
-}
- 
+  );
+};
+
 export default LoggedInRoutes

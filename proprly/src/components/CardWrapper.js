@@ -2,16 +2,12 @@ import React from 'react';
 import {
   Card,
   CardHeader,
-  CardContent
-} from '@material-ui/core'
+  CardContent,
+} from '@material-ui/core';
 
-
-
-
-export default function CardWrapper({children, title, subtitle=""}) {
-
+export default function CardWrapper({ children, title, subtitle = '' }) {
   return (
-    <Card sx={{height:'100%'}} title={title} >
+    <Card sx={{ height: '100%' }} title={title}>
       <CardHeader
         // avatar={
           // <Avatar aria-label="recipe" className={classes.avatar}>
@@ -23,8 +19,8 @@ export default function CardWrapper({children, title, subtitle=""}) {
         subheader={subtitle}
       />
       <CardContent>
-          {children}
-        </CardContent>
+        {children}
+      </CardContent>
     </Card>
   );
 }

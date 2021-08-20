@@ -16,16 +16,16 @@ import {
   Button,
   FormControlLabel,
   FormGroup,
-  Checkbox
+  Checkbox,
 } from '@material-ui/core';
-
+import CurrencyIcon from '@material-ui/icons/AttachMoney';
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
-import CurrencyIcon from '@material-ui/icons/AttachMoney';
+
 import LoadingSpinner from '../components/Spinner';
 import CardWrapper from '../components/CardWrapper';
 import Counter from '../components/Counter';
-import AutoCompleteList from '../components/AutoCompleteList'
+import AutoCompleteList from '../components/AutoCompleteList';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -44,49 +44,47 @@ const LotNewForm = ({
   const initial = {
     name: '',
     description: '',
-    location: {id:0,name:""},
+    location: { id: 0, name: '' },
     price: null,
     quantity: null,
   };
   const history = useHistory();
 
   const [formData, setFormData] = useState(initial);
-  const [priceInput, setPriceInput] = useState(false)
-  const [quantityInput, setQuantityInput] = useState(false)
-  
+  const [priceInput, setPriceInput] = useState(false);
+  const [quantityInput, setQuantityInput] = useState(false);
+
   const [locations, setLocations] = useState();
   const [locsLoading, setLocsLoading] = useState(true);
 
-  useEffect(()=>{
-    async function loadLocs(){
-      const locations = await ProprlyApi.listLocs()
-      setLocations(locations)
-      setLocsLoading(false)
+  useEffect(() => {
+    async function loadLocs() {
+      const loc = await ProprlyApi.listLocs();
+      setLocations(loc);
+      setLocsLoading(false);
     }
-    loadLocs()
-  },[])
+    loadLocs();
+  }, []);
 
   const { alerts, setAlerts } = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
-    console.log(formData);
     evt.preventDefault();
     try {
       const trimmedData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
         locId: formData.location.id,
-        quantity:formData.quantity? Number(formData.quantity):null,
-        price:formData.quantity? Number(formData.price):null
+        quantity: formData.quantity ? Number(formData.quantity) : null,
+        price: formData.quantity ? Number(formData.price) : null,
       };
-      const newLot = await ProprlyApi.newLot({...trimmedData });
+      const newLot = await ProprlyApi.newLot({ ...trimmedData });
       setTab('0');
       setFeature(newLot.id);
       refreshLots();
       history.push(`/lots/${newLot.id}`);
       setAlerts([...alerts, { severity: 'success', msg: 'Item created!' }]);
     } catch (error) {
-      console.log(error);
       setFormData({ ...formData });
       setAlerts([...error.map((e) => e = { severity: e.severity || 'error', msg: e.msg })]);
     }
@@ -94,23 +92,21 @@ const LotNewForm = ({
 
   const handleChange = (evt) => {
     const { name, value } = evt.target;
-    console.log(name, value);
     setFormData({
       ...formData,
       [name]: value,
     });
-    console.log(formData);
   };
 
   const handleCheck = (evt) => {
-    const { name,value,checked } = evt.target;
-    if (name==="quantityCheck"){
-      setQuantityInput(!quantityInput)
-      setFormData({...formData,quantity:quantityInput?null:0})
+    const { name } = evt.target;
+    if (name === 'quantityCheck') {
+      setQuantityInput(!quantityInput);
+      setFormData({ ...formData, quantity: quantityInput ? null : 0 });
     }
-    if (name==="priceCheck"){
-      setPriceInput(!priceInput)
-      setFormData({...formData,price:priceInput?null:0})
+    if (name === 'priceCheck') {
+      setPriceInput(!priceInput);
+      setFormData({ ...formData, price: priceInput ? null : 0 });
     }
   };
 
@@ -118,19 +114,7 @@ const LotNewForm = ({
     setFormData(initial);
   };
 
-  const renderMenuList = (list, defaultDepth = 0, step = 10) => {
-    const nextDepth = defaultDepth + step;
-
-    return list.map((item) => [<MenuItem
-      style={{ marginLeft: defaultDepth === 0 ? 0 : nextDepth }}
-      value={item.locationId}
-    >
-      {item.locationName}
-    </MenuItem>,
-    item.children && renderMenuList(item.children, defaultDepth = nextDepth)]);
-  };
-
-  return !locsLoading &&(
+  return !locsLoading && (
     <CardWrapper title="New Item">
       <Box component="form" onSubmit={handleSubmit}>
         <Grid
@@ -152,28 +136,30 @@ const LotNewForm = ({
             />
           </Grid>
           <Grid item xs={8}>
-            <FormControl fullWidth >
-              <AutoCompleteList 
+            <FormControl fullWidth>
+              <AutoCompleteList
                 required
                 options={locations}
                 value={formData.location}
-                setValue={(location)=>setFormData({...formData,location})}
+                setValue={(location) => setFormData({ ...formData, location })}
                 title="name"
                 val="id"
-                label="Location"/>
+                label="Location"
+              />
             </FormControl>
           </Grid>
           <Grid item xs={8}>
-            <FormGroup >
+            <FormGroup>
               <FormControlLabel
                 align="left"
                 control={
-                  <Checkbox checked={priceInput} name='priceCheck' onChange={handleCheck} />
+                  <Checkbox checked={priceInput} name="priceCheck" onChange={handleCheck} />
                 }
                 label="Price:"
                 labelPlacement="start"
               />
-              {priceInput && 
+              {priceInput
+              && (
               <TextField
                 value={formData.price}
                 name="price"
@@ -183,26 +169,29 @@ const LotNewForm = ({
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <CurrencyIcon/>
+                      <CurrencyIcon />
                     </InputAdornment>
                   ),
                 }}
-              />}
+              />
+              )}
               <FormControlLabel
                 control={
-                  <Checkbox checked={quantityInput} name='quantityCheck' onChange={handleCheck} />
+                  <Checkbox checked={quantityInput} name="quantityCheck" onChange={handleCheck} />
                 }
                 label="Quantity:"
                 labelPlacement="start"
               />
-              {quantityInput &&
+              {quantityInput
+              && (
               <TextField
                 value={formData.quantity}
                 name="quantity"
                 inputProps={{ min: 0 }}
                 type="number"
                 onChange={handleChange}
-                />}
+              />
+              )}
             </FormGroup>
           </Grid>
           <Grid xs={8} item>

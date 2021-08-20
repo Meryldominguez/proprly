@@ -1,6 +1,6 @@
 import React, {
   useEffect,
-  useState
+  useState,
 } from 'react';
 import TabBar from '../TabBar';
 import LotDetail from './LotDetail';
@@ -33,7 +33,8 @@ const LotFeature = (
           startingTab={currentTab}
           tabsArr={profile.isAdmin
             ? [
-              { title: 'New Item',
+              {
+                title: 'New Item',
                 component:
               <LotNewForm
                 setFeature={setFeature}
@@ -92,7 +93,8 @@ const LotFeature = (
         tabsArr={
         [
           { title: 'New Item', component: <span>Working on it!</span> },
-          { title: 'Details',
+          {
+            title: 'Details',
             component:
         <LotDetail item={item} />,
           },

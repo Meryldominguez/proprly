@@ -1,32 +1,35 @@
-import React, { useEffect } from 'react'
-import {v4 as uuid} from "uuid"
+import React, { useEffect } from 'react';
+import { v4 as uuid } from 'uuid';
 import { Alert, Container } from '@material-ui/core';
- 
+
 // https://dev.to/hibaeldursi/creating-a-contact-form-with-validation-with-react-and-material-ui-1am0
 
-const AlertContainer = ({alerts, setAlerts}) => {
-
+const AlertContainer = ({ alerts, setAlerts }) => {
   useEffect(() => {
-    let timer
-    if (alerts.length>0){ 
+    let timer;
+    if (alerts.length > 0) {
       timer = setTimeout(() => {
-      const oneLess = alerts.slice(1)
-      setAlerts(oneLess)
-    }, 3000);}
+        const oneLess = alerts.slice(1);
+        setAlerts(oneLess);
+      }, 3000);
+    }
     // Clear timeout if the component is unmounted
     return () => clearTimeout(timer);
-  },[alerts, setAlerts]);
+  }, [alerts, setAlerts]);
 
   return (
     <Container>
-    {alerts.map((a)=>
+      {alerts.map((a) => (
         <Alert
           key={uuid()}
           severity={a.severity}
-        >{a.msg}</Alert>)}
+        >
+          {a.msg}
+        </Alert>
+      ))}
     </Container>
-    
-  )
-}
- 
-export default AlertContainer
+
+  );
+};
+
+export default AlertContainer;

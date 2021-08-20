@@ -1,49 +1,57 @@
-import { useState } from "react";
-import { BrowserRouter } from "react-router-dom";
+import React, { useState } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import logo from './logo.png';
 import './App.css';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
-import { ProprlyTheme } from "./ProprlyTheme";
+import { ProprlyTheme } from './ProprlyTheme';
 
-import AlertContext from "./context/AlertContext";
-import UserContext from "./context/UserContext";
-import  Navbar  from "./Navbar";
-import AlertContainer from "./components/AlertContainer"
+import AlertContext from './context/AlertContext';
+import UserContext from './context/UserContext';
+import Navbar from './Navbar';
+import AlertContainer from './components/AlertContainer';
 
-import useAuth from "./hooks/useAuth"
-import {useGetUserProfile} from "./hooks/useFetch"
-import Routes from "./routes/Routes";
-
+import useAuth from './hooks/useAuth';
+import { useGetUserProfile } from './hooks/useFetch';
+import Routes from './routes/Routes';
 
 function App() {
-  const [user, signup, login, logout] = useAuth()
+  const [user, signup, login, logout] = useAuth();
 
-  let [[profile, setProfile], isLoading, authProfile, updateProfile, apply] = useGetUserProfile(user?user.username:null)
+  const [
+    [profile, setProfile],
+    isLoading,
+    authProfile,
+    updateProfile,
+    apply,
+  ] = useGetUserProfile(user ? user.username : null);
 
-  const [alerts, setAlerts] = useState([])
+  const [alerts, setAlerts] = useState([]);
 
-    if (process.env.NODE_ENV !=='production') {
+  if (process.env.NODE_ENV !== 'production') {
     return (
       <ThemeProvider theme={ProprlyTheme}>
         <Container className="App">
-        <UserContext.Provider value={{user, signup, login, profile, setProfile, isLoading, authProfile, updateProfile, apply}}>
+          <UserContext.Provider value={{
+            user, signup, login, profile, setProfile, isLoading, authProfile, updateProfile, apply,
+          }}
+          >
             <BrowserRouter>
-              <AlertContext.Provider value={{alerts,setAlerts}}>
-                <Navbar logout={logout}/>
-                <AlertContainer alerts={alerts} setAlerts={setAlerts}/>
-                {!isLoading && <Routes user={user} isLoading={isLoading}/>}
+              <AlertContext.Provider value={{ alerts, setAlerts }}>
+                <Navbar logout={logout} />
+                <AlertContainer alerts={alerts} setAlerts={setAlerts} />
+                {!isLoading && <Routes user={user} isLoading={isLoading} />}
               </AlertContext.Provider>
             </BrowserRouter>
-        </UserContext.Provider>
+          </UserContext.Provider>
         </Container>
 
       </ThemeProvider>
     );
   }
-  
-  //placeholder until up and running
+
+  // placeholder until up and running
   return (
     <div className="App">
       <header className="App-header">
