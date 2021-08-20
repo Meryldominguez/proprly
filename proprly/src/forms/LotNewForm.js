@@ -14,12 +14,18 @@ import {
   Select,
   MenuItem,
   Button,
+  FormControlLabel,
+  FormGroup,
+  Checkbox
 } from '@material-ui/core';
 
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
+import CurrencyIcon from '@material-ui/icons/AttachMoney';
 import LoadingSpinner from '../components/Spinner';
 import CardWrapper from '../components/CardWrapper';
+import Counter from '../components/Counter';
+import AutoCompleteList from '../components/AutoCompleteList'
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -38,12 +44,14 @@ const LotNewForm = ({
   const initial = {
     name: '',
     description: '',
-    locId: 0,
-    price: false,
-    quantity: false,
+    locId: '',
+    price: undefined,
+    quantity: undefined,
   };
   const history = useHistory();
   const [formData, setFormData] = useState(initial);
+  const [priceInput, setPriceInput] = useState(false)
+  const [quantityInput, setQuantityInput] = useState(false)
 
   const { alerts, setAlerts } = useContext(AlertContext);
 
@@ -54,7 +62,7 @@ const LotNewForm = ({
       const trimmedData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        parentId: formData.parentId === 0 ? null : formData.parentId,
+        locId: formData.locId === '' ? null : formData.locId,
       };
       console.log({ ...formData, ...trimmedData });
       const newLot = await ProprlyApi.newLot({ ...formData, ...trimmedData });
@@ -79,6 +87,22 @@ const LotNewForm = ({
     });
     console.log(formData);
   };
+
+  const handleCheck = (evt) => {
+    const { name,value,checked } = evt.target;
+    if (name==="quantityCheck"){
+      setQuantityInput(!quantityInput)
+      setFormData({...formData,quantity:quantityInput?null:0})
+    }
+    if (name==="priceCheck"){
+      setPriceInput(!priceInput)
+      setFormData({...formData,price:priceInput?null:""})
+    }
+
+    console.log(formData)
+    
+  };
+  
 
   const resetForm = () => {
     setFormData(initial);
@@ -105,7 +129,7 @@ const LotNewForm = ({
           spacing={2}
           justifyContent="center"
         >
-          <Grid xs={8} item align="center">
+          <Grid item xs={8} align="center">
             <TextField
               fullWidth
               id="title-input"
@@ -118,22 +142,40 @@ const LotNewForm = ({
             />
           </Grid>
           <Grid item xs={8}>
-            <FormControl fullWidth sx={{ minWidth: 300 }}>
-              <InputLabel htmlFor="parentId">Parent Location</InputLabel>
-              <Select
-                value={formData.parentId}
-                name="parentId"
-                id="parentId"
-                label="Parent Location"
-                onChange={handleChange}
-                MenuProps={MenuProps}
-              >
-                <MenuItem value={0}>
-                  No Parent
-                </MenuItem>
-                {renderMenuList(locations)}
-              </Select>
+            <FormControl fullWidth >
+              <AutoCompleteList 
+                options={locations}/>
             </FormControl>
+          </Grid>
+          <Grid item xs={8}>
+            <FormGroup >
+              <FormControlLabel
+                align="left"
+                control={
+                  <Checkbox checked={priceInput} name='priceCheck' onChange={handleCheck} />
+                }
+                label="Price:"
+                labelPlacement="start"
+              />
+              {priceInput && 
+              <TextField
+                value={formData.price}
+                name="price"
+                onChange={handleChange}
+              />}
+              <FormControlLabel
+                control={
+                  <Checkbox checked={quantityInput} name='quantityCheck' onChange={handleCheck} />
+                }
+                label="Quantity:"
+                labelPlacement="start"
+              />
+              {quantityInput &&
+              <Counter
+                value={formData.quantity}
+                setValue={(value)=>setFormData({...formData,quantity:value})}
+                 />}
+            </FormGroup>
           </Grid>
           <Grid xs={8} item>
             <TextField
