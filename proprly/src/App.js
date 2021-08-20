@@ -5,7 +5,7 @@ import './App.css';
 
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
-import { ProprlyTheme } from './ProprlyTheme';
+import ProprlyTheme from './ProprlyTheme';
 
 import AlertContext from './context/AlertContext';
 import UserContext from './context/UserContext';

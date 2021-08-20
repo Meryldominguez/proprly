@@ -11,4 +11,4 @@ const ProprlyTheme = createTheme({
     },
   },
 });
-export default { ProprlyTheme };
+export default ProprlyTheme;
