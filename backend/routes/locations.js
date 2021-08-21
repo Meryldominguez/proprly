@@ -57,10 +57,9 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
 
     if (!Number(id) && id != null) throw new BadRequestError("id must be a number")
     const locations = id ? 
-      await Location.getChildren(Number(id))
+      await Location.getChildren(true,Number(id))
       :
       await Location.getChildren();
-
     return res.json({ locations });
   } catch (err) {
     return next(err);
@@ -73,7 +72,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  */
 router.get("/list", ensureLoggedIn, async function (req, res, next){
   try {
-    const locationsList = await Location.getList()
+    const locationsList = await Location.getChildren(false)
     return res.json({locations:locationsList})
   } catch (err){
     return next(err);

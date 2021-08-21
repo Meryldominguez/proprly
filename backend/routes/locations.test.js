@@ -103,7 +103,7 @@ describe('GET /locations', function () {
     expect(resp.body).toEqual({
       locations: expect.any(Array)
     })
-    expect(resp.body.locations.length).toBe(4)
+    expect(resp.body.locations.length).toBe(2)
     expect(resp.status).toEqual(200)
   })
 
@@ -111,7 +111,7 @@ describe('GET /locations', function () {
     const resp = await request(app)
       .get('/locations')
       .set('authorization', `Bearer ${u1Token}`)
-    expect(resp.body.locations.length).toBe(4)
+    expect(resp.body.locations.length).toBe(2)
     expect(resp.statusCode).toEqual(200)
   })
 
@@ -149,6 +149,45 @@ describe('GET /locations', function () {
     expect(resp.statusCode).toEqual(500)
   })
 })
+/** ************************************ GET /locations/list */
+
+describe('GET /locations/list', function () {
+  test('works for admins', async function () {
+    const resp = await request(app)
+      .get('/locations/list')
+      .set('authorization', `Bearer ${adminToken}`)
+    expect(resp.body).toEqual({
+      locations: expect.any(Array)
+    })
+    expect(resp.body.locations.length).toBe(4)
+    expect(resp.status).toEqual(200)
+  })
+
+  test('works for user', async function () {
+    const resp = await request(app)
+      .get('/locations/list')
+      .set('authorization', `Bearer ${u1Token}`)
+    expect(resp.body.locations.length).toBe(4)
+    expect(resp.statusCode).toEqual(200)
+  })
+
+  test('unauth for anon', async function () {
+    const resp = await request(app)
+      .get('/locations/list')
+    expect(resp.statusCode).toEqual(401)
+  })
+
+  test('fails: test next() handler', async function () {
+    // there's no normal failure event which will cause this route to fail ---
+    // thus making it hard to test that the error-handler works with it. This
+    // should cause an error, all right :)
+    await db.query('DROP TABLE location CASCADE;')
+    const resp = await request(app)
+      .get('/locations/list')
+      .set('authorization', `Bearer ${adminToken}`)
+    expect(resp.statusCode).toEqual(500)
+  })
+})
 
 /** ************************************ GET /locations/:id */
 
@@ -165,7 +204,8 @@ describe('GET /locations/:id', function () {
         id: expect.any(Number),
         items: expect.any(Array),
         name: "Bay 1",
-        notes:null
+        notes:null,
+        parentId:expect.any(Number)
       }
     })
     expect(resp.body.location.items.length).toBe(3)
@@ -183,7 +223,8 @@ describe('GET /locations/:id', function () {
         id: expect.any(Number),
         items: expect.any(Array),
         name: "Bay 1",
-        notes:null
+        notes:null,
+        parentId:expect.any(Number)
       }
     })
     expect(resp.body.location.items.length).toBe(3)

@@ -84,7 +84,7 @@ async function commonBeforeAll() {
            ($1,$7, 2, 'need this'),
            ($2,$6, null, 'using half the box'),
            ($3,$6, null, '20 singular items' ),
-           ($4,$7, 1, null),
+           ($4,$7, 2, null),
            ($4,$6, null, 'maybe')`,
            [
              testFirstProd.id,

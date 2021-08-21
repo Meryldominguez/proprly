@@ -29,6 +29,7 @@ describe("create", function () {
     `SELECT id
       FROM production
       WHERE title ILIKE 'Carmen'`);
+    console.log(lot, prod)
 
       let prop = await Prop.create({
         prodId: prod.id,

@@ -149,7 +149,7 @@ describe('GET /lots/:id', function () {
         name: 'Lot1',
         description: 'New Lot1',
         quantity: 3,
-        available: 1,
+        available: -1,
         locId: expect.any(Number),
         location: "Bay 1",
         price: '$20.99',

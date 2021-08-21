@@ -82,31 +82,37 @@ describe("findAll", function () {
     let lots = await Lot.findAll();
     expect(lots).toEqual([
       {
+        available:0,
         id: expect.any(Number),
         name: "item1",
         locId: expect.any(Number),
         location: "First Location",
         description: "Desc1",
         quantity: 1,
-        price:"$10.99"
+        price:"$10.99",
+        tags:expect.any(Array)
       },
       {
+        available:null,
         id: expect.any(Number),
         name: "item2",
         locId: expect.any(Number),
         location: "First Location",
         description: "Desc2",
         quantity:null,
-        price:"$5.50"
+        price:"$5.50",
+        tags:expect.any(Array)
       },
       {
+        available:-1,
         id: expect.any(Number),
         name: "item3",
         locId: expect.any(Number),
         location: "Second Location",
         description: "Desc3",
         quantity: 3,
-        price:"$400.00"
+        price:"$400.00",
+        tags:expect.any(Array)
       },
 
     ]);
@@ -117,14 +123,16 @@ describe("findAll", function () {
     let lots = await Lot.findAll({searchTerm:"1"});
     expect(lots.length).toEqual(1)
     expect(lots).toEqual([
-      {        
+      {      
+        available:0,  
         locId: expect.any(Number),
         id: expect.any(Number),
         name: "item1",
         location: "First Location",
         description: "Desc1",
         quantity: 1,
-        price:"$10.99"
+        price:"$10.99",
+        tags:expect.any(Array)
       },
     ]);
     lots = await Lot.findAll({searchTerm:"Item"});
@@ -161,7 +169,7 @@ describe("get", function () {
         location: "First Location",
         active: expect.any(Array),
         description: "Desc1",
-        available: 1,
+        available: 0,
         quantity: 1,
         price:"$10.99",
         tags:expect.any(Array)
@@ -174,6 +182,7 @@ describe("get", function () {
       {
         id: expect.any(Number),
         name: "item2",
+        available:null,
         locId: expect.any(Number),
         active: expect.any(Array),
         location:"First Location",
@@ -192,7 +201,7 @@ describe("get", function () {
         locId: expect.any(Number),
         active: expect.any(Array),
         location:"Second Location",
-        available:2,
+        available:-1,
         description: "Desc3",
         quantity: 3,
         price:"$400.00",

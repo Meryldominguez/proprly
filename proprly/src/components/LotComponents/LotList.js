@@ -51,7 +51,6 @@ const SingleLot = ({
   const history = useHistory();
 
   const handleFeature = (evt) => {
-    console.log(item.id);
     evt.preventDefault();
     feature(item.id);
     history.push(`/lots/${item.id}`);

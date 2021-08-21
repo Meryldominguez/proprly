@@ -52,7 +52,6 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
 
 router.get("/",ensureLoggedIn, async function (req, res, next) {
   const search = req.query
-  console.log(req.query)
   try {
     if(search){
       const validator = jsonschema.validate(search, lotSearchSchema);

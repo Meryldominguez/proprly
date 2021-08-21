@@ -101,6 +101,62 @@ describe("create",function () {
 
 });
 
+/************************************** getChildren */
+
+describe("getChildren", function () {
+  test("works, parsed", async function () {
+    const {rows:[loc]} = await db.query(
+      `SELECT id, name, notes
+       FROM location
+       WHERE name = 'Parent Location'`);
+      
+    let locations = await Location.getChildren(true,loc.id);
+    
+    expect(locations).toEqual([
+      {
+        parentId: null,
+        locationName: "Parent Location",
+        locationId:expect.any(Number),
+        children: expect.any(Array)
+      }
+    ])
+    expect(locations.length).toEqual(1)
+  });
+  test("works, flat", async function () {
+    const {rows:[loc]} = await db.query(
+      `SELECT id, name, notes
+       FROM location
+       WHERE name = 'Parent Location'`);
+      
+    let locations = await Location.getChildren(false, loc.id);
+    expect(locations[0]).toEqual(
+      {
+        parentId: null,
+        locationName: "Parent Location",
+        locationId:expect.any(Number),
+      }
+    )
+    
+    expect(locations.length).toEqual(3)
+  });
+
+  test("not found if no such lot", async function () {
+    try {
+      await Location.getChildren(false,-200);
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+  test("not found if string passed as id", async function () {
+    try {
+      await Location.getChildren(true,"X");
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
 /************************************** get */
 
 describe("get", function () {
@@ -118,6 +174,7 @@ describe("get", function () {
         name: "Parent Location",
         notes: "The parent location",
         items: expect.any(Array),
+        parentId: null
       }
     )
     expect(location.items.length).toEqual(3)
@@ -237,7 +294,8 @@ describe("update", function () {
         `SELECT id
          FROM location
          WHERE name = 'First Location'`);
-      await Location.update(id, {parentId:child.id});
+
+      const res = await Location.update(id, {parentId:child.id});
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();

@@ -28,11 +28,14 @@ describe('POST /props', function () {
   test('works for admin', async function () {
     const { rows: [prod] } = await db.query(
       `SELECT * FROM production
-        WHERE title = 'The magic flute'`)
+        WHERE title = 'Carmen'`)
     const { rows: [lot] } = await db.query(
       `SELECT * FROM lot
-        WHERE name = 'Lot6'`)
-
+        WHERE name = 'Lot8'`)
+    console.log(lot,prod)
+    const res= await db.query(`
+    SELECT * from prop WHERE lot_id=$1 AND prod_id=$2`,[lot.id,prod.id])
+    console.log(res.rows)
     const resp = await request(app)
       .post('/props')
       .send({
@@ -42,7 +45,6 @@ describe('POST /props', function () {
           notes:"a prop"
       })
       .set('authorization', `Bearer ${adminToken}`)
-    expect(resp.statusCode).toEqual(201)
     expect(resp.body).toEqual({
       prop: {
         lotId: lot.id, 
@@ -51,6 +53,7 @@ describe('POST /props', function () {
         notes:"a prop"
       }
     })
+    expect(resp.statusCode).toEqual(201)
   })
   test('works for user', async function () {
     const { rows: [prod] } = await db.query(
@@ -122,7 +125,7 @@ describe('PATCH /props/:id', () => {
 
     const { rows: [prod] } = await db.query(
       `SELECT * FROM production
-        WHERE title = 'La traviata'`)
+        WHERE title = 'The magic flute'`)
     const { rows: [lot] } = await db.query(
       `SELECT * FROM lot
         WHERE name = 'Lot8'`)
@@ -162,7 +165,7 @@ describe('PATCH /props/:id', () => {
         prodId:prod.id,
         lotId:lot.id,
         quantity:25,
-        notes:"prop notes"
+        notes:"prop 2 notes"
       }
     })
   })

@@ -54,23 +54,27 @@ class Lot {
    * */
 
    static async findAll(params={}) {
-
     let query = `
     SELECT 
         lot.id, 
         lot.name,
         location.id as "locId",
         location.name as location, 
-        lot.quantity, 
-        lot.price, 
+        lot.quantity,
+        CAST(lot.quantity-(SELECT SUM(prop.quantity) FROM prop WHERE lot_id=lot.id) 
+          as int) AS available, 
+        lot.price,
+        array_remove(array_agg(tag.title), NULL) AS tags,
         lot.description
       FROM lot
-      JOIN location ON location.id = lot.loc_id
+      LEFT JOIN location ON location.id = lot.loc_id
+      LEFT JOIN lot_tag AS lt ON lt.lot_id=lot.id
+      LEFT JOIN tag on tag.id=tag_id
     `; 
     let whereExpressions = [];
     let queryValues = [];
     
-    // For each possible search term, add to whereExpressions and queryValues so
+    // For each possible search term, add to whereExpressions and queryValues
     // we can generate the right SQL
     if (params['searchTerm']) {
       
@@ -90,7 +94,6 @@ class Lot {
      return lotsRes.rows
    }
     const lotsRes = await db.query(query)
-   
     return lotsRes.rows;
   }
 
@@ -108,25 +111,23 @@ class Lot {
                   lot.name,
                   lot.loc_id as "locId", 
                   lot.quantity, 
-                  lot.price, 
+                  CAST(lot.quantity-(SELECT SUM(prop.quantity) FROM prop WHERE lot_id=$1) as int)
+                    AS available,
+                  lot.price,
                   lot.description,
-                  l.name as "location"
+                  l.name as "location",
+                  array_remove(array_agg(tag.title), NULL) AS tags 
            FROM lot
            JOIN location AS l ON l.id=lot.loc_id
-           WHERE lot.id = $1`,
+           LEFT JOIN lot_tag ON lot_id=lot.id
+           LEFT JOIN tag ON tag.id=tag_id
+           WHERE lot.id=$1
+           GROUP BY lot.id, l.name`,
         [id]);
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
     const usedProps = await Prop.getLotProps(id)
     lot.active= usedProps
-    if (lot['quantity'] !== null) {
-      //Only gets props from active productions
-      lot.available = lot.quantity
-      usedProps.forEach(prop=>{
-       lot.available = lot.available-prop.quantity
-      })
-    }
-    lot.tags=await Tag.getLotTags(id)
 
     return lot;
   }
