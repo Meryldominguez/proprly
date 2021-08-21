@@ -226,7 +226,7 @@ describe("remove", function () {
 
     const {rows:propCount} = await db.query(
       "SELECT * FROM prop");
-    expect(propCount.length).toBe(4)
+    expect(propCount.length).toBe(5)
 
     const {rows:tagCount} = await db.query(
       "SELECT * FROM tag");

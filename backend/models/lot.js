@@ -54,37 +54,35 @@ class Lot {
    * */
 
    static async findAll(params={}) {
-
     let query = `
     SELECT 
         lot.id, 
         lot.name,
         location.id as "locId",
         location.name as location, 
-        lot.quantity, 
-        lot.price, 
+        lot.quantity,
+        CAST(lot.quantity-(SELECT SUM(prop.quantity) FROM prop WHERE lot_id=lot.id) 
+          as int) AS available, 
+        lot.price,
+        array_remove(array_agg(tag.title), NULL) AS tags,
         lot.description
       FROM lot
-      JOIN location ON location.id = lot.loc_id
+      LEFT JOIN location ON location.id = lot.loc_id
+      LEFT JOIN lot_tag AS lt ON lt.lot_id=lot.id
+      LEFT JOIN tag on tag.id=tag_id
     `; 
     let whereExpressions = [];
     let queryValues = [];
-
-    //for searching by tags
-    // if (params['tags']){
-    // }
     
-    // For each possible search term, add to whereExpressions and queryValues so
+    // For each possible search term, add to whereExpressions and queryValues
     // we can generate the right SQL
     if (params['searchTerm']) {
-      query += "JOIN lot_tag AS x ON x.lot_id=lot.id \n"
-      query += "JOIN tag ON x.tag_id=tag.id \n"
       
-      queryValues.push(`%${params.searchTerm}%`);
+      queryValues.push(`%${params.searchTerm.toLowerCase()}%`);
+
       whereExpressions.push(`lot.name ILIKE $${queryValues.length}`)
       whereExpressions.push(`lot.description ILIKE $${queryValues.length}`)
-      whereExpressions.push(`location.name ILIKE $${queryValues.length} `)
-      whereExpressions.push(`tag.title ILIKE $${queryValues.length} \n`)
+
       query += "WHERE " + whereExpressions.join(" OR ")
     }
       query += "GROUP BY lot.id, location.id\n";
@@ -96,7 +94,6 @@ class Lot {
      return lotsRes.rows
    }
     const lotsRes = await db.query(query)
-   
     return lotsRes.rows;
   }
 
@@ -110,27 +107,27 @@ class Lot {
    static async get(id) {
     if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
     const {rows:[lot]} = await db.query(
-          `SELECT id,
-                  name,
-                  loc_id as "locId", 
-                  quantity, 
-                  price, 
-                  description
+          `SELECT lot.id,
+                  lot.name,
+                  lot.loc_id as "locId", 
+                  lot.quantity, 
+                  CAST(lot.quantity-(SELECT SUM(prop.quantity) FROM prop WHERE lot_id=$1) as int)
+                    AS available,
+                  lot.price,
+                  lot.description,
+                  l.name as "location",
+                  array_remove(array_agg(tag.title), NULL) AS tags 
            FROM lot
-           WHERE id = $1`,
+           JOIN location AS l ON l.id=lot.loc_id
+           LEFT JOIN lot_tag ON lot_id=lot.id
+           LEFT JOIN tag ON tag.id=tag_id
+           WHERE lot.id=$1
+           GROUP BY lot.id, l.name`,
         [id]);
 
     if (!lot) throw new NotFoundError(`No lot: ${id}`);
-
-    if (lot['quantity'] !== null) {
-      //Only gets props from active productions
-      const usedProps = await Prop.getLotProps(id)
-      lot.available = lot.quantity
-      usedProps.forEach(prop=>{
-       lot.available = lot.available-prop.quantity
-      })
-    }
-    lot.tags=await Tag.getLotTags(id)
+    const usedProps = await Prop.getLotProps(id)
+    lot.active= usedProps
 
     return lot;
   }

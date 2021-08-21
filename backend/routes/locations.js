@@ -52,21 +52,32 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", ensureLoggedIn, async function (req, res, next) {
-  
   try {
     const id = req.query.id? req.query.id : null
 
     if (!Number(id) && id != null) throw new BadRequestError("id must be a number")
     const locations = id ? 
-      await Location.getChildren(Number(id))
+      await Location.getChildren(true,Number(id))
       :
       await Location.getChildren();
-
     return res.json({ locations });
   } catch (err) {
     return next(err);
   }
 });
+
+/** GET /list => [location, location]
+ * 
+ * authorization: Logged in
+ */
+router.get("/list", ensureLoggedIn, async function (req, res, next){
+  try {
+    const locationsList = await Location.getChildren(false)
+    return res.json({locations:locationsList})
+  } catch (err){
+    return next(err);
+  }
+})
 
 /** GET /[id]  =>  { location }
  *

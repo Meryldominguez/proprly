@@ -83,7 +83,7 @@ async function addLocations(){
 
 async function addLots(){
   try {
-    const [warehouse,studio,bay1,bay2] = await Location.getChildren()
+    const [warehouse,studio,bay1,bay2] = await Location.getChildren(false)
 
     await Lot.create(
       {
@@ -150,7 +150,7 @@ async function addLots(){
         price : null
       });
   } catch (error) {
-    
+    console.error(error)
   }
 };
 
@@ -191,55 +191,55 @@ async function addProps(){
       prodId:prod1.id,
       lotId:lot1.id,
       quantity:2,
-      notes:"prop notes"
+      notes:"prop 1 notes"
     })
     await Prop.create({
       prodId:prod1.id,
       lotId:lot5.id,
       quantity:20,
-      notes:"prop notes"
+      notes:"prop 2 notes"
     })
     await Prop.create({
       prodId:prod1.id,
       lotId:lot3.id,
       quantity:2,
-      notes:"prop notes"
+      notes:"prop 3 notes"
     })
     await Prop.create({
       prodId:prod2.id,
       lotId:lot8.id,
       quantity:null,
-      notes:"prop notes"
+      notes:"prop 4 notes"
     })
     await Prop.create({
       prodId:prod2.id,
       lotId:lot6.id,
       quantity:100,
-      notes:"prop notes"
+      notes:"prop 5 notes"
     })
     await Prop.create({
       prodId:prod2.id,
       lotId:lot1.id,
       quantity:2,
-      notes:"prop notes"
+      notes:"prop 6 notes"
     })
     await Prop.create({
       prodId:prod3.id,
       lotId:lot3.id,
       quantity:2,
-      notes:"prop notes"
+      notes:"prop 7 notes"
     })
     await Prop.create({
       prodId:prod3.id,
       lotId:lot7.id,
       quantity:300,
-      notes:"prop notes"
+      notes:"prop 8 notes"
     })
     await Prop.create({
       prodId:prod3.id,
       lotId:lot5.id,
       quantity:10,
-      notes:"prop notes"
+      notes:"prop 9 notes"
     })
   } catch (error) {
     console.error(error)

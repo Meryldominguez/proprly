@@ -16,6 +16,7 @@ class Location {
    * Throws BadRequestError if location already in database.
    * */
   static async create({ name, notes=null,parentId=null}) {
+
     if (!name || name === "") throw new BadRequestError(`Please include a name for the location`)
     const {rows:[loc]} = await db.query(
           `INSERT INTO location
@@ -35,12 +36,24 @@ class Location {
    * if no id param is passed, all locations are returned
    **/
 
-  static async getChildren(id=null) {
+  static async getChildren(nested=true, id=null) {
+    if (typeof id != "number" && id !== null) throw new BadRequestError(`${id} is not an integer`)
+
+    if (id){
+      let {rows:[loc]} = await db.query(
+      `SELECT id, name, notes, parent_id as "parentId"
+        FROM location
+        WHERE id=$1
+        `,
+    [id]);
+    if (!loc) throw new NotFoundError(`No location: ${id}`);
+  };
+
+    
     const idQuery = id?`WHERE child.id=${id}`:"WHERE NOT child.id IS NULL";
     const query = `WITH RECURSIVE findchildren AS ( 
       SELECT 
           child.parent_id AS "parentId", 
-          parent.name AS "parentName",
           child.id AS "locationId",
           child.name AS "locationName"
           FROM location AS child
@@ -49,17 +62,36 @@ class Location {
 
       UNION ALL
 
-      SELECT child.parent_id, parent.name,child.id, child.name
+      SELECT child.parent_id,child.id, child.name
           FROM findchildren AS r
       JOIN location AS parent ON parent.id=r."locationId"
       JOIN location AS child ON parent.id=child.parent_id
     )
 
     SELECT * FROM findchildren
-    GROUP BY "parentId","parentName", "locationId", "locationName"
-    ORDER BY "parentId" DESC`
+    GROUP BY "parentId", "locationId", "locationName"
+    ORDER BY "parentId" NULLS FIRST`
+
     const result = await db.query(query)
-    return result.rows
+    if (!nested) return result.rows
+
+    const recursiveLoc = (arr)=>{
+      const child = arr.pop()
+      const parsed = arr.every((loc,idx) => {
+        if (loc.locationId === child.parentId) {
+          loc.children=loc.children?
+            [...loc.children,child]:[child]
+          return false
+        }
+        return true
+      })
+      if (parsed){
+        arr.push(child)
+        return arr
+      }
+      return recursiveLoc(arr)
+    }
+    return recursiveLoc(result.rows)
   }
 
   /** Given a location id, return location and items listed under it or its child locations.
@@ -72,15 +104,15 @@ class Location {
     if (typeof id != "number") throw new BadRequestError(`${id} is not an integer`)
     
     let {rows:[loc]} = await db.query(
-      `SELECT id, name, notes
+      `SELECT id, name, notes, parent_id as "parentId"
         FROM location
         WHERE id=$1
         `,
     [id]);
     if (!loc) throw new NotFoundError(`No location: ${id}`);
 
-    const childArrray = await Location.getChildren(loc.id)
-    const idArray = childArrray.map(item => item.locationId)
+    const childArray = await Location.getChildren(false,loc.id)
+    const idArray = childArray.map(item => item.locationId)
 
     let lotQuery = await db.query(
       `SELECT lot.id, lot.name, quantity, description, price, loc_id, location.name as "location"
@@ -93,24 +125,6 @@ class Location {
     loc.items = lotQuery.rows
     return loc;
   }
-  /** Given a location id, return location and items listed under it or its child locations.
-   *
-   * Returns [loc:{children=[{loc},{loc}]}, loc, loc...] 
-   *
-   * Throws NotFoundError if not found.
-  //  **/
-  //  static async getAll() {
-  //   let locs = []
-  //   const childArrray = await Location.getChildren()
-  //   childArrray.forEach((row,idx)=>{
-  //     if (locs.indexOf(row['parentId'])===-1){
-  //       const loc = {id:row.locationId, name:locationName}
-  //       locs.push(loc)
-  //     }
-      
-  //   })
-  //   return locs;
-  // }
 
   /** Update location data with `data`.
    *
@@ -129,9 +143,9 @@ class Location {
     if (Object.keys(data).length === 0) throw new BadRequestError("No update data sumbitted")
 
     if (data.parentId) {
-      const childArrray = await Location.getChildren(id)
+      const childArray = await Location.getChildren(id,false)
       const idSet = new Set()
-      childArrray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
+      childArray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
       
       if (idSet.has(data.parentId)) throw new BadRequestError(`New parent location cannot be a current child of the location`)
     }

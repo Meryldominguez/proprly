@@ -9,14 +9,16 @@
       "maxLength": 50
     },
     "dateStart": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 30
+      "anyOf": [
+        {"type":"null"},
+        {"type":"string"}
+      ]
     },
     "dateEnd": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 30
+      "anyOf": [
+        {"type":"null"},
+        {"type":"string"}
+      ]
     },
     "active": {
       "type": "boolean"

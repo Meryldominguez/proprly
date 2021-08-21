@@ -110,6 +110,17 @@ describe('GET /lots', function () {
     expect(resp.statusCode).toEqual(401)
   })
 
+  test('Query works', async function () {
+    const resp = await request(app)
+      .get('/lots?searchTerm=lot')
+      .set('authorization', `Bearer ${adminToken}`)
+    expect(resp.body).toEqual({
+      lots: expect.any(Array)
+    })
+    expect(resp.body.lots.length).toBe(8)
+    expect(resp.status).toEqual(200)
+  })
+
   test('fails: test next() handler', async function () {
     // there's no normal failure event which will cause this route to fail ---
     // thus making it hard to test that the error-handler works with it. This
@@ -138,10 +149,12 @@ describe('GET /lots/:id', function () {
         name: 'Lot1',
         description: 'New Lot1',
         quantity: 3,
-        available: 1,
+        available: -1,
         locId: expect.any(Number),
+        location: "Bay 1",
         price: '$20.99',
-        tags: expect.any(Array)
+        tags: expect.any(Array),
+        active: expect.any(Array)
       }
     })
   })

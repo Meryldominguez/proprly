@@ -9,7 +9,7 @@ const Lot = require("../models/lot");
 
 const lotNewSchema = require("../schemas/lotNew.json");
 const lotUpdateSchema = require("../schemas/lotUpdate.json");
-// const lotSearchSchema = require("../schemas/lotSearch.json");
+const lotSearchSchema = require("../schemas/lotSearch.json");
 
 const router = new express.Router();
 
@@ -42,26 +42,24 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
 });
 
 /** GET /  =>
- *   { lot: [ { id, name, description, numEmployees, logoUrl }, ...] }
+ *   { lot: [ { id, name, description }, ...] }
  *
  * Can filter on provided search filters:
- * - minEmployees
- * - maxEmployees
- * - nameLike (will find case-insensitive, partial matches)
- *
+ * - searchTerm
+ * 
  * Authorization required: logged in
  */
 
 router.get("/",ensureLoggedIn, async function (req, res, next) {
-  const searchTerm = req.query.q
+  const search = req.query
   try {
-    if(searchTerm){
-      const validator = jsonschema.validate(q, lotSearchSchema);
+    if(search){
+      const validator = jsonschema.validate(search, lotSearchSchema);
       if (!validator.valid) {
         const errs = validator.errors.map(e => e.stack);
         throw new BadRequestError(errs);
       }
-      const lots = await Lot.findAll({searchTerm});
+      const lots = await Lot.findAll(search);
       return res.json({ lots });
     }
     const lots = await Lot.findAll();
