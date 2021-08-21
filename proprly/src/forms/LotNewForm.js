@@ -31,8 +31,8 @@ const LotNewForm = ({
     name: '',
     description: '',
     location: {id: 0, name: ''},
-    price: null,
-    quantity: null,
+    price: '',
+    quantity: '',
   };
   const history = useHistory();
 
@@ -93,11 +93,11 @@ const LotNewForm = ({
     const {name} = evt.target;
     if (name === 'quantityCheck') {
       setQuantityInput(!quantityInput);
-      setFormData({...formData, quantity: quantityInput ? null : 0});
+      setFormData({...formData, quantity: quantityInput ? initial.quantity: 0});
     }
     if (name === 'priceCheck') {
       setPriceInput(!priceInput);
-      setFormData({...formData, price: priceInput ? null : 0});
+      setFormData({...formData, price: priceInput ? initial.price : 0});
     }
   };
 
@@ -105,7 +105,7 @@ const LotNewForm = ({
     setFormData(initial);
   };
 
-  return !locsLoading && (
+  return (
     <CardWrapper title="New Item">
       <Box component="form" onSubmit={handleSubmit}>
         <Grid
@@ -128,7 +128,7 @@ const LotNewForm = ({
           </Grid>
           <Grid item xs={8}>
             <FormControl fullWidth>
-              <AutoCompleteList
+              {!locsLoading && <AutoCompleteList
                 required
                 options={locations}
                 value={formData.location}
@@ -136,7 +136,7 @@ const LotNewForm = ({
                 title="name"
                 val="id"
                 label="Location"
-              />
+              />}
             </FormControl>
           </Grid>
           <Grid item xs={8}>
@@ -152,23 +152,21 @@ const LotNewForm = ({
                 label="Price:"
                 labelPlacement="start"
               />
-              {priceInput &&
-              (
-                <TextField
-                  value={formData.price}
-                  name="price"
-                  type="number"
-                  onChange={handleChange}
-                  inputProps={{min: 0}}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <CurrencyIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              )}
+              <TextField
+                value={formData.price}
+                disabled={!priceInput}
+                name="price"
+                type="number"
+                onChange={handleChange}
+                inputProps={{min: 0}}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CurrencyIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
               <FormControlLabel
                 control={
                   <Checkbox
@@ -180,16 +178,14 @@ const LotNewForm = ({
                 label="Quantity:"
                 labelPlacement="start"
               />
-              {quantityInput &&
-              (
-                <TextField
-                  value={formData.quantity}
-                  name="quantity"
-                  inputProps={{min: 0}}
-                  type="number"
-                  onChange={handleChange}
-                />
-              )}
+              <TextField
+                value={formData.quantity}
+                disabled={!quantityInput}
+                name="quantity"
+                inputProps={{min: 0}}
+                type="number"
+                onChange={handleChange}
+              />
             </FormGroup>
           </Grid>
           <Grid xs={8} item>

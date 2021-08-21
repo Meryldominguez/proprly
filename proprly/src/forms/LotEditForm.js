@@ -37,7 +37,6 @@ const LotEditForm = ({
   const [quantityInput, setQuantityInput] = useState(initial.quantity?true:false);
 
   const [locations, setLocations] = useState();
-  // eslint-disable-next-line no-unused-vars
   const [locsLoading, setLocsLoading] = useState(true);
 
   useEffect(() => {
@@ -106,9 +105,8 @@ const LotEditForm = ({
     setFormData(initial);
   };
 
-
   return (
-    <CardWrapper title="Edit Item">
+    <CardWrapper title={lot.name}>
       <Box component="form" onSubmit={handleSubmit}>
         <Grid
           container
@@ -130,7 +128,7 @@ const LotEditForm = ({
           </Grid>
           <Grid item xs={8}>
             <FormControl fullWidth>
-              <AutoCompleteList
+              {!locsLoading && <AutoCompleteList
                 required
                 options={locations}
                 value={formData.location}
@@ -138,7 +136,7 @@ const LotEditForm = ({
                 title="name"
                 val="id"
                 label="Location"
-              />
+              />}
             </FormControl>
           </Grid>
           <Grid item xs={8}>
