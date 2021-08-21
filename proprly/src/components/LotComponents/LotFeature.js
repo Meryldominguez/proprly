@@ -8,6 +8,7 @@ import LotNewForm from '../../forms/LotNewForm';
 import LotDelete from './LotDelete';
 import {useFetchLot} from '../../hooks/useFetch';
 import LoadingSpinner from '../Spinner';
+import LotEditForm from '../../forms/LotEditForm';
 
 const LotFeature = (
     {
@@ -48,7 +49,12 @@ const LotFeature = (
               {
                 title: 'Edit',
                 component:
-              <span>Working on it!</span>,
+              <LotEditForm
+                setFeature={setFeature}
+                setTab={setTab}
+                refreshLots={refreshLots}
+                lot={item}
+              />,
               },
               {
                 title: 'Delete',

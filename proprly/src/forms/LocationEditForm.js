@@ -4,9 +4,6 @@ import React, {
 } from 'react';
 import {v4 as uuid} from 'uuid';
 import {
-  useHistory,
-} from 'react-router-dom';
-import {
   Box,
   Grid,
   TextField,
@@ -40,7 +37,6 @@ const LocEditForm = ({
     notes: location.notes || '',
     parentId: location.parentId ? location.parentId : 0,
   };
-  const history = useHistory();
   const [formData, setFormData] = useState(initial);
 
   console.log(initial);
@@ -56,10 +52,9 @@ const LocEditForm = ({
         parentId: formData.parentId === 0 ? null : formData.parentId,
       };
       console.log({...formData, ...trimmedData});
-      const newLoc = await ProprlyApi.updateLoc(location.id, {...formData, ...trimmedData});
+      await ProprlyApi.updateLoc(location.id, {...formData, ...trimmedData});
       setTab('1');
       refreshLocs();
-      history.push(`/locations/${newLoc.id}`);
       setAlerts([...alerts, {severity: 'success', msg: 'Location created!'}]);
     } catch (error) {
       console.log(error);

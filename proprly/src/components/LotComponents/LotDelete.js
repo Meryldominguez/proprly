@@ -10,9 +10,10 @@ import {
 } from '@material-ui/core';
 import AlertContext from '../../context/AlertContext';
 import ProprlyApi from '../../api';
+import CardWrapper from '../CardWrapper';
 
 const LotDelete = ({
-  refreshLots, refreshFeature, id, query,
+  refreshLots, refreshFeature, item, query,
 }) => {
   const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
@@ -20,7 +21,7 @@ const LotDelete = ({
   const handleClick = async (evt) => {
     evt.preventDefault();
     try {
-      await ProprlyApi.deleteLot(id);
+      await ProprlyApi.deleteLot(item.id);
       query ?
         history.push(`/lots/?${query}`) :
         history.push('/lots');
@@ -33,17 +34,19 @@ const LotDelete = ({
   };
 
   return (
-    <Grid style={{height: '100%'}} justifyContent="center" container>
-      <Grid item>
-        <Button
-          onClick={handleClick}
-          variant="contained"
-          color="secondary"
-        >
+    <CardWrapper title={item.name} >
+      <Grid style={{height: '100%'}} justifyContent="center" container>
+        <Grid item>
+          <Button
+            onClick={handleClick}
+            variant="contained"
+            color="secondary"
+          >
           Permanently Delete this item?
-        </Button>
+          </Button>
+        </Grid>
       </Grid>
-    </Grid>
+    </CardWrapper>
   );
 };
 

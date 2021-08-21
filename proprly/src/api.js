@@ -59,7 +59,7 @@ class ProprlyApi {
 
   /** Get all lots. Searching can be accomplished by query string */
   static async updateLot(id, data) {
-    const res = await this.request('lots/', {data}, 'patch');
+    const res = await this.request(`lots/${id}`, {...data}, 'patch');
     return res.lot;
   }
 

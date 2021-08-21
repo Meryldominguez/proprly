@@ -28,7 +28,6 @@ const LotDetail = ({item}) => {
   const handleClick = () => {
     setOpen(!open);
   };
-  console.log(item);
   return (
     <CardWrapper title={item.name}>
       <List>

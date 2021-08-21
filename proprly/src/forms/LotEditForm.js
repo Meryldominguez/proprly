@@ -1,46 +1,53 @@
 import React, {
   useContext,
   useState,
+  useEffect,
 } from 'react';
-import {
-  useHistory,
-} from 'react-router-dom';
 import {
   Box,
   Grid,
   TextField,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  InputAdornment,
   Button,
 } from '@material-ui/core';
+import CurrencyIcon from '@material-ui/icons/AttachMoney';
 
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
 import CardWrapper from '../components/CardWrapper';
+import AutoCompleteList from '../components/AutoCompleteList';
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-const LocEditForm = ({
-  locations, isLoading, location, refreshLocs, setTab,
+const LotEditForm = ({
+  lot, refreshLots, setTab,
 }) => {
   const initial = {
-    name: location.name || '',
-    notes: location.notes || '',
-    parentId: location.parentId ? location.parentId : 0,
+    name: lot.name,
+    description: lot.description,
+    location: {id: lot.locId, name: lot.location},
+    price: lot.price? lot.price.slice(1) : '',
+    quantity: lot.quantity || '',
   };
-  const history = useHistory();
+
   const [formData, setFormData] = useState(initial);
+  const [priceInput, setPriceInput] = useState(initial.price?true:false);
+  const [quantityInput, setQuantityInput] = useState(initial.quantity?true:false);
+
+  const [locations, setLocations] = useState();
+  // eslint-disable-next-line no-unused-vars
+  const [locsLoading, setLocsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadLocs= async ()=>{
+      const loc = await ProprlyApi.listLocs();
+      setLocations(loc);
+      setLocsLoading(false);
+    };
+    loadLocs();
+  }, []);
 
   const {alerts, setAlerts} = useContext(AlertContext);
 
@@ -49,16 +56,18 @@ const LocEditForm = ({
     try {
       const trimmedData = {
         name: formData.name.trim(),
-        notes: formData.notes.trim(),
-        parentId: formData.parentId === 0 ? null : formData.parentId,
+        description: formData.description.trim(),
+        locId: formData.location.id,
+        quantity: formData.quantity ? Number(formData.quantity) : null,
+        price: formData.price ? Number(formData.price) : null,
       };
-      const newLoc = await ProprlyApi.updateLoc(
-          location.id, {...formData, ...trimmedData});
+      await ProprlyApi.updateLot(
+          lot.id, {...trimmedData});
       setTab('1');
-      refreshLocs();
-      history.push(`/locations/${newLoc.id}`);
-      setAlerts([...alerts, {severity: 'success', msg: 'Location created!'}]);
+      refreshLots();
+      setAlerts([...alerts, {severity: 'success', msg: 'Item updated!'}]);
     } catch (error) {
+      console.log(error);
       setFormData({...formData});
       setAlerts([...error.map((e) => {
         const err = {severity: e.severity || 'error', msg: e.msg};
@@ -66,37 +75,40 @@ const LocEditForm = ({
       })]);
     }
   };
-  const isFormDirty = () => !!((initial.name === formData.name.trim() &&
-        initial.notes === formData.notes.trim() &&
-        initial.parentId === formData.parentId));
+  const isFormDirty = () => (
+    initial.name === formData.name.trim() &&
+    initial.description === formData.description.trim() &&
+    initial.location.id === formData.location.id &&
+    initial.price === formData.price &&
+    initial.quantity === formData.quantity
+  );
 
   const handleChange = (evt) => {
     const {name, value} = evt.target;
-    console.log(name, value);
     setFormData({
       ...formData,
       [name]: value,
     });
   };
+  const handleCheck = (evt) => {
+    const {name} = evt.target;
+    if (name === 'quantityCheck') {
+      setQuantityInput(!quantityInput);
+      setFormData({...formData, quantity: quantityInput ? '' : initial.quantity});
+    }
+    if (name === 'priceCheck') {
+      setPriceInput(!priceInput);
+      setFormData({...formData, price: priceInput ? '' : initial.price});
+    }
+  };
 
   const resetForm = () => {
     setFormData(initial);
   };
-  const renderMenuList = (list, defaultDepth = 0, step = 10) => {
-    const nextDepth = defaultDepth + step;
 
-    return list.map((item) => [<MenuItem
-      key={uuid()}
-      style={{marginLeft: defaultDepth === 0 ? 0 : nextDepth}}
-      value={item.locationId}
-    >
-      {item.locationName}
-    </MenuItem>,
-    item.children && renderMenuList(item.children, nextDepth)]);
-  };
 
   return (
-    <CardWrapper title={location.name}>
+    <CardWrapper title="Edit Item">
       <Box component="form" onSubmit={handleSubmit}>
         <Grid
           container
@@ -104,7 +116,7 @@ const LocEditForm = ({
           spacing={2}
           justifyContent="center"
         >
-          <Grid xs={8} item align="center">
+          <Grid item xs={8} align="center">
             <TextField
               fullWidth
               id="title-input"
@@ -117,38 +129,78 @@ const LocEditForm = ({
             />
           </Grid>
           <Grid item xs={8}>
-            <FormControl
-              fullWidth
-              sx={{minWidth: 300}}
-            >
-              <InputLabel htmlFor="parentId">Parent Location</InputLabel>
-              <Select
-                fullWidth
-                value={formData.parentId}
-                name="parentId"
-                id="parentId"
-                label="Parent Location"
-                onChange={handleChange}
-                MenuProps={MenuProps}
-              >
-                <MenuItem value={0}>
-                  No Parent
-                </MenuItem>
-                {!isLoading && renderMenuList(locations)}
-              </Select>
+            <FormControl fullWidth>
+              <AutoCompleteList
+                required
+                options={locations}
+                value={formData.location}
+                setValue={(location) => setFormData({...formData, location})}
+                title="name"
+                val="id"
+                label="Location"
+              />
             </FormControl>
+          </Grid>
+          <Grid item xs={8}>
+            <FormGroup>
+              <FormControlLabel
+                align="left"
+                control={
+                  <Checkbox
+                    checked={priceInput}
+                    name="priceCheck"
+                    onChange={handleCheck} />
+                }
+                label="Price:"
+                labelPlacement="start"
+              />
+              <TextField
+                value={formData.price}
+                disabled={!priceInput}
+                name="price"
+                type="number"
+                onChange={handleChange}
+                inputProps={{min: 0}}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CurrencyIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={quantityInput}
+                    name="quantityCheck"
+                    onChange={handleCheck}
+                  />
+                }
+                label="Quantity:"
+                labelPlacement="start"
+              />
+              <TextField
+                value={formData.quantity}
+                disabled={!quantityInput}
+                name="quantity"
+                inputProps={{min: 0}}
+                type="number"
+                onChange={handleChange}
+              />
+            </FormGroup>
           </Grid>
           <Grid xs={8} item>
             <TextField
               fullWidth
               type="text"
-              name="notes"
+              name="description"
               multiline
               maxRows={4}
               minRows={4}
               label="Notes"
               variant="outlined"
-              value={formData.notes}
+              value={formData.description}
               onChange={handleChange}
             />
           </Grid>
@@ -156,13 +208,13 @@ const LocEditForm = ({
             <Grid spacing={2} container>
               <Grid item xs={6}>
                 <Button
+                  disabled={isFormDirty()}
                   variant="outlined"
                   color="primary"
                   fullWidth
-                  disabled={isFormDirty()}
                   onClick={resetForm}
                 >
-                  Reset
+                  Reset Changes
                 </Button>
               </Grid>
               <Grid item xs={6}>
@@ -173,7 +225,7 @@ const LocEditForm = ({
                   fullWidth
                   onClick={handleSubmit}
                 >
-                  Edit Location
+                  Edit Item
                 </Button>
               </Grid>
             </Grid>
@@ -184,4 +236,4 @@ const LocEditForm = ({
   );
 };
 
-export default LocEditForm;
+export default LotEditForm;

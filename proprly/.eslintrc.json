@@ -23,6 +23,11 @@
         "max-len": ["error", { "code": 100 }],
         "valid-jsdoc":"off",
         "require-jsdoc":"off",
-        "no-unused-vars":"warn"
+        "no-unused-vars":"warn",
+        "comma-dangle":"warn",
+        "semi":"warn",
+        "quotes":"warn",
+        "object-curly-spacing":"warn",
+        "object-curly-newline":"warn"
     }
 }

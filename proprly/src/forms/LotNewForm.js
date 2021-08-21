@@ -44,7 +44,6 @@ const LotNewForm = ({
   const [locsLoading, setLocsLoading] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line require-jsdoc
     const loadLocs= async ()=>{
       const loc = await ProprlyApi.listLocs();
       setLocations(loc);
@@ -63,7 +62,7 @@ const LotNewForm = ({
         description: formData.description.trim(),
         locId: formData.location.id,
         quantity: formData.quantity ? Number(formData.quantity) : null,
-        price: formData.quantity ? Number(formData.price) : null,
+        price: formData.price ? Number(formData.price) : null,
       };
       const newLot = await ProprlyApi.newLot({...trimmedData});
       setTab('0');
