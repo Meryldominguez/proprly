@@ -64,28 +64,12 @@ const ProductionDashboard = ({isActive, search, year}) => {
           </List>
         </Grid>
         <Grid item xs={9}>
-          <TabBar
-            startingTab={currentTab}
-            tabsArr={[
-              {
-                title: 'New Production',
-                component: <ProdNewForm
-                  refreshFeature={(i) => setFeature(i)}
-                  refreshProds={(i) => setProds(i)}
-                  setView={(i) => setCurrentTab(i)}
-                />,
-              },
-              {
-                title: 'Detail',
-                component: <ProdFeature
-                  production={featured}
-                  query={queryString}
-                  setFeature={setFeature}
-                  setProds={setProds}
-                  setView={(i) => setCurrentTab(i)}
-                />,
-              },
-            ]}
+          <ProdFeature
+            production={featured}
+            query={queryString}
+            setFeature={setFeature}
+            setProds={setProds}
+            setView={(i) => setCurrentTab(i)}
           />
         </Grid>
       </Grid>

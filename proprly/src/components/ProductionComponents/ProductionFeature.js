@@ -17,7 +17,8 @@ const ProductionFeature = ({
         <TabBar
           tabsArr={profile.isAdmin ?
             [
-              {title: 'Details', component: <ProdDetail production={production} />},
+              {title: 'Details', component:
+              <ProdDetail production={production} />},
               {
                 title: 'Edit',
                 component:
@@ -52,7 +53,6 @@ const ProductionFeature = ({
                   production={production}
                 />,
               },
-            // {title:"Edit", component:<LotEditForm production={production} />},
             ]}
         />
       </CardWrapper>

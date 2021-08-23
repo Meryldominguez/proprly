@@ -16,7 +16,6 @@ import {
   Collapse,
   Typography,
   Box,
-  Grid,
 } from '@material-ui/core';
 import {
   ExpandMore,
@@ -25,7 +24,7 @@ import {
 
 const ProductionDetail = ({production}) => {
   const [openProps, setOpenProps] = useState(false);
-  const [openNotes, setOpenNotes] = useState(false);
+  const [openNotes, setOpenNotes] = useState(true);
   const handleClickItems = () => {
     setOpenProps(!openProps);
   };
@@ -35,24 +34,24 @@ const ProductionDetail = ({production}) => {
   console.log(production);
   return (
     <List>
-      {production.notes ?
-        (
-          <Collapse in={!openNotes} timeout="auto" collapsedSize={60}>
-            <Grid container onClick={handleClickNotes}>
-              <Grid item xs={12}>
-                <Typography
-                  width="100%"
-                  noWrap={openNotes}
-                  variant="subtitle1"
-                >
-                  {production.notes}
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                {openNotes ? <ExpandLess /> : <ExpandMore />}
-              </Grid>
-            </Grid>
+      {production.notes ?(
+        <>
+          <Collapse in={!openNotes} timeout="auto" collapsedSize={30}>
+            <ListItemText
+              onClick={handleClickNotes}
+              variant='subtitle1'
+              primary={production.notes}
+              primaryTypographyProps={{
+                noWrap: openNotes,
+                px: 3,
+              }}
+            />
           </Collapse>
+          <ListItemText
+            onClick={handleClickNotes}
+            primary={openNotes ? <ExpandLess /> : <ExpandMore />}
+          />
+        </>
         ) :
         (
           <Typography
