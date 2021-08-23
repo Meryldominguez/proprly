@@ -32,7 +32,6 @@ const ProductionDetail = ({production}) => {
   const handleClickNotes = () => {
     setOpenNotes(!openNotes);
   };
-  console.log(production);
   return (
     <CardWrapper title={production.title} >
       <List>

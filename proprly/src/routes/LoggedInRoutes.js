@@ -37,7 +37,7 @@ const LoggedInRoutes = ({username}) => {
         </Route>
 
         <Route exact path="/productions/:featuredId">
-          <CardWrapper>
+          <CardWrapper title="Productions">
             <ProductionDashboard
               isActive={queryObj.isActive}
               search={queryObj.search}
