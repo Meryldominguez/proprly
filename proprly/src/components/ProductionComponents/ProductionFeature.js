@@ -1,19 +1,22 @@
-import React, {useContext} from 'react';
-import UserContext from '../../context/UserContext';
-import CardWrapper from '../CardWrapper';
+import React, {
+  useEffect,
+} from 'react';
+import {useFetchProduction} from '../../hooks/useFetch';
 import TabBar from '../TabBar';
 import ProdDetail from './ProductionDetail';
 import ProdDelete from './ProductionDelete';
 import ProdEditForm from '../../forms/ProductionEditForm';
+import LoadingSpinner from '../Spinner';
 
 const ProductionFeature = ({
-  setProds, setFeature, setView, production,
+  currentFeature, currentTab, profile, setFeature, setView,
 }) => {
-  const {profile} = useContext(UserContext);
+  const [production, prodLoading, refreshFeature] = useFetchProduction(currentFeature);
+  useEffect(() => refreshFeature(currentFeature), [currentFeature]);
 
-  return (profile && production.id) ?
+  if (production && production.id) {
+    return (!prodLoading) ?
     (
-      <CardWrapper title={production.title}>
         <TabBar
           tabsArr={profile.isAdmin ?
             [
@@ -55,15 +58,21 @@ const ProductionFeature = ({
               },
             ]}
         />
-      </CardWrapper>
-    ) :
-    (
-      <CardWrapper title={production.name}>
-        <span>
-          {production.notes}
-        </span>
-      </CardWrapper>
-    );
+    ) : <LoadingSpinner />;
+  }
+  return (!prodLoading && profile)? (
+    <TabBar
+      startingTab={currentTab}
+      tabsArr={[
+        {title: 'New Item', component: <span>Working on it!</span>},
+        {
+          title: 'Details',
+          component:
+          <ProdDetail production={production} />,
+        },
+      ]}
+    />
+  ): <LoadingSpinner />;
 };
 
 export default ProductionFeature;

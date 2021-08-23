@@ -21,6 +21,7 @@ import {
   ExpandMore,
   ExpandLess,
 } from '@material-ui/icons';
+import CardWrapper from '../CardWrapper';
 
 const ProductionDetail = ({production}) => {
   const [openProps, setOpenProps] = useState(false);
@@ -33,8 +34,9 @@ const ProductionDetail = ({production}) => {
   };
   console.log(production);
   return (
-    <List>
-      {production.notes ?(
+    <CardWrapper title={production.title} >
+      <List>
+        {production.notes ?(
         <>
           <Collapse in={!openNotes} timeout="auto" collapsedSize={30}>
             <ListItemText
@@ -61,31 +63,34 @@ const ProductionDetail = ({production}) => {
             No Notes for this Location
           </Typography>
         )}
-      <ListItemButton>
-        <ListItemText primary="Dates" />
-        <ListItemText align="right">
-          {production.dateStart ?
+        {production.id && <ListItemButton>
+          <ListItemText primary="Dates" />
+          <ListItemText align="right">
+            {production.dateStart ?
             new Date(production.dateStart).toDateString() :
             'N/A'}
-          {' - '}
-          {production.dateEnd ?
+            {' - '}
+            {production.dateEnd ?
             new Date(production.dateEnd).toDateString() :
             'N/A' }
-        </ListItemText>
-      </ListItemButton>
-      <ListItemButton disabled={production.props.length < 1} onClick={handleClickItems}>
-        <ListItemText align="right">
+          </ListItemText>
+        </ListItemButton>}
+        {production.props && <>
+          <ListItemButton disabled={production.props.length < 1} onClick={handleClickItems}>
+            <ListItemText align="right">
           [
-          {production.props.length}
-          {' '}
+              {production.props.length}
+              {' '}
           Props]
-        </ListItemText>
-        {openProps ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={openProps} timeout="auto">
-        <PropList items={production.props} />
-      </Collapse>
-    </List>
+            </ListItemText>
+            {openProps ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openProps} timeout="auto">
+            <PropList items={production.props} />
+          </Collapse>
+        </>}
+      </List>
+    </CardWrapper>
   );
 };
 const PropList = ({items}) => {

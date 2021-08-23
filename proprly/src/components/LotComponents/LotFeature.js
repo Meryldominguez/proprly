@@ -100,7 +100,7 @@ const LotFeature = (
             {
               title: 'Details',
               component:
-        <LotDetail item={item} />,
+                <LotDetail item={item} />,
             },
           ]
         }

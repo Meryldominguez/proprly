@@ -1,4 +1,8 @@
-import {useEffect, useState, useContext} from 'react';
+import {
+  useEffect,
+  useState,
+  useContext,
+} from 'react';
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
 
@@ -150,12 +154,14 @@ const useFetchProductions = (q) => {
     setIsLoading(true);
     setQuery(data);
   };
-  return [prods, isLoading, search, setQuery];
+
+  return [prods, isLoading, search];
 };
+
 const useFetchProduction = (prodId) => {
   const [id, setId] = useState(prodId);
-  const [prod, setProd] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [prod, setProd] = useState();
 
   useEffect(() => {
     const load = async ()=>{
@@ -164,8 +170,8 @@ const useFetchProduction = (prodId) => {
           await ProprlyApi.getProd(id) :
           {
             id: null,
-            name: 'Featured Production',
-            description: 'Select an production on the side for more information',
+            title: 'Featured Production',
+            notes: 'Select an production on the side for more information',
           };
         setProd({
           ...resp,
@@ -173,6 +179,7 @@ const useFetchProduction = (prodId) => {
           dateEnd: resp.dateEnd ? formatDate(new Date(resp.dateEnd)) : null,
         });
         setIsLoading(false);
+        console.log(prod);
         return resp;
       } catch (err) {
         setId(null);
@@ -180,10 +187,9 @@ const useFetchProduction = (prodId) => {
       }
     };
     load();
-  }, [id, isLoading]);
+  }, [id]);
 
   const setFeature = (i) => {
-    setIsLoading(true);
     setId(i);
   };
   return [prod, isLoading, setFeature];
