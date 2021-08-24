@@ -1,6 +1,6 @@
 import React, {
   useState,
-  useContext
+  useContext,
 } from 'react';
 import UserContext from '../../context/UserContext';
 import {
@@ -23,8 +23,7 @@ const ProductionDashboard = ({isActive, search, year}) => {
   const [id, setId] = useState(featuredId);
   const [view, setView] = useState('1');
 
-  const [productions, prodsLoading, newSearch] = useFetchProductions(queryString);
-
+  const [productions, prodsLoading, newSearch, refreshProds] = useFetchProductions(queryString);
   return (!isLoading && !prodsLoading) ?
     (
       <Grid
@@ -36,7 +35,7 @@ const ProductionDashboard = ({isActive, search, year}) => {
         <Grid item xs={3}>
           <ProdList
             currentFeature={id}
-            feature={(id) => setFeature(id)}
+            feature={(id) => setId(id)}
             productions={productions}
           />
         </Grid>
@@ -47,6 +46,7 @@ const ProductionDashboard = ({isActive, search, year}) => {
             profile={profile}
             setTab={(idx)=> setView(idx)}
             setFeature={(i)=> setId(i)}
+            refreshProds={refreshProds}
           />
         </Grid>
       </Grid>

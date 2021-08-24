@@ -19,7 +19,7 @@ import LoadingSpinner from '../components/Spinner';
 import AlertContext from '../context/AlertContext';
 
 const ProdEditForm = ({
-  production, refreshProds, refreshFeature, setView,
+  production, refreshProds, refreshFeature, setTab,
 }) => {
   const initial = {
     title: production.title,
@@ -42,7 +42,7 @@ const ProdEditForm = ({
       console.log({...formData, ...trimmedData});
       await ProprlyApi.updateProd(production.id, {...formData, ...trimmedData});
       history.push(`/productions/${production.id}`);
-      setView('1');
+      setTab('1');
       refreshProds();
       refreshFeature(production.id);
       setAlerts([...alerts, {severity: 'success', msg: 'Production updated!'}]);
@@ -84,6 +84,7 @@ const ProdEditForm = ({
               container
               rowSpacing={{xs: 4}}
               spacing={2}
+              justifyContent="center"
             >
               <Grid item>
                 <FormControlLabel
@@ -96,11 +97,11 @@ const ProdEditForm = ({
                     />
                   )}
                   color="secondary"
-                  labelPlacement="top"
-                  label={formData.active ? 'Active' : 'Inactive'}
+                  labelPlacement="end"
+                  label={formData.active ? 'Active Production' : 'Inactive Production'}
                 />
               </Grid>
-              <Grid xs={12} item>
+              <Grid xs={8} item>
                 <TextField
                   fullWidth
                   id="title-input"
@@ -112,28 +113,35 @@ const ProdEditForm = ({
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={12}>
-
-                <TextField
-                  type="date"
-                  name="dateStart"
-                  label="Start Date"
-                  variant="outlined"
-                  InputLabelProps={{shrink: true}}
-                  value={formData.dateStart || ''}
-                  onChange={handleChange}
-                />
-                <TextField
-                  type="date"
-                  name="dateEnd"
-                  label="End Date"
-                  InputLabelProps={{shrink: true}}
-                  variant="outlined"
-                  value={formData.dateEnd || ''}
-                  onChange={handleChange}
-                />
+              <Grid item xs={8}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      name="dateStart"
+                      label="Start Date"
+                      variant="outlined"
+                      InputLabelProps={{shrink: true}}
+                      value={formData.dateStart || ''}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      name="dateEnd"
+                      label="End Date"
+                      InputLabelProps={{shrink: true}}
+                      variant="outlined"
+                      value={formData.dateEnd || ''}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
-              <Grid xs={12} item>
+              <Grid xs={8} item>
                 <TextField
                   fullWidth
                   type="text"
@@ -146,7 +154,7 @@ const ProdEditForm = ({
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={8}>
                 <Grid spacing={2} container>
                   <Grid item xs={6}>
                     <Button

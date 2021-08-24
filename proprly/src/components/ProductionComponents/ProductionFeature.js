@@ -6,73 +6,54 @@ import TabBar from '../TabBar';
 import ProdDetail from './ProductionDetail';
 import ProdDelete from './ProductionDelete';
 import ProdEditForm from '../../forms/ProductionEditForm';
+import ProdNewForm from '../../forms/ProductionNewForm';
 import LoadingSpinner from '../Spinner';
+import {useHistory} from 'react-router-dom';
 
 const ProductionFeature = ({
-  currentFeature, currentTab, profile, setFeature, setView,
+  currentFeature, currentTab, profile, setFeature, setTab, refreshProds,
 }) => {
   const [production, prodLoading, refreshFeature] = useFetchProduction(currentFeature);
+
   useEffect(() => refreshFeature(currentFeature), [currentFeature]);
 
-  if (production && production.id) {
-    return (!prodLoading) ?
-    (
-        <TabBar
-          tabsArr={profile.isAdmin ?
-            [
-              {title: 'Details', component:
+  if (!prodLoading && production) {
+    return (<TabBar
+      startingTab={currentTab}
+      tabsArr={
+        [
+          {title: 'New Production',
+            component:
+              <ProdNewForm
+                setFeature={setFeature}
+                setTab={setTab}
+                refreshProds={refreshProds}
+              />},
+          {title: 'Details', component:
               <ProdDetail production={production} />},
-              {
-                title: 'Edit',
+          production.id &&
+              {title: 'Edit',
                 component:
               <ProdEditForm
-                refreshProds={(i) => setProds([i])}
+                refreshProds={refreshProds}
                 refreshFeature={(id) => setFeature(id)}
                 production={production}
-                setView={setView}
-              />,
-              },
-              {
-                title: 'Delete',
+                setTab={setTab}
+              />},
+          (profile.isAdmin && production.id) &&
+              {title: 'Delete',
                 component:
               <ProdDelete
-                refreshProds={(i) => setProds([i])}
+                refreshProds={refreshProds}
                 refreshFeature={(id) => setFeature(id)}
                 id={production.id}
-                setView={setView}
-              />,
-              },
-            ] :
-            [
-              {
-                title: 'Details',
-                component: <ProdDetail production={production} />,
-              },
-              {
-                title: 'Edit',
-                component: <ProdDetail
-                  refreshProds={(i) => setProds([i])}
-                  refreshFeature={(id) => setFeature(id)}
-                  production={production}
-                />,
-              },
-            ]}
-        />
-    ) : <LoadingSpinner />;
-  }
-  return (!prodLoading && profile)? (
-    <TabBar
-      startingTab={currentTab}
-      tabsArr={[
-        {title: 'New Item', component: <span>Working on it!</span>},
-        {
-          title: 'Details',
-          component:
-          <ProdDetail production={production} />,
-        },
-      ]}
+                setTab={setTab}
+              />},
+        ]}
     />
-  ): <LoadingSpinner />;
+    );
+  }
+  return <LoadingSpinner />;
 };
 
 export default ProductionFeature;

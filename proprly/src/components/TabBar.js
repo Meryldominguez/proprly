@@ -21,18 +21,23 @@ export default function TabBar({tabsArr, startingTab = '0'}) {
       <TabContext value={activeTab}>
         <Box sx={{padding: 1, borderBottom: 1, borderColor: 'divider'}}>
           <TabList variant="scrollable" onChange={handleChange} aria-label="tabs">
-            {tabsArr.map((tab, idx) => <Tab key={uuid()} label={tab.title} value={`${idx}`} />)}
+            {tabsArr.map((tab, idx) => {
+              if (tab) return <Tab key={uuid()} label={tab.title} value={`${idx}`} />;
+            })}
           </TabList>
         </Box>
-        {tabsArr.map((tab, idx) => (
-          <TabPanel
-            style={{height: '100%'}}
-            key={uuid()}
-            value={`${idx}`}
-          >
-            {tab.component}
-          </TabPanel>
-        ))}
+        {tabsArr.map((tab, idx) => {
+          if (tab) {
+            return (
+              <TabPanel
+                style={{height: '100%'}}
+                key={uuid()}
+                value={`${idx}`}
+              >
+                {tab.component}
+              </TabPanel>);
+          }
+        })}
       </TabContext>
     </Box>
   );

@@ -3,6 +3,7 @@ import {
   useState,
   useContext,
 } from 'react';
+import {useHistory} from 'react-router-dom';
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
 
@@ -44,6 +45,8 @@ const useFetchLots = (q) => {
   return [lots, isLoading, search, triggerRefresh];
 };
 const useFetchLot = (lotId) => {
+  const {setAlerts} = useContext(AlertContext);
+  const history = useHistory();
   const [id, setId] = useState(lotId);
   const [lot, setLot] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -64,8 +67,8 @@ const useFetchLot = (lotId) => {
         return resp;
       } catch (err) {
         setId(null);
-        setIsLoading(false);
-        console.log(err);
+        history.push('/lots')
+        setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
       }
     };
     load();
@@ -99,14 +102,10 @@ const useFetchLocations = () => {
 
 const useFetchLocation = (locId) => {
   const {setAlerts} = useContext(AlertContext);
-
+  const history = useHistory();
   const [id, setId] = useState(locId);
   const [isLoading, setIsLoading] = useState(true);
   const [location, setLocation] = useState();
-
-  const refreshFeature = (i) => {
-    setId(i);
-  };
 
   useEffect(() => {
     const load = async ()=> {
@@ -122,14 +121,15 @@ const useFetchLocation = (locId) => {
         setLocation(resp);
         setIsLoading(false);
       } catch (err) {
-        refreshFeature(null);
+        setId(null);
+        history.push(`/locations`);
         setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
       }
     };
     load();
   }, [id]);
 
-  return [location, isLoading, refreshFeature];
+  return [location, isLoading, setId];
 };
 
 const useFetchProductions = (q) => {
@@ -154,11 +154,16 @@ const useFetchProductions = (q) => {
     setIsLoading(true);
     setQuery(data);
   };
+  const triggerRefresh = () => {
+    setIsLoading(true);
+  };
 
-  return [prods, isLoading, search];
+  return [prods, isLoading, search, triggerRefresh];
 };
 
 const useFetchProduction = (prodId) => {
+  const {setAlerts} = useContext(AlertContext);
+  const history = useHistory();
   const [id, setId] = useState(prodId);
   const [isLoading, setIsLoading] = useState(true);
   const [prod, setProd] = useState();
@@ -179,11 +184,11 @@ const useFetchProduction = (prodId) => {
           dateEnd: resp.dateEnd ? formatDate(new Date(resp.dateEnd)) : null,
         });
         setIsLoading(false);
-        console.log(prod);
         return resp;
       } catch (err) {
         setId(null);
-        console.log(err);
+        history.push(`/productions`);
+        setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
       }
     };
     load();

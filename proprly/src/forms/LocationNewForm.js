@@ -117,9 +117,10 @@ const LocNewForm = ({
             />
           </Grid>
           <Grid item xs={8}>
-            <FormControl fullWidth sx={{minWidth: 300}}>
+            <FormControl fullWidth >
               <InputLabel htmlFor="parentId">Parent Location</InputLabel>
               <Select
+                fullWidth
                 value={formData.parentId}
                 name="parentId"
                 id="parentId"

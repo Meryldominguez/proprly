@@ -51,7 +51,6 @@ const SingleProd = ({
   const history = useHistory();
 
   const handleFeature = (evt) => {
-    console.log(prod);
     evt.preventDefault();
     feature(prod.id);
     history.push(`/productions/${prod.id}`);

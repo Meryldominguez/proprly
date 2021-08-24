@@ -48,10 +48,11 @@ const ProductionDetail = ({production}) => {
               }}
             />
           </Collapse>
+          {production.id &&
           <ListItemText
             onClick={handleClickNotes}
             primary={openNotes ? <ExpandLess /> : <ExpandMore />}
-          />
+          />}
         </>
         ) :
         (

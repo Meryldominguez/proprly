@@ -25,87 +25,44 @@ const LotFeature = (
 
   useEffect(() => refreshFeature(currentFeature), [currentFeature]);
 
-  if (item && item.id) {
-    return (!itemLoading) ?
+  return (!itemLoading && item) ?
       (
         <TabBar
           startingTab={currentTab}
-          tabsArr={profile.isAdmin ?
+          tabsArr={
             [
-              {
-                title: 'New Item',
+              {title: 'New Item',
                 component:
               <LotNewForm
                 setFeature={setFeature}
                 setTab={setTab}
                 refreshLots={refreshLots}
-              />,
-              },
-              {
-                title: 'Details',
+              />},
+              {title: 'Details',
                 component:
-              <LotDetail item={item} />,
-              },
-              {
-                title: 'Edit',
+              <LotDetail item={item} />},
+              item.id &&
+              {title: 'Edit',
                 component:
               <LotEditForm
                 setFeature={setFeature}
                 setTab={setTab}
                 refreshLots={refreshLots}
                 lot={item}
-              />,
-              },
-              {
-                title: 'Delete',
+              />},
+              (profile.isAdmin && item.id) &&
+              {title: 'Delete',
                 component:
               <LotDelete
                 setFeature={setFeature}
                 refreshLots={refreshLots}
                 setTab={setTab}
                 item={item}
-              />,
-              },
-            ] :
-            [
-              {
-                title: 'New Item',
-                component:
-              <span>Working on it!</span>,
-              },
-              {
-                title: 'Details',
-                component:
-              <LotDetail item={item} />,
-              },
-              {
-                title: 'Edit',
-                component:
-              <LotDetail
-                item={item}
-              />,
-              },
+              />},
             ]}
         />
       ) :
       <LoadingSpinner />;
-  }
-  return (!itemLoading && profile) ?
-    (
-      <TabBar
-        startingTab={currentTab}
-        tabsArr={
-          [
-            {title: 'New Item', component: <span>Working on it!</span>},
-            {
-              title: 'Details',
-              component:
-                <LotDetail item={item} />,
-            },
-          ]
-        }
-      />
-    ) : <LoadingSpinner />;
 };
 
 export default LotFeature;

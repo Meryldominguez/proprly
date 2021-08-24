@@ -50,24 +50,20 @@ const LotDashboard = ({searchTerm}) => {
         </Grid>
         <Divider spacing={4} />
         <Grid item xs={4}>
-
           {lots.length > 0 ?
-            (
-              <LotList
-                currentFeature={id}
-                feature={(i) => setId(i)}
-                setTab={(idx) => setView(idx)}
-                lots={lots}
-              />
-            ) :
-            (
-              <CardWrapper>
-                <Typography spacing={3}>
-                  No results for your search
-                </Typography>
-                <small>Try another term?</small>
-              </CardWrapper>
-            )}
+            <LotList
+              currentFeature={id}
+              feature={(i) => setId(i)}
+              setTab={(idx) => setView(idx)}
+              lots={lots}
+            /> :
+            <CardWrapper>
+              <Typography spacing={3}>
+                No results for your search
+              </Typography>
+              <small>Try another term?</small>
+            </CardWrapper>
+          }
         </Grid>
         <Grid item xs={8}>
           <LotFeature

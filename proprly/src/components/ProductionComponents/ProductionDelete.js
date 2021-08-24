@@ -14,7 +14,7 @@ import AlertContext from '../../context/AlertContext';
 import ProprlyApi from '../../api';
 
 const ProductionDelete = ({
-  refreshProds, refreshFeature, setView, id,
+  refreshProds, refreshFeature, setTab, id,
 }) => {
   const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
@@ -26,10 +26,11 @@ const ProductionDelete = ({
       console.log(resp);
       history.push('/productions');
       refreshProds();
-      setView('0');
+      setTab('1');
       refreshFeature();
       setAlerts([{variant: 'success', msg: `Locatiion #${id} has been deleted`}]);
     } catch (err) {
+      console.log(err);
       setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };
