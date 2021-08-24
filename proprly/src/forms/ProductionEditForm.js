@@ -86,7 +86,7 @@ const ProdEditForm = ({
               spacing={2}
               justifyContent="center"
             >
-              <Grid item>
+              <Grid item xs={12}>
                 <FormControlLabel
                   control={(
                     <Switch

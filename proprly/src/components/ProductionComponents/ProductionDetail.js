@@ -16,6 +16,8 @@ import {
   Collapse,
   Typography,
   Box,
+  Button,
+  ListItem,
 } from '@material-ui/core';
 import {
   ExpandMore,
@@ -44,7 +46,7 @@ const ProductionDetail = ({production}) => {
               primary={production.notes}
               primaryTypographyProps={{
                 noWrap: openNotes,
-                px: 3,
+                px: 4,
               }}
             />
           </Collapse>
@@ -67,24 +69,29 @@ const ProductionDetail = ({production}) => {
           <ListItemText primary="Dates" />
           <ListItemText align="right">
             {production.dateStart ?
-            new Date(production.dateStart).toDateString() :
-            'N/A'}
+            new Date(production.dateStart).toDateString() : 'N/A'}
             {' - '}
             {production.dateEnd ?
-            new Date(production.dateEnd).toDateString() :
-            'N/A' }
+            new Date(production.dateEnd).toDateString() : 'N/A' }
           </ListItemText>
         </ListItemButton>}
-        {production.props && <>
-          <ListItemButton disabled={production.props.length < 1} onClick={handleClickItems}>
-            <ListItemText align="right">
-          [
-              {production.props.length}
-              {' '}
-          Props]
-            </ListItemText>
-            {openProps ? <ExpandLess /> : <ExpandMore />}
-          </ListItemButton>
+        {production.id && <>
+          <ListItem>
+            <Button
+              component={Link}
+              to={`/props/${production.id}`}
+            >
+                Manage Props
+            </Button>
+            <ListItemButton disabled={production.props.length < 1} onClick={handleClickItems}>
+              <ListItemText
+                align="right"
+              >
+                [{production.props.length}{' '} Props]
+              </ListItemText>
+              {openProps ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+          </ListItem>
           <Collapse in={openProps} timeout="auto">
             <PropList items={production.props} />
           </Collapse>
