@@ -32,10 +32,8 @@ describe('POST /props', function () {
     const { rows: [lot] } = await db.query(
       `SELECT * FROM lot
         WHERE name = 'Lot8'`)
-    console.log(lot,prod)
     const res= await db.query(`
     SELECT * from prop WHERE lot_id=$1 AND prod_id=$2`,[lot.id,prod.id])
-    console.log(res.rows)
     const resp = await request(app)
       .post('/props')
       .send({

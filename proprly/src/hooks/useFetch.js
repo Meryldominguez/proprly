@@ -67,7 +67,7 @@ const useFetchLot = (lotId) => {
         return resp;
       } catch (err) {
         setId(null);
-        history.push('/lots')
+        history.push('/lots');
         setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
       }
     };

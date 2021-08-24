@@ -29,7 +29,6 @@ const RecursiveList = ({
   const [openId, setOpenId] = useState(null);
 
   const handleOpen = (id) => {
-    console.log(id, openId, 'handle open');
     return id === openId ?
       setOpenId(null) :
       setOpenId(id);
