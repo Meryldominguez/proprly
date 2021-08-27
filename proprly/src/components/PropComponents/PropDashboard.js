@@ -1,57 +1,46 @@
 import React, {
+  useEffect,
   useState,
-  useContext,
 } from 'react';
-import UserContext from '../../context/UserContext';
+import TabBar from '../TabBar';
 import {
   useParams,
 } from 'react-router-dom';
-import {
-  Grid,
-} from '@material-ui/core';
+
 import LoadingSpinner from '../Spinner';
-import ProdList from './ProductionList';
-import ProdFeature from './ProductionFeature';
+import PropManager from './PropManager';
+
 import {useFetchProductions} from '../../hooks/useFetch';
 
-
-const ProductionDashboard = ({isActive, search, year}) => {
-  const {profile, isLoading} = useContext(UserContext);
+const PropDashboard = ({
+}) => {
   const {featuredId} = useParams();
   const queryString = '';
 
-  const [id, setId] = useState(featuredId);
-  const [view, setView] = useState('1');
+  const [productions, prodsLoading] = useFetchProductions(queryString);
+  const [view, setView] = useState('0');
 
-  const [productions, prodsLoading, newSearch, refreshProds] = useFetchProductions(queryString);
-  return (!isLoading && !prodsLoading) ?
-    (
-      <Grid
-        container
-        rowSpacing={3}
-        columnSpacing={{xs: 1, sm: 2, md: 3}}
-        justifyContent="center"
-      >
-        <Grid item xs={3}>
-          <ProdList
-            currentFeature={id}
-            feature={(id) => setId(id)}
-            productions={productions}
-          />
-        </Grid>
-        <Grid item xs={9}>
-          <ProdFeature
-            currentFeature={id}
-            currentTab={view}
-            profile={profile}
-            setTab={(idx)=> setView(idx)}
-            setFeature={(i)=> setId(i)}
-            refreshProds={refreshProds}
-          />
-        </Grid>
-      </Grid>
-    ) :
-    <LoadingSpinner />;
+  // useEffect(()=>{
+  //   const [res] = productions.filter((prod, idx)=>{
+  //     if (prod.id===Number(featuredId)) return prod.idx=idx;
+  //   });
+  //   console.log(res);
+  //   setView(res? String(res['idx']): '0');
+  // }, [prodsLoading]);
+
+  if (!prodsLoading) {
+    return (<TabBar
+      startingTab={view}
+      tabsArr={productions.map((prod)=> {
+        return {
+          title: prod.title,
+          component: <PropManager prod={prod} />,
+        };
+      })}
+    />
+    );
+  };
+  return <LoadingSpinner />;
 };
 
-export default ProductionDashboard;
+export default PropDashboard;

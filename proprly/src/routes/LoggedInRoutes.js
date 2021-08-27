@@ -13,6 +13,7 @@ import CardWrapper from '../components/CardWrapper';
 import LocationDashboard from '../components/LocationComponents/LocationDashboard';
 import LotDashboard from '../components/LotComponents/LotDashboard';
 import ProductionDashboard from '../components/ProductionComponents/ProductionDashboard';
+import PropDashboard from '../components/PropComponents/PropDashboard';
 import ProfileForm from '../forms/ProfileForm';
 import Dashboard from '../components/Dashboard';
 
@@ -24,6 +25,17 @@ const LoggedInRoutes = ({username}) => {
       <Switch>
         <Route exact path="/">
           <Dashboard />
+        </Route>
+
+        <Route exact path="/props">
+          <CardWrapper title="Manage Props">
+            <PropDashboard />
+          </CardWrapper>
+        </Route>
+        <Route exact path="/props/:featuredId">
+          <CardWrapper title="Manage Props">
+            <PropDashboard />
+          </CardWrapper>
         </Route>
 
         <Route exact path="/productions">

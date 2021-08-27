@@ -12,7 +12,7 @@ import TabPanel from '@material-ui/lab/TabPanel';
 
 export default function TabBar({tabsArr, startingTab = '0'}) {
   const [activeTab, setActiveTab] = useState(startingTab);
-
+  console.log(activeTab);
   const handleChange = (event, newValue) => {
     setActiveTab(newValue);
   };
