@@ -1,4 +1,5 @@
 import React from 'react';
+import {v4 as uuid} from 'uuid';
 import {
   AppBar,
   Toolbar,
@@ -59,18 +60,18 @@ function Navbar({user, logout}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      {user? <>
-        <MenuItem onClick={handleMenuClose}>
+      {user? [
+        (<MenuItem key={uuid()} onClick={handleMenuClose}>
           <Button component={Link} to='/profile' color="inherit">
           Profile
           </Button>
-        </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
+        </MenuItem>),
+        (<MenuItem key={uuid()} onClick={handleMenuClose}>
           <Button onClick={()=>logout()} color="inherit">
           Logout
           </Button>
-        </MenuItem>
-      </>:
+        </MenuItem>)
+      ]:
       <MenuItem onClick={handleMenuClose}>Login</MenuItem>}
     </Menu>
   );

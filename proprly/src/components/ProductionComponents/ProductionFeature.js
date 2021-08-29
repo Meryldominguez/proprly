@@ -8,7 +8,6 @@ import ProdDelete from './ProductionDelete';
 import ProdEditForm from '../../forms/ProductionEditForm';
 import ProdNewForm from '../../forms/ProductionNewForm';
 import LoadingSpinner from '../Spinner';
-import {useHistory} from 'react-router-dom';
 
 const ProductionFeature = ({
   currentFeature, currentTab, profile, setFeature, setTab, refreshProds,
