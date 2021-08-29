@@ -12,111 +12,61 @@ import {useFetchLocation} from '../../hooks/useFetch';
 const LocFeature = (
     {
       currentFeature,
+      feature,
       currentTab,
       setTab,
-      locations,
-      locsLoading,
       profile,
-      setFeature,
+      locations,
       refreshLocs,
     },
 ) => {
-  const [location, locLoading, refreshFeature] = useFetchLocation(currentFeature);
+  const [
+    location,
+    locLoading,
+    setFeature,
+    // refreshFeature
+  ] = useFetchLocation(currentFeature);
 
-  useEffect(() => refreshFeature(currentFeature), [currentFeature]);
+  useEffect(() => setFeature(currentFeature), [currentFeature]);
 
-  if (location && location.id) {
-    return (!locLoading) ?
-      (
-        <TabBar
-          startingTab={currentTab}
-          tabsArr={profile.isAdmin ?
-            [
-              {
-                title: 'New Location',
-                component:
-              <LocNewForm
-                locations={locations}
-                setFeature={setFeature}
-                setTab={setTab}
-                refreshLocs={refreshLocs}
-              />,
-              },
-              {
-                title: 'Details',
-                component:
-              <LocDetail location={location} />,
-              },
-              {
-                title: 'Edit',
-                component:
-              <LocEditForm
-                locations={locations}
-                location={location}
-                setTab={setTab}
-                refreshLocs={refreshLocs}
-              />,
-              },
-              {
-                title: 'Delete',
-                component:
-              <LocDelete
-                setFeature={setFeature}
-                location={location}
-                setTab={setTab}
-                refreshLocs={refreshLocs}
-              />,
-              },
-            ] :
-            [{
-              title: 'New Location',
-              component:
-              <LocNewForm
-                locations={locations}
-                setFeature={setFeature}
-                setTab={setTab}
-                refreshLocs={refreshLocs}
-              />,
-            },
-            {
-              title: 'Details',
-              component:
-              <LocDetail location={location} />,
-            },
-            {
-              title: 'Edit',
-              component:
-              <LocEditForm
-                locations={locations}
-                location={location}
-                setTab={setTab}
-                refreshLocs={refreshLocs}
-              />,
-            },
-            ]}
-        />
-      ) :
-      <LoadingSpinner />;
-  }
-
-  return (!locLoading && profile) ? (
-    <TabBar
+  if (!locLoading && location && profile) {
+    return (<TabBar
+      startingTab={currentTab}
       tabsArr={
         [
-          {
-            title: 'New Location',
+          {title: 'New Location',
             component:
-      <LocNewForm locations={locations} locsLoading={locsLoading} setFeature={setFeature} />,
-          },
-          {
-            title: 'Details',
+          <LocNewForm
+            setFeature={feature}
+            setTab={setTab}
+            refreshLocs={refreshLocs}
+            locations={locations}
+          />},
+          {title: 'Details',
             component:
-      <LocDetail location={location} />,
-          },
-        ]
-      }
+          <LocDetail location={location} />},
+          location.id &&
+          {title: 'Edit',
+            component:
+          <LocEditForm
+            setTab={setTab}
+            refreshLocs={refreshLocs}
+            location={location}
+            locations={locations}
+          />},
+          (profile['isAdmin'] && location.id) &&
+          {title: 'Delete',
+            component:
+          <LocDelete
+            refreshFeature={feature}
+            refreshLocs={refreshLocs}
+            location={location}
+          />},
+        ]}
     />
-  ) : <LoadingSpinner />;
+    );
+  }
+  return <LoadingSpinner />;
 };
 
 export default LocFeature;

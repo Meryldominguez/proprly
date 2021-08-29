@@ -60,9 +60,10 @@ const LocNewForm = ({
       refreshLocs();
       history.push(`/locations/${newLoc.id}`);
       setAlerts([...alerts, {severity: 'success', msg: 'Location created!'}]);
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
       setFormData({...formData});
-      setAlerts([...error.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
+      setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };
 

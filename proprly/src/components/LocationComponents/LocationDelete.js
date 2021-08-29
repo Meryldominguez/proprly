@@ -12,7 +12,9 @@ import AlertContext from '../../context/AlertContext';
 import ProprlyApi from '../../api';
 import CardWrapper from '../CardWrapper';
 
-const LocationDelete = ({setFeature, location, refreshLocs}) => {
+const LocationDelete = ({
+  refreshFeature, refreshLocs, location,
+}) => {
   const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
 
@@ -21,10 +23,11 @@ const LocationDelete = ({setFeature, location, refreshLocs}) => {
     try {
       await ProprlyApi.deleteLoc(location.id);
       history.push('/locations');
-      setFeature();
+      refreshFeature();
       refreshLocs();
-      setAlerts([{variant: 'success', msg: `Locatiion #${location.id} has been deleted`}]);
+      setAlerts([{variant: 'success', msg: `Location "${location.name}" has been deleted`}]);
     } catch (err) {
+      console.log(err);
       setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };
@@ -35,9 +38,8 @@ const LocationDelete = ({setFeature, location, refreshLocs}) => {
         <Grid item>
           <Button
             onClick={handleClick}
-            variant="contained"
-            color="secondary"
-          >
+            variant='contained'
+            color="secondary">
             Permanently Delete this Location and all the Items in it?
           </Button>
         </Grid>

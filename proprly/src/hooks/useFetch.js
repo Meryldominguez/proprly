@@ -82,6 +82,7 @@ const useFetchLocations = () => {
   const [locations, setLocations] = useState();
   useEffect(() => {
     const load = async ()=>{
+      setIsLoading(true);
       const resp = await ProprlyApi.getLocs(query);
       setLocations(resp);
       setIsLoading(false);
@@ -90,15 +91,16 @@ const useFetchLocations = () => {
     load();
   }, [query, dep]);
 
-  return [locations, isLoading, refresh];
+  return [locations, isLoading, setQuery, refresh];
 };
 
 const useFetchLocation = (locId) => {
+  const [dep, refresh] = useRefresh();
   const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
   const [id, setId] = useState(locId);
-  const [isLoading, setIsLoading] = useState(true);
   const [location, setLocation] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const load = async ()=> {
@@ -113,6 +115,7 @@ const useFetchLocation = (locId) => {
           };
         setLocation(resp);
         setIsLoading(false);
+        return resp;
       } catch (err) {
         setId(null);
         history.push(`/locations`);
@@ -120,9 +123,9 @@ const useFetchLocation = (locId) => {
       }
     };
     load();
-  }, [id]);
+  }, [id, dep]);
 
-  return [location, isLoading, setId];
+  return [location, isLoading, setId, refresh];
 };
 
 const useFetchProductions = (q) => {

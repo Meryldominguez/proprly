@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import {v4 as uuid} from 'uuid';
 import {
+  Box,
   List,
   ListItem,
   ListItemButton,
@@ -20,7 +21,6 @@ import {
 } from '@material-ui/icons';
 
 import ArrowIcon from '@material-ui/icons/SubdirectoryArrowRight';
-import LoadingSpinner from '../Spinner';
 
 const RecursiveList = ({
   locations, currentFeature, feature, color = 'secondary', defaultDepth = 0, step = 7,
@@ -115,15 +115,15 @@ const SingleLoc = ({
 };
 
 const LocList = ({
-  locations, isLoading, currentFeature, feature,
-}) => (!isLoading ?
-  (
-    <RecursiveList
-      isLoading={isLoading}
-      locations={locations}
-      currentFeature={currentFeature}
-      feature={feature}
-    />
-  ) :
-  <LoadingSpinner />);
+  locations, currentFeature, feature,
+}) => locations.length>0 ?
+  <RecursiveList
+    locations={locations}
+    currentFeature={currentFeature}
+    feature={feature}
+  />:
+  <Box
+    sx={{bgcolor: 'background.paper'}}
+  />
+;
 export default LocList;

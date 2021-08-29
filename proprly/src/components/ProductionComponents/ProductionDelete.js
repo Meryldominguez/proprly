@@ -29,6 +29,7 @@ const ProductionDelete = ({
       refreshProds();
       setAlerts([{variant: 'success', msg: `Production has been deleted`}]);
     } catch (err) {
+      console.log(err);
       setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };
