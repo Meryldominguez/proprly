@@ -27,8 +27,9 @@ const LotDelete = ({
         history.push('/lots');
       refreshFeature();
       refreshLots();
-      setAlerts([{variant: 'success', msg: `Item #${id} has been deleted`}]);
+      setAlerts([{variant: 'success', msg: `Item #${item.id} has been deleted`}]);
     } catch (err) {
+      console.log(err);
       setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };

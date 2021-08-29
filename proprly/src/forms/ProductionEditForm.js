@@ -3,9 +3,6 @@ import React, {
   useState,
 } from 'react';
 import {
-  useHistory,
-} from 'react-router-dom';
-import {
   Box,
   Grid,
   TextField,
@@ -17,9 +14,10 @@ import {
 import ProprlyApi from '../api';
 import LoadingSpinner from '../components/Spinner';
 import AlertContext from '../context/AlertContext';
+import CardWrapper from '../components/CardWrapper';
 
 const ProdEditForm = ({
-  production, refreshProds, refreshFeature, setTab,
+  setTab, refreshProds, production,
 }) => {
   const initial = {
     title: production.title,
@@ -28,7 +26,6 @@ const ProdEditForm = ({
     dateStart: production.dateStart ? production.dateStart : '',
     dateEnd: production.dateEnd ? production.dateEnd : '',
   };
-  const history = useHistory();
   const [formData, setFormData] = useState(initial);
   const {alerts, setAlerts} = useContext(AlertContext);
 
@@ -40,12 +37,11 @@ const ProdEditForm = ({
         notes: formData.notes.trim(),
       };
       await ProprlyApi.updateProd(production.id, {...formData, ...trimmedData});
-      history.push(`/productions/${production.id}`);
       setTab('1');
       refreshProds();
-      refreshFeature(production.id);
       setAlerts([...alerts, {severity: 'success', msg: 'Production updated!'}]);
     } catch (error) {
+      console.log(error);
       setFormData({...formData});
       setAlerts([
         ...error.map((e) => {
@@ -73,117 +69,114 @@ const ProdEditForm = ({
   const resetForm = () => {
     setFormData(production);
   };
-  return (
-    <>
-      { production ?
-        (
-          <Box component="form" onSubmit={handleSubmit} spacing={8}>
-            <Grid
-              container
-              rowSpacing={{xs: 4}}
-              spacing={2}
-              justifyContent="center"
-            >
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={(
-                    <Switch
-                      checked={formData.active}
-                      name="active"
-                      onChange={handleChange}
-                      inputProps={{'aria-label': 'controlled'}}
-                    />
-                  )}
-                  color="secondary"
-                  labelPlacement="end"
-                  label={formData.active ? 'Active Production' : 'Inactive Production'}
+  return production ? (
+    <CardWrapper title={production.title}>
+      <Box component="form" onSubmit={handleSubmit} spacing={8}>
+        <Grid
+          container
+          rowSpacing={{xs: 4}}
+          spacing={2}
+          justifyContent="center"
+        >
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={(
+                <Switch
+                  checked={formData.active}
+                  name="active"
+                  onChange={handleChange}
+                  inputProps={{'aria-label': 'controlled'}}
                 />
-              </Grid>
-              <Grid xs={8} item>
+              )}
+              color="secondary"
+              labelPlacement="end"
+              label={formData.active ? 'Active Production' : 'Inactive Production'}
+            />
+          </Grid>
+          <Grid xs={8} item>
+            <TextField
+              fullWidth
+              id="title-input"
+              name="title"
+              label="Title"
+              type="text"
+              variant="outlined"
+              value={formData.title}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={8}>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  id="title-input"
-                  name="title"
-                  label="Title"
-                  type="text"
+                  type="date"
+                  name="dateStart"
+                  label="Start Date"
                   variant="outlined"
-                  value={formData.title}
+                  InputLabelProps={{shrink: true}}
+                  value={formData.dateStart || ''}
                   onChange={handleChange}
                 />
               </Grid>
-              <Grid item xs={8}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      type="date"
-                      name="dateStart"
-                      label="Start Date"
-                      variant="outlined"
-                      InputLabelProps={{shrink: true}}
-                      value={formData.dateStart || ''}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      type="date"
-                      name="dateEnd"
-                      label="End Date"
-                      InputLabelProps={{shrink: true}}
-                      variant="outlined"
-                      value={formData.dateEnd || ''}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid xs={8} item>
+              <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  type="text"
-                  name="notes"
-                  multiline
-                  maxRows={4}
-                  label="Notes"
+                  type="date"
+                  name="dateEnd"
+                  label="End Date"
+                  InputLabelProps={{shrink: true}}
                   variant="outlined"
-                  value={formData.notes}
+                  value={formData.dateEnd || ''}
                   onChange={handleChange}
                 />
-              </Grid>
-              <Grid item xs={8}>
-                <Grid spacing={2} container>
-                  <Grid item xs={6}>
-                    <Button
-                      disabled={!isFormDirty()}
-                      variant="outlined"
-                      color="primary"
-                      fullWidth
-                      onClick={resetForm}
-                    >
-                      Reset
-                    </Button>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Button
-                      disabled={!isFormDirty()}
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={handleSubmit}
-                    >
-                      Update Production
-                    </Button>
-                  </Grid>
-                </Grid>
               </Grid>
             </Grid>
-          </Box>
+          </Grid>
+          <Grid xs={8} item>
+            <TextField
+              fullWidth
+              type="text"
+              name="notes"
+              multiline
+              maxRows={4}
+              label="Notes"
+              variant="outlined"
+              value={formData.notes}
+              onChange={handleChange}
+            />
+          </Grid>
+          <Grid item xs={8}>
+            <Grid spacing={2} container>
+              <Grid item xs={6}>
+                <Button
+                  disabled={!isFormDirty()}
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                  onClick={resetForm}
+                >
+                      Reset
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  disabled={!isFormDirty()}
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={handleSubmit}
+                >
+                      Update Production
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Box>
+    </CardWrapper>
         ) :
-        <LoadingSpinner />}
-    </>
-  );
+        <LoadingSpinner />;
 };
 
 export default ProdEditForm;

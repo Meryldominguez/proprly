@@ -4,8 +4,10 @@ import {
   useContext,
 } from 'react';
 import {useHistory} from 'react-router-dom';
+import useRefresh from './useRefresh';
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
+
 
 const formatDate = (date) => {
   const year = String(date.getFullYear());
@@ -17,34 +19,29 @@ const formatDate = (date) => {
 };
 
 const useFetchLots = (q) => {
+  const [dep, refresh] = useRefresh();
   const [query, setQuery] = useState(q);
   const [lots, setLots] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const load = async ()=>{
       try {
+        setIsLoading(true);
         const resp = await ProprlyApi.getLots(query);
         setLots(resp);
         setIsLoading(false);
         return resp;
       } catch (err) {
-        console.error(err);
+        console.log(err);
       }
     };
     load();
-  }, [query, isLoading]);
+  }, [query, dep]);
 
-  const search = (data) => {
-    setIsLoading(true);
-    setQuery(data);
-  };
-  const triggerRefresh = () => {
-    setIsLoading(true);
-  };
-
-  return [lots, isLoading, search, triggerRefresh];
+  return [lots, isLoading, setQuery, refresh];
 };
 const useFetchLot = (lotId) => {
+  const [dep, refresh] = useRefresh();
   const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
   const [id, setId] = useState(lotId);
@@ -66,21 +63,20 @@ const useFetchLot = (lotId) => {
         setIsLoading(false);
         return resp;
       } catch (err) {
+        console.log(err);
         setId(null);
         history.push('/lots');
         setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
       }
     };
     load();
-  }, [id]);
+  }, [id, dep]);
 
-  const refreshFeature = (i) => {
-    setId(i);
-  };
-  return [lot, isLoading, refreshFeature];
+  return [lot, isLoading, setId, refresh];
 };
 
 const useFetchLocations = () => {
+  const [dep, refresh] = useRefresh();
   const [query, setQuery] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [locations, setLocations] = useState();
@@ -92,12 +88,9 @@ const useFetchLocations = () => {
       return resp;
     };
     load();
-  }, [query, isLoading]);
+  }, [query, dep]);
 
-  const triggerRefresh = () => {
-    setIsLoading(true);
-  };
-  return [locations, isLoading, triggerRefresh];
+  return [locations, isLoading, refresh];
 };
 
 const useFetchLocation = (locId) => {
@@ -133,12 +126,15 @@ const useFetchLocation = (locId) => {
 };
 
 const useFetchProductions = (q) => {
+  const [dep, refresh] = useRefresh();
   const [query, setQuery] = useState(q);
   const [prods, setProds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const load = async ()=> {
       try {
+        setIsLoading(true);
         const resp = await ProprlyApi.searchProds(query);
         setProds(resp);
         setIsLoading(false);
@@ -148,28 +144,22 @@ const useFetchProductions = (q) => {
       }
     };
     load();
-  }, [query, isLoading]);
+  }, [query, dep]);
 
-  const search = (data) => {
-    setIsLoading(true);
-    setQuery(data);
-  };
-  const triggerRefresh = () => {
-    setIsLoading(true);
-  };
-
-  return [prods, isLoading, search, triggerRefresh];
+  return [prods, isLoading, setQuery, refresh];
 };
 
 const useFetchProduction = (prodId) => {
+  const [dep, refresh] = useRefresh();
   const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
   const [id, setId] = useState(prodId);
-  const [isLoading, setIsLoading] = useState(true);
   const [prod, setProd] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const load = async ()=>{
+      setIsLoading(true);
       try {
         const resp = (id) ?
           await ProprlyApi.getProd(id) :
@@ -194,13 +184,10 @@ const useFetchProduction = (prodId) => {
       }
     };
     load();
-  }, [id, isLoading]);
+    ;
+  }, [id, dep]);
 
-  const setFeature = (i) => {
-    setId(i);
-    setIsLoading(true);
-  };
-  return [prod, isLoading, setFeature];
+  return [prod, isLoading, setId, refresh];
 };
 
 const useGetUserProfile = (username) => {

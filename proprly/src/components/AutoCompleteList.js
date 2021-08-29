@@ -14,7 +14,6 @@ const AutoCompleteList = ({
     onChange={(event, newValue) => setValue(newValue)}
     filterOptions={(options, params) => {
       const filtered = filter(options, params);
-
       if (suggestable) {
         const {inputValue} = params;
         // Suggest the creation of a new value

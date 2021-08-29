@@ -32,7 +32,7 @@ const LotDashboard = ({searchTerm}) => {
 
   const [lots, lotsLoading, search, refreshLots] = useFetchLots(queryString);
 
-  return !isLoading && !lotsLoading ?
+  return !isLoading && !lotsLoading && profile ?
     (
       <Grid
         container
@@ -54,7 +54,6 @@ const LotDashboard = ({searchTerm}) => {
             <LotList
               currentFeature={id}
               feature={(i) => setId(i)}
-              setTab={(idx) => setView(idx)}
               lots={lots}
             /> :
             <CardWrapper>
@@ -67,12 +66,13 @@ const LotDashboard = ({searchTerm}) => {
         </Grid>
         <Grid item xs={8}>
           <LotFeature
-            query={queryString}
+            currentFeature={id}
+            feature={(i) => setId(i)}
             currentTab={view}
             setTab={(idx) => setView(idx)}
+
+            query={queryString}
             profile={profile}
-            setFeature={(i) => setId(i)}
-            currentFeature={id}
             refreshLots={refreshLots}
           />
         </Grid>

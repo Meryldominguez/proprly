@@ -27,7 +27,7 @@ const LotEditForm = ({
   const initial = {
     name: lot.name,
     description: lot.description,
-    location: {id: lot.locId, name: lot.location},
+    location: {locationId: lot.locId, locationName: lot.location},
     price: lot.price? lot.price.slice(1) : '',
     quantity: lot.quantity || '',
   };
@@ -56,7 +56,7 @@ const LotEditForm = ({
       const trimmedData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        locId: formData.location.id,
+        locId: formData.location.locationId,
         quantity: formData.quantity ? Number(formData.quantity) : null,
         price: formData.price ? Number(formData.price) : null,
       };
@@ -76,12 +76,13 @@ const LotEditForm = ({
   const isFormDirty = () => (
     initial.name === formData.name.trim() &&
     initial.description === formData.description.trim() &&
-    initial.location.id === formData.location.id &&
+    initial.location.locationId === formData.location.locationId &&
     initial.price === formData.price &&
     initial.quantity === formData.quantity
   );
 
   const handleChange = (evt) => {
+    console.log(formData, isFormDirty());
     const {name, value} = evt.target;
     setFormData({
       ...formData,
@@ -132,8 +133,8 @@ const LotEditForm = ({
                 options={locations}
                 value={formData.location}
                 setValue={(location) => setFormData({...formData, location})}
-                title="name"
-                val="id"
+                title="locationName"
+                val="locationId"
                 label="Location"
               />}
             </FormControl>

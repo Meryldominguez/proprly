@@ -13,17 +13,22 @@ import LotEditForm from '../../forms/LotEditForm';
 const LotFeature = (
     {
       query,
+      currentFeature,
+      feature,
       currentTab,
       setTab,
-      currentFeature,
       profile,
-      setFeature,
       refreshLots,
     },
 ) => {
-  const [item, itemLoading, refreshFeature] = useFetchLot(currentFeature);
+  const [
+    item,
+    itemLoading,
+    setFeature,
+    // refresh,
+  ] = useFetchLot(currentFeature);
 
-  useEffect(() => refreshFeature(currentFeature), [currentFeature]);
+  useEffect(() => setFeature(currentFeature), [currentFeature]);
 
   return (!itemLoading && item) ?
       (
@@ -34,7 +39,7 @@ const LotFeature = (
               {title: 'New Item',
                 component:
               <LotNewForm
-                setFeature={setFeature}
+                setFeature={feature}
                 setTab={setTab}
                 refreshLots={refreshLots}
               />},
@@ -45,19 +50,18 @@ const LotFeature = (
               {title: 'Edit',
                 component:
               <LotEditForm
-                setFeature={setFeature}
                 setTab={setTab}
                 refreshLots={refreshLots}
                 lot={item}
               />},
-              (profile.isAdmin && item.id) &&
+              (profile['isAdmin'] && item.id) &&
               {title: 'Delete',
                 component:
               <LotDelete
-                setFeature={setFeature}
+                refreshFeature={feature}
                 refreshLots={refreshLots}
-                setTab={setTab}
                 item={item}
+                query={query}
               />},
             ]}
         />
