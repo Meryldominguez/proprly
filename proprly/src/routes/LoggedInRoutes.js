@@ -15,6 +15,7 @@ import LotDashboard from '../components/LotComponents/LotDashboard';
 import ProductionDashboard from '../components/ProductionComponents/ProductionDashboard';
 import ProfileForm from '../forms/ProfileForm';
 import Dashboard from '../components/Dashboard';
+import PropDashboard from '../components/PropComponents/PropDashboard';
 
 const LoggedInRoutes = ({username}) => {
   const {search} = useLocation();
@@ -26,8 +27,20 @@ const LoggedInRoutes = ({username}) => {
           <Dashboard />
         </Route>
 
+        <Route exact path="/props">
+          <CardWrapper title="Manage Props">
+            <PropDashboard/>
+          </CardWrapper>
+        </Route>
+
+        <Route exact path="/props/:featuredId">
+          <CardWrapper title="Manage Props">
+            <PropDashboard />
+          </CardWrapper>
+        </Route>
+
         <Route exact path="/productions">
-          <CardWrapper>
+          <CardWrapper title="Productions">
             <ProductionDashboard
               isActive={queryObj.isActive}
               search={queryObj.search}
@@ -37,7 +50,7 @@ const LoggedInRoutes = ({username}) => {
         </Route>
 
         <Route exact path="/productions/:featuredId">
-          <CardWrapper>
+          <CardWrapper title="Productions">
             <ProductionDashboard
               isActive={queryObj.isActive}
               search={queryObj.search}

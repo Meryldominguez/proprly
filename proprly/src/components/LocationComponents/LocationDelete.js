@@ -19,8 +19,7 @@ const LocationDelete = ({setFeature, location, refreshLocs}) => {
   const handleClick = async (evt) => {
     evt.preventDefault();
     try {
-      const resp = await ProprlyApi.deleteLoc(location.id);
-      console.log(resp);
+      await ProprlyApi.deleteLoc(location.id);
       history.push('/locations');
       setFeature();
       refreshLocs();

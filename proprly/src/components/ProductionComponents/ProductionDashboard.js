@@ -1,33 +1,30 @@
 import React, {
   useState,
+  useContext,
 } from 'react';
+import UserContext from '../../context/UserContext';
 import {
   useParams,
-  // Redirect
 } from 'react-router-dom';
 import {
-  List,
-  ListSubheader,
   Grid,
-  Typography,
 } from '@material-ui/core';
 import LoadingSpinner from '../Spinner';
-import TabBar from '../TabBar';
-import CardWrapper from '../CardWrapper';
 import ProdList from './ProductionList';
 import ProdFeature from './ProductionFeature';
-import {useFetchProduction, useFetchProductions} from '../../hooks/useFetch';
-import ProdNewForm from '../../forms/ProductionNewForm';
+import {useFetchProductions} from '../../hooks/useFetch';
+
 
 const ProductionDashboard = ({isActive, search, year}) => {
+  const {profile, isLoading} = useContext(UserContext);
   const {featuredId} = useParams();
   const queryString = '';
-  const [currentTab, setCurrentTab] = useState(featuredId ? '1' : '0');
 
-  const [productions, prodsLoading, setProds] = useFetchProductions(queryString);
-  const [featured, prodLoading, setFeature] = useFetchProduction(featuredId);
+  const [id, setId] = useState(featuredId);
+  const [view, setView] = useState('1');
 
-  return (!prodsLoading && !prodLoading && productions) ?
+  const [productions, prodsLoading, newSearch, refreshProds] = useFetchProductions(queryString);
+  return (!isLoading && !prodsLoading) ?
     (
       <Grid
         container
@@ -36,56 +33,20 @@ const ProductionDashboard = ({isActive, search, year}) => {
         justifyContent="center"
       >
         <Grid item xs={3}>
-          <List
-            sx={{border: '1', width: '100%', bgcolor: 'background.paper'}}
-            component="nav"
-            aria-labelledby="nested-list-subheader"
-            subheader={(
-              <ListSubheader component="div" id="nested-list-subheader">
-                Productions
-              </ListSubheader>
-            )}
-          >
-            {productions.length > 0 ?
-              (
-                <ProdList
-                  currentFeature={featured.id}
-                  feature={(id) => setFeature(id)}
-                  productions={productions}
-                />
-              ) :
-              (
-                <CardWrapper>
-                  <Typography spacing={3}>
-                    No results for your search
-                  </Typography>
-                </CardWrapper>
-              )}
-          </List>
+          <ProdList
+            currentFeature={id}
+            feature={(id) => setId(id)}
+            productions={productions}
+          />
         </Grid>
         <Grid item xs={9}>
-          <TabBar
-            startingTab={currentTab}
-            tabsArr={[
-              {
-                title: 'New Production',
-                component: <ProdNewForm
-                  refreshFeature={(i) => setFeature(i)}
-                  refreshProds={(i) => setProds(i)}
-                  setView={(i) => setCurrentTab(i)}
-                />,
-              },
-              {
-                title: 'Detail',
-                component: <ProdFeature
-                  production={featured}
-                  query={queryString}
-                  setFeature={setFeature}
-                  setProds={setProds}
-                  setView={(i) => setCurrentTab(i)}
-                />,
-              },
-            ]}
+          <ProdFeature
+            currentFeature={id}
+            currentTab={view}
+            profile={profile}
+            setTab={(idx)=> setView(idx)}
+            setFeature={(i)=> setId(i)}
+            refreshProds={refreshProds}
           />
         </Grid>
       </Grid>

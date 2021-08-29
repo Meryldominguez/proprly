@@ -16,43 +16,46 @@ import {
   Collapse,
   Typography,
   Box,
-  Grid,
+  Button,
+  ListItem,
 } from '@material-ui/core';
 import {
   ExpandMore,
   ExpandLess,
 } from '@material-ui/icons';
+import CardWrapper from '../CardWrapper';
 
 const ProductionDetail = ({production}) => {
   const [openProps, setOpenProps] = useState(false);
-  const [openNotes, setOpenNotes] = useState(false);
+  const [openNotes, setOpenNotes] = useState(true);
   const handleClickItems = () => {
     setOpenProps(!openProps);
   };
   const handleClickNotes = () => {
     setOpenNotes(!openNotes);
   };
-  console.log(production);
   return (
-    <List>
-      {production.notes ?
-        (
-          <Collapse in={!openNotes} timeout="auto" collapsedSize={60}>
-            <Grid container onClick={handleClickNotes}>
-              <Grid item xs={12}>
-                <Typography
-                  width="100%"
-                  noWrap={openNotes}
-                  variant="subtitle1"
-                >
-                  {production.notes}
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                {openNotes ? <ExpandLess /> : <ExpandMore />}
-              </Grid>
-            </Grid>
+    <CardWrapper title={production.title} >
+      <List>
+        {production.notes ?(
+        <>
+          <Collapse in={!openNotes} timeout="auto" collapsedSize={30}>
+            <ListItemText
+              onClick={handleClickNotes}
+              variant='subtitle1'
+              primary={production.notes}
+              primaryTypographyProps={{
+                noWrap: openNotes,
+                px: 4,
+              }}
+            />
           </Collapse>
+          {production.id &&
+          <ListItemText
+            onClick={handleClickNotes}
+            primary={openNotes ? <ExpandLess /> : <ExpandMore />}
+          />}
+        </>
         ) :
         (
           <Typography
@@ -62,31 +65,39 @@ const ProductionDetail = ({production}) => {
             No Notes for this Location
           </Typography>
         )}
-      <ListItemButton>
-        <ListItemText primary="Dates" />
-        <ListItemText align="right">
-          {production.dateStart ?
-            new Date(production.dateStart).toDateString() :
-            'N/A'}
-          {' - '}
-          {production.dateEnd ?
-            new Date(production.dateEnd).toDateString() :
-            'N/A' }
-        </ListItemText>
-      </ListItemButton>
-      <ListItemButton disabled={production.props.length < 1} onClick={handleClickItems}>
-        <ListItemText align="right">
-          [
-          {production.props.length}
-          {' '}
-          Props]
-        </ListItemText>
-        {openProps ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={openProps} timeout="auto">
-        <PropList items={production.props} />
-      </Collapse>
-    </List>
+        {production.id && <ListItemButton>
+          <ListItemText primary="Dates" />
+          <ListItemText align="right">
+            {production.dateStart ?
+            new Date(production.dateStart).toDateString() : 'N/A'}
+            {' - '}
+            {production.dateEnd ?
+            new Date(production.dateEnd).toDateString() : 'N/A' }
+          </ListItemText>
+        </ListItemButton>}
+        {production.id && <>
+          <ListItem>
+            <Button
+              component={Link}
+              to={`/props/${production.id}`}
+            >
+                Manage Props
+            </Button>
+            <ListItemButton disabled={production.props.length < 1} onClick={handleClickItems}>
+              <ListItemText
+                align="right"
+              >
+                [{production.props.length}{' '} Props]
+              </ListItemText>
+              {openProps ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={openProps} timeout="auto">
+            <PropList items={production.props} />
+          </Collapse>
+        </>}
+      </List>
+    </CardWrapper>
   );
 };
 const PropList = ({items}) => {

@@ -91,7 +91,7 @@ class ProprlyApi {
     return res.locations;
   }
 
-  /** Get all locations nested with children. Searching by id can be accomplished by query string */
+  /** Get all locations not nested. */
   static async listLocs() {
     const res = await this.request('locations/list');
     return res.locations;
@@ -149,6 +149,27 @@ class ProprlyApi {
     const res = await this.request(`productions/${id}`, {}, method);
     return res;
   }
+  // Props API routes
+
+  /** create a new prop. */
+
+  static async newProp(data) {
+    const res = await this.request('props/', {...data}, 'post');
+    return res.prop;
+  }
+
+  /** update a prop by id */
+  static async updateProp(prodId, lotId, data) {
+    const res = await this.request(`props/${prodId}/${lotId}`, {...data}, 'patch');
+    return res.production;
+  }
+
+  /** delete a Production by id. */
+  static async deleteProp(prodId, lotId) {
+    const method = 'delete';
+    const res = await this.request(`props/${prodId}/${lotId}`, {}, method);
+    return res;
+  }
 
   // User API routes
   /** User Login */
@@ -176,8 +197,4 @@ class ProprlyApi {
   }
 }
 
-// for now, put token ("testuser" / "password" on class)
-// ProprlyApi.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZ" +
-//     "SI6InRlc3R1c2VyIiwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTU5ODE1OTI1OX0." +
-//     "FtrMwBQwe6Ue-glIFgz_Nf8XxRT2YecFCiSpYL0fCXc";
 export default ProprlyApi;

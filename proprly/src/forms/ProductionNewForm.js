@@ -17,7 +17,7 @@ import {
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
 
-const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
+const ProdNewForm = ({refreshProds, setFeature, setTab}) => {
   const initial = {
     title: '',
     notes: '',
@@ -31,7 +31,6 @@ const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
   const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
-    console.log(formData);
     evt.preventDefault();
     try {
       const trimmedData = {
@@ -40,15 +39,13 @@ const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
         dateStart: formData.dateStart || null,
         dateEnd: formData.dateEnd || null,
       };
-      console.log({...formData, ...trimmedData});
       const newProd = await ProprlyApi.newProd({...formData, ...trimmedData});
       history.push(`/productions/${newProd.id}`);
-      refreshFeature(newProd.id);
+      setFeature(newProd.id);
       refreshProds();
-      setView('1');
-      setAlerts([...alerts, {severity: 'success', msg: 'Production create!'}]);
+      setTab('1');
+      setAlerts([...alerts, {severity: 'success', msg: 'Production created!'}]);
     } catch (error) {
-      console.log(error);
       setFormData({...formData});
       setAlerts([
         ...error.map((e) => {
@@ -97,7 +94,7 @@ const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
                 'Active Production' : 'Inactive Production'}
           />
         </Grid>
-        <Grid xs={8} item align="center">
+        <Grid xs={8} item >
           <TextField
             fullWidth
             id="title-input"
@@ -110,8 +107,8 @@ const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
           />
         </Grid>
         <Grid item xs={8}>
-          <Grid container spacing={3} justifyContent="center">
-            <Grid xs={6} item>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
               <TextField
                 fullWidth
                 type="date"
@@ -123,7 +120,7 @@ const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
                 onChange={handleChange}
               />
             </Grid>
-            <Grid xs={6} item>
+            <Grid item xs={6}>
               <TextField
                 fullWidth
                 type="date"
@@ -151,7 +148,7 @@ const ProdNewForm = ({refreshProds, refreshFeature, setView}) => {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={8}>
           <Grid spacing={2} container>
             <Grid item xs={6}>
               <Button

@@ -39,11 +39,9 @@ const LocEditForm = ({
   };
   const [formData, setFormData] = useState(initial);
 
-  console.log(initial);
   const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
-    console.log(formData);
     evt.preventDefault();
     try {
       const trimmedData = {
@@ -51,13 +49,11 @@ const LocEditForm = ({
         notes: formData.notes.trim(),
         parentId: formData.parentId === 0 ? null : formData.parentId,
       };
-      console.log({...formData, ...trimmedData});
       await ProprlyApi.updateLoc(location.id, {...formData, ...trimmedData});
       setTab('1');
       refreshLocs();
-      setAlerts([...alerts, {severity: 'success', msg: 'Location created!'}]);
+      setAlerts([...alerts, {severity: 'success', msg: 'Location updated!'}]);
     } catch (error) {
-      console.log(error);
       setFormData({...formData});
       setAlerts([...error.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
@@ -68,7 +64,6 @@ const LocEditForm = ({
 
   const handleChange = (evt) => {
     const {name, value} = evt.target;
-    console.log(name, value);
     setFormData({
       ...formData,
       [name]: value,
@@ -113,10 +108,7 @@ const LocEditForm = ({
             />
           </Grid>
           <Grid item xs={8}>
-            <FormControl
-              fullWidth
-              sx={{minWidth: 300}}
-            >
+            <FormControl fullWidth >
               <InputLabel htmlFor="parentId">Parent Location</InputLabel>
               <Select
                 fullWidth

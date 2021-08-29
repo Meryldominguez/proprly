@@ -51,7 +51,6 @@ const ProfileForm = () => {
       }
       setAlerts([...alerts, {severity: 'success', msg: 'Profile updated!'}]);
     } catch (error) {
-      console.log(error);
       setFormData({...formData, password: ''});
       setAlerts([
         ...error.map((e) => {

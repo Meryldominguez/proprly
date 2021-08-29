@@ -70,28 +70,22 @@ class Location {
 
     SELECT * FROM findchildren
     GROUP BY "parentId", "locationId", "locationName"
-    ORDER BY "parentId" NULLS FIRST`
+    ORDER BY "locationName" `
 
     const result = await db.query(query)
     if (!nested) return result.rows
-
-    const recursiveLoc = (arr)=>{
-      const child = arr.pop()
-      const parsed = arr.every((loc,idx) => {
-        if (loc.locationId === child.parentId) {
-          loc.children=loc.children?
-            [...loc.children,child]:[child]
-          return false
+    const recursiveLoc = (arr, targetId)=>{
+      return arr.reduce((acc, next, idx)=>{
+        if (next.parentId===targetId) {
+          const children = recursiveLoc(arr, next.locationId)
+          if (children.length>0) next.children=children
+          return acc.concat(next)
         }
-        return true
-      })
-      if (parsed){
-        arr.push(child)
-        return arr
-      }
-      return recursiveLoc(arr)
-    }
-    return recursiveLoc(result.rows)
+        return acc
+      },[])
+
+    };
+    return recursiveLoc(result.rows, id)
   }
 
   /** Given a location id, return location and items listed under it or its child locations.
@@ -143,7 +137,7 @@ class Location {
     if (Object.keys(data).length === 0) throw new BadRequestError("No update data sumbitted")
 
     if (data.parentId) {
-      const childArray = await Location.getChildren(id,false)
+      const childArray = await Location.getChildren(false,id)
       const idSet = new Set()
       childArray.map(item => [item.locationId,item.childId].forEach(i => idSet.add(i)))
       
