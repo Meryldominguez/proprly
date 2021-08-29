@@ -47,7 +47,6 @@ const LocNewForm = ({
   const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
-    console.log(formData);
     evt.preventDefault();
     try {
       const trimmedData = {
@@ -55,7 +54,6 @@ const LocNewForm = ({
         notes: formData.notes.trim(),
         parentId: formData.parentId === 0 ? null : formData.parentId,
       };
-      console.log({...formData, ...trimmedData});
       const newLoc = await ProprlyApi.newLoc({...formData, ...trimmedData});
       setTab('0');
       setFeature(newLoc.id);
@@ -63,7 +61,6 @@ const LocNewForm = ({
       history.push(`/locations/${newLoc.id}`);
       setAlerts([...alerts, {severity: 'success', msg: 'Location created!'}]);
     } catch (error) {
-      console.log(error);
       setFormData({...formData});
       setAlerts([...error.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
@@ -71,12 +68,10 @@ const LocNewForm = ({
 
   const handleChange = (evt) => {
     const {name, value} = evt.target;
-    console.log(name, value);
     setFormData({
       ...formData,
       [name]: value,
     });
-    console.log(formData);
   };
 
   const resetForm = () => {

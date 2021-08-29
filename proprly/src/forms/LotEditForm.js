@@ -66,7 +66,6 @@ const LotEditForm = ({
       refreshLots();
       setAlerts([...alerts, {severity: 'success', msg: 'Item updated!'}]);
     } catch (error) {
-      console.log(error);
       setFormData({...formData});
       setAlerts([...error.map((e) => {
         const err = {severity: e.severity || 'error', msg: e.msg};

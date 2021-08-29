@@ -22,15 +22,13 @@ const ProductionDelete = ({
   const handleClick = async (evt) => {
     evt.preventDefault();
     try {
-      const resp = await ProprlyApi.deleteProd(id);
-      console.log(resp);
+      await ProprlyApi.deleteProd(id);
       history.push('/productions');
       refreshProds();
       setTab('1');
       refreshFeature();
       setAlerts([{variant: 'success', msg: `Locatiion #${id} has been deleted`}]);
     } catch (err) {
-      console.log(err);
       setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };

@@ -28,7 +28,6 @@ const useAuth = () => {
 
   const login = async ({username, password}) => {
     const resp = await ProprlyApi.login({username, password});
-    console.log(resp);
     if (!resp.error) {
       ProprlyApi.token = resp.token;
       window.localStorage.setItem('username', resp.username);

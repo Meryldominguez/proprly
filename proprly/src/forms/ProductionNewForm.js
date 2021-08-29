@@ -31,7 +31,6 @@ const ProdNewForm = ({refreshProds, setFeature, setTab}) => {
   const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
-    console.log(formData);
     evt.preventDefault();
     try {
       const trimmedData = {
@@ -40,7 +39,6 @@ const ProdNewForm = ({refreshProds, setFeature, setTab}) => {
         dateStart: formData.dateStart || null,
         dateEnd: formData.dateEnd || null,
       };
-      console.log({...formData, ...trimmedData});
       const newProd = await ProprlyApi.newProd({...formData, ...trimmedData});
       history.push(`/productions/${newProd.id}`);
       setFeature(newProd.id);

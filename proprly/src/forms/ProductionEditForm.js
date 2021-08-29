@@ -39,7 +39,6 @@ const ProdEditForm = ({
         title: formData.title.trim(),
         notes: formData.notes.trim(),
       };
-      console.log({...formData, ...trimmedData});
       await ProprlyApi.updateProd(production.id, {...formData, ...trimmedData});
       history.push(`/productions/${production.id}`);
       setTab('1');
@@ -47,7 +46,6 @@ const ProdEditForm = ({
       refreshFeature(production.id);
       setAlerts([...alerts, {severity: 'success', msg: 'Production updated!'}]);
     } catch (error) {
-      console.log(error);
       setFormData({...formData});
       setAlerts([
         ...error.map((e) => {

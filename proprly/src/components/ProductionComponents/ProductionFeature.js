@@ -40,7 +40,7 @@ const ProductionFeature = ({
                 production={production}
                 setTab={setTab}
               />},
-          (profile.isAdmin && production.id) &&
+          (profile['isAdmin'] && production.id) &&
               {title: 'Delete',
                 component:
               <ProdDelete

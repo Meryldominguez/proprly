@@ -53,7 +53,9 @@ const SingleLot = ({
   const handleFeature = (evt) => {
     evt.preventDefault();
     feature(item.id);
-    history.push(`/lots/${item.id}`);
+    if (history.location.pathname.slice(0, 5) ==='/lots') {
+      history.push(`/lots/${item.id}`);
+    }
   };
   return (
     <ListItem component="div" style={style} disablePadding>
