@@ -1,57 +1,61 @@
 import React, {
   useState,
   useContext,
+  useEffect,
 } from 'react';
 import UserContext from '../../context/UserContext';
 import {
   useParams,
 } from 'react-router-dom';
-import {
-  Grid,
-} from '@material-ui/core';
+import TabBar from '../TabBar';
 import LoadingSpinner from '../Spinner';
-import ProdList from './ProductionList';
-import ProdFeature from './ProductionFeature';
 import {useFetchProductions} from '../../hooks/useFetch';
+import PropManager from './PropManager';
+// import {useFetchProps} from '../../hooks/useFetch';
 
+function idIndexOf(item, list) {
+  const [res]=list.filter((i, idx)=>{
+    if (i.id===item.id) {
+      i.idx=idx;
+      return i;
+    }
+  });
+  if (!res) return -1;
+  return res.idx;
+}
 
-const ProductionDashboard = ({isActive, search, year}) => {
+const PropDashboard = () => {
   const {profile, isLoading} = useContext(UserContext);
   const {featuredId} = useParams();
-  const queryString = '';
+  const [view, setView] = useState();
+  const [productions, prodsLoading, newSearch, refreshProds] = useFetchProductions('');
+  const [id, setId] = useState(Number(featuredId));
 
-  const [id, setId] = useState(featuredId);
-  const [view, setView] = useState('1');
+  useEffect(()=>{
+    if (featuredId) {
+      const index = idIndexOf({id}, productions);
+      if (index !== -1) {
+        setView(String(index));
+      };
+    } else {
+      setView('0');
+    }
+  }, [productions]);
 
-  const [productions, prodsLoading, newSearch, refreshProds] = useFetchProductions(queryString);
-  return (!isLoading && !prodsLoading) ?
-    (
-      <Grid
-        container
-        rowSpacing={3}
-        columnSpacing={{xs: 1, sm: 2, md: 3}}
-        justifyContent="center"
-      >
-        <Grid item xs={3}>
-          <ProdList
-            currentFeature={id}
-            feature={(id) => setId(id)}
-            productions={productions}
-          />
-        </Grid>
-        <Grid item xs={9}>
-          <ProdFeature
-            currentFeature={id}
-            currentTab={view}
-            profile={profile}
-            setTab={(idx)=> setView(idx)}
-            setFeature={(i)=> setId(i)}
-            refreshProds={refreshProds}
-          />
-        </Grid>
-      </Grid>
-    ) :
+  return (!isLoading && !prodsLoading && view) ?
+    <TabBar
+      startingTab={view}
+      tabsArr={productions.map((prod)=>{
+        return {
+          title: prod.title,
+          component:
+            <PropManager
+              prodId={prod.id}
+            />,
+        };
+      })}
+    /> :
     <LoadingSpinner />;
 };
 
-export default ProductionDashboard;
+export default PropDashboard;

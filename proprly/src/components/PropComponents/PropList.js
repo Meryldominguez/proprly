@@ -1,84 +1,47 @@
-import React from 'react';
-import {
-  useHistory,
-} from 'react-router-dom';
+import React, {
+  useState,
+} from 'react';
 import {v4 as uuid} from 'uuid';
 import {
-  Box,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-
+  Typography,
 } from '@material-ui/core';
-// import RoomIcon from '@material-ui/icons/Room';
-import ArrowIcon from '@material-ui/icons/SubdirectoryArrowRight';
 import {FixedSizeList} from 'react-window';
+import CardWrapper from '../CardWrapper';
+import SingleProp from '../../forms/PropForm';
 
-const ProductionList = ({currentFeature, feature, productions}) => {
+const PropList = ({refreshProd, props, prod}) => {
+  const [checkedIdx, setCheckedIdx] = useState();
+
   const renderList = ({index, style}) => (
-    <SingleProd
+    <SingleProp
+      active={checkedIdx===index}
+      makeActive={()=>setCheckedIdx(checkedIdx===index? null :index)}
       style={style}
       key={uuid()}
-      featured={currentFeature === productions[index].id}
-      feature={feature}
-      prod={productions[index]}
+      prop={props[index]}
+      prodId={prod.id}
+      refresh={(id)=>refreshProd(id)}
     />
   );
-
-  return productions.length > 0 ? (
-    <Box
-      sx={{bgcolor: 'background.paper'}}
+  return props['length'] > 0 ? (
+    <CardWrapper title={prod.title}
     >
       <FixedSizeList
-        height={700}
-        itemSize={80}
-        itemCount={productions.length}
+        height={600}
+        itemSize={150}
+        itemCount={props.length}
         overscanCount={3}
       >
         {renderList}
       </FixedSizeList>
-    </Box>
+    </ CardWrapper>
   ) : (
-    <Box
-      sx={{bgcolor: 'background.paper'}}
-    />
+    <CardWrapper title={prod.title}>
+      <Typography>
+        No props for this production
+      </Typography>
+    </CardWrapper>
   );
 };
 
-const SingleProd = ({
-  featured, feature, prod, style,
-}) => {
-  const history = useHistory();
-
-  const handleFeature = (evt) => {
-    evt.preventDefault();
-    feature(prod.id);
-    history.push(`/productions/${prod.id}`);
-  };
-  return (
-    <ListItemButton
-      style={style}
-      onClick={handleFeature}
-      sx={{pl: 1}}
-      disabled={featured}
-    >
-      <ListItemIcon>
-        <ArrowIcon />
-      </ListItemIcon>
-      <ListItemText
-        primaryTypographyProps={{
-          noWrap: true,
-        }}
-        primary={prod.title}
-        secondary={
-          `${prod.dateEnd ?
-            new Date(prod.dateEnd).getFullYear() :
-            'N/A'} ${prod.active ? '[ACTIVE]' : ''}`
-        }
-      />
-    </ListItemButton>
-
-  );
-};
-
-export default ProductionList;
+export default PropList;
