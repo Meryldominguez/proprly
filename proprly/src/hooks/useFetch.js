@@ -186,16 +186,19 @@ const useFetchProduction = (prodId) => {
         setIsLoading(false);
         return resp;
       } catch (err) {
-        setId(null);
-        history.push(`/productions`);
+        if (history.location.pathname.slice(0, 5)==='/prod') {
+          setId(null);
+          history.push(`/productions`);
+        };
         setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
       }
     };
     load();
-  }, [id]);
+  }, [id, isLoading]);
 
   const setFeature = (i) => {
     setId(i);
+    setIsLoading(true);
   };
   return [prod, isLoading, setFeature];
 };

@@ -1,21 +1,31 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {v4 as uuid} from 'uuid';
-
 import {
   Box,
   Tab,
 } from '@material-ui/core';
-
 import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
+import {useHistory} from 'react-router-dom';
 
 export default function TabBar({tabsArr, startingTab = '0'}) {
   const [activeTab, setActiveTab] = useState(startingTab);
-
-  const handleChange = (event, newValue) => {
+  const history = useHistory();
+  const handleChange = (evt, newValue) => {
+    evt.preventDefault();
     setActiveTab(newValue);
   };
+
+  useEffect(()=>{
+    if (history.location.pathname.slice(0, 6)==='/props') {
+      const idArr = tabsArr.map((prod)=>{
+        return prod.component.props.prodId;
+      });
+      history.push(`/props/${idArr[Number(activeTab)]}`);
+    }
+  }, [activeTab]);
+
   return (
     <Box sx={{height: '100%', width: '100%', typography: 'body1'}}>
       <TabContext value={activeTab}>
