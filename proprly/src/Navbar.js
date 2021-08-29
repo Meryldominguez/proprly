@@ -70,7 +70,7 @@ function Navbar({user, logout}) {
           <Button onClick={()=>logout()} color="inherit">
           Logout
           </Button>
-        </MenuItem>)
+        </MenuItem>),
       ]:
       <MenuItem onClick={handleMenuClose}>Login</MenuItem>}
     </Menu>

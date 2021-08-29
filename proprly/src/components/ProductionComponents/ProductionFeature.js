@@ -10,16 +10,21 @@ import ProdNewForm from '../../forms/ProductionNewForm';
 import LoadingSpinner from '../Spinner';
 
 const ProductionFeature = ({
-  currentFeature, currentTab, profile, setFeatId, setTab, refreshProds,
+  currentFeature,
+  feature,
+  currentTab,
+  setTab,
+  profile,
+  refreshProds,
 }) => {
   const [
     production,
     prodLoading,
-    setProduction,
-    refreshFeature,
+    setFeature,
+    // refresh,
   ] = useFetchProduction(currentFeature);
 
-  useEffect(() => setFeatId(currentFeature), [currentFeature]);
+  useEffect(() => setFeature(currentFeature), [currentFeature]);
 
   if (!prodLoading && production && profile) {
     return (<TabBar
@@ -28,31 +33,30 @@ const ProductionFeature = ({
         [
           {title: 'New Production',
             component:
-              <ProdNewForm
-                setFeature={setFeatId}
-                setTab={setTab}
-                refreshProds={refreshProds}
-              />},
-          {title: 'Details', component:
-              <ProdDetail production={production} />},
+          <ProdNewForm
+            setFeature={feature}
+            setTab={setTab}
+            refreshProds={refreshProds}
+          />},
+          {title: 'Details',
+            component:
+          <ProdDetail production={production} />},
           production.id &&
-              {title: 'Edit',
-                component:
-              <ProdEditForm
-                refreshProds={refreshProds}
-                refreshFeature={(id) => setFeatureId(id)}
-                production={production}
-                setTab={setTab}
-              />},
+          {title: 'Edit',
+            component:
+          <ProdEditForm
+            setTab={setTab}
+            refreshProds={refreshProds}
+            production={production}
+          />},
           (profile['isAdmin'] && production.id) &&
-              {title: 'Delete',
-                component:
-              <ProdDelete
-                refreshProds={refreshProds}
-                refreshFeature={setFeatureId}
-                id={production.id}
-                setTab={setTab}
-              />},
+          {title: 'Delete',
+            component:
+          <ProdDelete
+            refreshFeature={feature}
+            refreshProds={refreshProds}
+            prod={production}
+          />},
         ]}
     />
     );

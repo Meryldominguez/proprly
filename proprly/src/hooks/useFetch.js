@@ -134,6 +134,7 @@ const useFetchProductions = (q) => {
   useEffect(() => {
     const load = async ()=> {
       try {
+        setIsLoading(true);
         const resp = await ProprlyApi.searchProds(query);
         setProds(resp);
         setIsLoading(false);
@@ -145,13 +146,7 @@ const useFetchProductions = (q) => {
     load();
   }, [query, dep]);
 
-  const search = (data) => {
-    setIsLoading(true);
-    setQuery(data);
-  };
-
-
-  return [prods, isLoading, search, refresh];
+  return [prods, isLoading, setQuery, refresh];
 };
 
 const useFetchProduction = (prodId) => {

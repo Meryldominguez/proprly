@@ -54,7 +54,6 @@ const LotDashboard = ({searchTerm}) => {
             <LotList
               currentFeature={id}
               feature={(i) => setId(i)}
-              setTab={(idx) => setView(idx)}
               lots={lots}
             /> :
             <CardWrapper>
@@ -67,8 +66,8 @@ const LotDashboard = ({searchTerm}) => {
         </Grid>
         <Grid item xs={8}>
           <LotFeature
-            feature={(i) => setId(i)}
             currentFeature={id}
+            feature={(i) => setId(i)}
             currentTab={view}
             setTab={(idx) => setView(idx)}
 

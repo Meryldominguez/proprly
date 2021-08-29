@@ -82,6 +82,7 @@ const LotEditForm = ({
   );
 
   const handleChange = (evt) => {
+    console.log(formData, isFormDirty());
     const {name, value} = evt.target;
     setFormData({
       ...formData,

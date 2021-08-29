@@ -15,16 +15,18 @@ import ProdFeature from './ProductionFeature';
 import {useFetchProductions} from '../../hooks/useFetch';
 
 
-const ProductionDashboard = ({isActive, search, year}) => {
+const ProductionDashboard = ({isActive, searchTerms, year}) => {
   const {profile, isLoading} = useContext(UserContext);
   const {featuredId} = useParams();
+
   const queryString = '';
 
   const [view, setView] = useState('1');
   const [id, setId] = useState(featuredId);
 
-  const [productions, prodsLoading, newSearch, refreshProds] = useFetchProductions(queryString);
-  return (!isLoading && !prodsLoading) ?
+  const [productions, prodsLoading, search, refreshProds] = useFetchProductions(queryString);
+
+  return (!isLoading && !prodsLoading && profile) ?
     (
       <Grid
         container
@@ -37,15 +39,15 @@ const ProductionDashboard = ({isActive, search, year}) => {
             currentFeature={id}
             feature={(id) => setId(id)}
             productions={productions}
+            search={search}
           />
         </Grid>
         <Grid item xs={9}>
           <ProdFeature
             currentFeature={id}
-            setFeatId={(i)=> setId(i)}
+            feature={(i)=> setId(i)}
             currentTab={view}
             setTab={(idx)=> setView(idx)}
-
             profile={profile}
             refreshProds={refreshProds}
           />
