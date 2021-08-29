@@ -17,13 +17,13 @@ const LotFeature = (
       setTab,
       currentFeature,
       profile,
-      setFeature,
+      feature,
       refreshLots,
     },
 ) => {
-  const [item, itemLoading, refreshFeature] = useFetchLot(currentFeature);
+  const [item, itemLoading, setFeature, refresh] = useFetchLot(currentFeature);
 
-  useEffect(() => refreshFeature(currentFeature), [currentFeature]);
+  useEffect(() => setFeature(currentFeature), [currentFeature]);
 
   return (!itemLoading && item) ?
       (
@@ -34,7 +34,7 @@ const LotFeature = (
               {title: 'New Item',
                 component:
               <LotNewForm
-                setFeature={setFeature}
+                setFeature={feature}
                 setTab={setTab}
                 refreshLots={refreshLots}
               />},
@@ -45,7 +45,7 @@ const LotFeature = (
               {title: 'Edit',
                 component:
               <LotEditForm
-                setFeature={setFeature}
+                setFeature={refresh}
                 setTab={setTab}
                 refreshLots={refreshLots}
                 lot={item}
@@ -54,10 +54,11 @@ const LotFeature = (
               {title: 'Delete',
                 component:
               <LotDelete
-                setFeature={setFeature}
+                refreshFeature={feature}
                 refreshLots={refreshLots}
                 setTab={setTab}
                 item={item}
+                query={query}
               />},
             ]}
         />

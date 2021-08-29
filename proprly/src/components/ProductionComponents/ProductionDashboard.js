@@ -20,8 +20,8 @@ const ProductionDashboard = ({isActive, search, year}) => {
   const {featuredId} = useParams();
   const queryString = '';
 
-  const [id, setId] = useState(featuredId);
   const [view, setView] = useState('1');
+  const [id, setId] = useState(featuredId);
 
   const [productions, prodsLoading, newSearch, refreshProds] = useFetchProductions(queryString);
   return (!isLoading && !prodsLoading) ?
@@ -42,10 +42,11 @@ const ProductionDashboard = ({isActive, search, year}) => {
         <Grid item xs={9}>
           <ProdFeature
             currentFeature={id}
+            setFeatId={(i)=> setId(i)}
             currentTab={view}
-            profile={profile}
             setTab={(idx)=> setView(idx)}
-            setFeature={(i)=> setId(i)}
+
+            profile={profile}
             refreshProds={refreshProds}
           />
         </Grid>

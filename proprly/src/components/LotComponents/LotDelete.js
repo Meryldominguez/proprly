@@ -13,7 +13,7 @@ import ProprlyApi from '../../api';
 import CardWrapper from '../CardWrapper';
 
 const LotDelete = ({
-  refreshLots, refreshFeature, item, query,
+  refreshLots, refreshFeature, item, query, setTab
 }) => {
   const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
@@ -22,13 +22,15 @@ const LotDelete = ({
     evt.preventDefault();
     try {
       await ProprlyApi.deleteLot(item.id);
+      setTab('1')
       query ?
         history.push(`/lots/?${query}`) :
         history.push('/lots');
       refreshFeature();
       refreshLots();
-      setAlerts([{variant: 'success', msg: `Item #${id} has been deleted`}]);
+      setAlerts([{variant: 'success', msg: `Item #${item.id} has been deleted`}]);
     } catch (err) {
+      console.log(err)
       setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
   };

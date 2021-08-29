@@ -24,10 +24,9 @@ const ProductionDelete = ({
     try {
       await ProprlyApi.deleteProd(id);
       history.push('/productions');
-      refreshProds();
-      setTab('1');
       refreshFeature();
-      setAlerts([{variant: 'success', msg: `Locatiion #${id} has been deleted`}]);
+      refreshProds();
+      setAlerts([{variant: 'success', msg: `Production has been deleted`}]);
     } catch (err) {
       setAlerts([...err.map((e) => e = {severity: e.severity || 'error', msg: e.msg})]);
     }
@@ -38,7 +37,7 @@ const ProductionDelete = ({
       <Grid item>
         <Alert severity="info">
           <AlertTitle>Deleting a production is not reccomended!</AlertTitle>
-          Consider `&lsquo;`Archiving`&rsquo;` a production instead.
+          Consider &ldquo;Archiving&rdquo; a production instead.
         </Alert>
       </Grid>
       <Grid item>

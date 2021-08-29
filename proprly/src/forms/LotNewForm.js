@@ -30,7 +30,7 @@ const LotNewForm = ({
   const initial = {
     name: '',
     description: '',
-    location: {id: 0, name: ''},
+    location: {locationId: 0, locationName: ''},
     price: '',
     quantity: '',
   };
@@ -51,7 +51,6 @@ const LotNewForm = ({
     };
     loadLocs();
   }, []);
-
   const {alerts, setAlerts} = useContext(AlertContext);
 
   const handleSubmit = async (evt) => {
@@ -60,7 +59,7 @@ const LotNewForm = ({
       const trimmedData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        locId: formData.location.id,
+        locId: formData.location.locationId,
         quantity: formData.quantity ? Number(formData.quantity) : null,
         price: formData.price ? Number(formData.price) : null,
       };
@@ -133,8 +132,8 @@ const LotNewForm = ({
                 options={locations}
                 value={formData.location}
                 setValue={(location) => setFormData({...formData, location})}
-                title="name"
-                val="id"
+                title="locationName"
+                val="locationId"
                 label="Location"
               />}
             </FormControl>

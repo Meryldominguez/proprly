@@ -10,10 +10,16 @@ import ProdNewForm from '../../forms/ProductionNewForm';
 import LoadingSpinner from '../Spinner';
 
 const ProductionFeature = ({
-  currentFeature, currentTab, profile, setFeature, setTab, refreshProds,
+  currentFeature, currentTab, profile, setFeatId, setTab, refreshProds,
 }) => {
-  const [production, prodLoading, refreshFeature] = useFetchProduction(currentFeature);
-  useEffect(() => refreshFeature(currentFeature), [currentFeature]);
+  const [
+    production,
+    prodLoading,
+    setProduction,
+    refreshFeature,
+  ] = useFetchProduction(currentFeature);
+
+  useEffect(() => setFeatId(currentFeature), [currentFeature]);
 
   if (!prodLoading && production && profile) {
     return (<TabBar
@@ -23,7 +29,7 @@ const ProductionFeature = ({
           {title: 'New Production',
             component:
               <ProdNewForm
-                setFeature={setFeature}
+                setFeature={setFeatId}
                 setTab={setTab}
                 refreshProds={refreshProds}
               />},
@@ -34,7 +40,7 @@ const ProductionFeature = ({
                 component:
               <ProdEditForm
                 refreshProds={refreshProds}
-                refreshFeature={(id) => setFeature(id)}
+                refreshFeature={(id) => setFeatureId(id)}
                 production={production}
                 setTab={setTab}
               />},
@@ -43,7 +49,7 @@ const ProductionFeature = ({
                 component:
               <ProdDelete
                 refreshProds={refreshProds}
-                refreshFeature={(id) => setFeature(id)}
+                refreshFeature={setFeatureId}
                 id={production.id}
                 setTab={setTab}
               />},
