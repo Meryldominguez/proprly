@@ -173,13 +173,13 @@ class ProprlyApi {
 
   // User API routes
   /** User Login */
-  static async Login(formData) {
+  static async login(formData) {
     const res = await this.request('auth/token', formData, 'post');
     return res;
   }
 
   /** User register */
-  static async Signup(formData) {
+  static async signup(formData) {
     const res = await this.request('auth/register', formData, 'post');
     return res;
   }

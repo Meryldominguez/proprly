@@ -23,7 +23,6 @@ function App() {
     isLoading,
     authProfile,
     updateProfile,
-    apply,
   ] = useGetUserProfile(user ? user.username : null);
 
   const [alerts, setAlerts] = useState([]);
@@ -34,21 +33,24 @@ function App() {
         <Container className="App">
           <UserContext.Provider value={{
             user,
-            signup,
-            login,
             profile,
             setProfile,
             isLoading,
             authProfile,
             updateProfile,
-            apply,
           }}
           >
             <BrowserRouter>
               <AlertContext.Provider value={{alerts, setAlerts}}>
-                <Navbar logout={logout} />
+                <Navbar user={user} logout={logout} />
                 <AlertContainer alerts={alerts} setAlerts={setAlerts} />
-                {!isLoading && <Routes user={user} isLoading={isLoading} />}
+                {!isLoading &&
+                  <Routes
+                    user={user}
+                    signup={signup}
+                    login={login}
+                    isLoading={isLoading}
+                  />}
               </AlertContext.Provider>
             </BrowserRouter>
           </UserContext.Provider>

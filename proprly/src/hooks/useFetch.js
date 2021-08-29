@@ -229,13 +229,8 @@ const useGetUserProfile = (username) => {
     return !!resp.token;
   };
 
-  const Apply = async (jobID) => {
-    const resp = await ProprlyApi.apply(username, jobID);
-    setIsLoading(true);
-    return resp;
-  };
 
-  return [[profile, setProfile], isLoading, authProfile, updateProfile, Apply];
+  return [[profile, setProfile], isLoading, authProfile, updateProfile];
 };
 
 export {

@@ -25,6 +25,7 @@ const LoginForm = ({userLogin}) => {
       setAlerts([...alerts, {severity: 'success', msg: 'Welcome back!'}]);
       history.push('/');
     } catch (error) {
+      console.log(error);
       setAlerts([...error.map((e) => {
         const err = {severity: e.severity || 'error', msg: e.msg};
         return err;
@@ -75,7 +76,7 @@ const LoginForm = ({userLogin}) => {
             variant="contained"
             color="primary"
             fullWidth
-            onClick={handleSubmit}>
+            type="submit">
             Login!
           </Button>
         </Grid>

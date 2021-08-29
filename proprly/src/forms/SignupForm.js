@@ -124,11 +124,11 @@ const SignupForm = ({userSignup}) => {
         </Grid>
         <Grid item xs={12} justifyContent="center">
           <Button
+            type="submit"
             variant="contained"
             color="primary"
             xs={10}
-            fullWidth
-            onClick={handleSubmit}>
+            fullWidth>
           Sign up!
           </Button>
         </Grid>

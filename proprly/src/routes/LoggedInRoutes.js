@@ -14,7 +14,6 @@ import LocationDashboard from '../components/LocationComponents/LocationDashboar
 import LotDashboard from '../components/LotComponents/LotDashboard';
 import ProductionDashboard from '../components/ProductionComponents/ProductionDashboard';
 import ProfileForm from '../forms/ProfileForm';
-import Dashboard from '../components/Dashboard';
 import PropDashboard from '../components/PropComponents/PropDashboard';
 
 const LoggedInRoutes = ({username}) => {
@@ -24,7 +23,7 @@ const LoggedInRoutes = ({username}) => {
     <Container>
       <Switch>
         <Route exact path="/">
-          <Dashboard />
+          <Redirect to='/productions' />
         </Route>
 
         <Route exact path="/props">
