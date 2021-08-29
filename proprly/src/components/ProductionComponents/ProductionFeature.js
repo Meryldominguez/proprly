@@ -13,10 +13,9 @@ const ProductionFeature = ({
   currentFeature, currentTab, profile, setFeature, setTab, refreshProds,
 }) => {
   const [production, prodLoading, refreshFeature] = useFetchProduction(currentFeature);
-
   useEffect(() => refreshFeature(currentFeature), [currentFeature]);
 
-  if (!prodLoading && production) {
+  if (!prodLoading && production && profile) {
     return (<TabBar
       startingTab={currentTab}
       tabsArr={

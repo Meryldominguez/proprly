@@ -4,8 +4,10 @@ import {
   useContext,
 } from 'react';
 import {useHistory} from 'react-router-dom';
+import useRefresh from './useRefresh';
 import ProprlyApi from '../api';
 import AlertContext from '../context/AlertContext';
+
 
 const formatDate = (date) => {
   const year = String(date.getFullYear());
@@ -133,9 +135,11 @@ const useFetchLocation = (locId) => {
 };
 
 const useFetchProductions = (q) => {
+  const [dep, refresh] = useRefresh();
   const [query, setQuery] = useState(q);
   const [prods, setProds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const load = async ()=> {
       try {
@@ -148,20 +152,19 @@ const useFetchProductions = (q) => {
       }
     };
     load();
-  }, [query, isLoading]);
+  }, [query, dep]);
 
   const search = (data) => {
     setIsLoading(true);
     setQuery(data);
   };
-  const triggerRefresh = () => {
-    setIsLoading(true);
-  };
 
-  return [prods, isLoading, search, triggerRefresh];
+
+  return [prods, isLoading, search, refresh];
 };
 
 const useFetchProduction = (prodId) => {
+  const [dep, refresh] = useRefresh();
   const {setAlerts} = useContext(AlertContext);
   const history = useHistory();
   const [id, setId] = useState(prodId);
@@ -194,13 +197,13 @@ const useFetchProduction = (prodId) => {
       }
     };
     load();
-  }, [id, isLoading]);
+    ;
+  }, [id, dep]);
 
   const setFeature = (i) => {
     setId(i);
-    setIsLoading(true);
   };
-  return [prod, isLoading, setFeature];
+  return [prod, isLoading, setFeature, refresh];
 };
 
 const useGetUserProfile = (username) => {
