@@ -149,6 +149,27 @@ class ProprlyApi {
     const res = await this.request(`productions/${id}`, {}, method);
     return res;
   }
+  // Props API routes
+
+  /** create a new prop. */
+
+  static async newProp(data) {
+    const res = await this.request('props/', {...data}, 'post');
+    return res.prop;
+  }
+
+  /** update a prop by id */
+  static async updateProp(prodId, lotId, data) {
+    const res = await this.request(`props/${prodId}/${lotId}`, {...data}, 'patch');
+    return res.production;
+  }
+
+  /** delete a Production by id. */
+  static async deleteProp(prodId, lotId) {
+    const method = 'delete';
+    const res = await this.request(`props/${prodId}/${lotId}`, {}, method);
+    return res;
+  }
 
   // User API routes
   /** User Login */
