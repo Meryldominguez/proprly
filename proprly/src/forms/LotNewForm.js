@@ -5,6 +5,7 @@ import React, {
 } from 'react';
 import {
   useHistory,
+  Link,
 } from 'react-router-dom';
 import {
   Box,
@@ -16,6 +17,7 @@ import {
   FormControlLabel,
   FormGroup,
   Checkbox,
+  Typography,
 } from '@material-ui/core';
 import CurrencyIcon from '@material-ui/icons/AttachMoney';
 import ProprlyApi from '../api';
@@ -103,31 +105,31 @@ const LotNewForm = ({
   const resetForm = () => {
     setFormData(initial);
   };
-
-  return (
-    <CardWrapper title="New Item">
-      <Box component="form" onSubmit={handleSubmit}>
-        <Grid
-          container
-          rowSpacing={{xs: 4}}
-          spacing={2}
-          justifyContent="center"
-        >
-          <Grid item xs={8} align="center">
-            <TextField
-              fullWidth
-              id="title-input"
-              name="name"
-              label="Name"
-              type="text"
-              variant="outlined"
-              value={formData.name}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <FormControl fullWidth>
-              {!locsLoading && <AutoCompleteList
+  return !locsLoading && locations.length > 0?
+  (<CardWrapper title="New Item">
+    <Box component="form" onSubmit={handleSubmit}>
+      <Grid
+        container
+        rowSpacing={{xs: 4}}
+        spacing={2}
+        justifyContent="center"
+      >
+        <Grid item xs={8} align="center">
+          <TextField
+            fullWidth
+            id="title-input"
+            name="name"
+            label="Name"
+            type="text"
+            variant="outlined"
+            value={formData.name}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <FormControl fullWidth>
+            {!locsLoading &&
+              <AutoCompleteList
                 required
                 options={locations}
                 value={formData.location}
@@ -136,99 +138,117 @@ const LotNewForm = ({
                 val="locationId"
                 label="Location"
               />}
-            </FormControl>
-          </Grid>
-          <Grid item xs={8}>
-            <FormGroup>
-              <FormControlLabel
-                align="left"
-                control={
-                  <Checkbox
-                    checked={priceInput}
-                    name="priceCheck"
-                    onChange={handleCheck} />
-                }
-                label="Price:"
-                labelPlacement="start"
-              />
-              <TextField
-                value={formData.price}
-                disabled={!priceInput}
-                name="price"
-                type="number"
-                onChange={handleChange}
-                inputProps={{min: 0}}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CurrencyIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={quantityInput}
-                    name="quantityCheck"
-                    onChange={handleCheck}
-                  />
-                }
-                label="Quantity:"
-                labelPlacement="start"
-              />
-              <TextField
-                value={formData.quantity}
-                disabled={!quantityInput}
-                name="quantity"
-                inputProps={{min: 0}}
-                type="number"
-                onChange={handleChange}
-              />
-            </FormGroup>
-          </Grid>
-          <Grid xs={8} item>
+          </FormControl>
+        </Grid>
+        <Grid item xs={8}>
+          <FormGroup>
+            <FormControlLabel
+              align="left"
+              control={
+                <Checkbox
+                  checked={priceInput}
+                  name="priceCheck"
+                  onChange={handleCheck} />
+              }
+              label="Price:"
+              labelPlacement="start"
+            />
             <TextField
-              fullWidth
-              type="text"
-              name="description"
-              multiline
-              maxRows={4}
-              minRows={4}
-              label="Notes"
-              variant="outlined"
-              value={formData.description}
+              value={formData.price}
+              disabled={!priceInput}
+              name="price"
+              type="number"
+              onChange={handleChange}
+              inputProps={{min: 0}}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <CurrencyIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={quantityInput}
+                  name="quantityCheck"
+                  onChange={handleCheck}
+                />
+              }
+              label="Quantity:"
+              labelPlacement="start"
+            />
+            <TextField
+              value={formData.quantity}
+              disabled={!quantityInput}
+              name="quantity"
+              inputProps={{min: 0}}
+              type="number"
               onChange={handleChange}
             />
-          </Grid>
-          <Grid item xs={10}>
-            <Grid spacing={2} container>
-              <Grid item xs={6}>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  fullWidth
-                  onClick={resetForm}
-                >
+          </FormGroup>
+        </Grid>
+        <Grid xs={8} item>
+          <TextField
+            fullWidth
+            type="text"
+            name="description"
+            multiline
+            maxRows={4}
+            minRows={4}
+            label="Notes"
+            variant="outlined"
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={10}>
+          <Grid spacing={2} container>
+            <Grid item xs={6}>
+              <Button
+                variant="outlined"
+                color="primary"
+                fullWidth
+                onClick={resetForm}
+              >
                   Clear Form
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  onClick={handleSubmit}
-                >
+              </Button>
+            </Grid>
+            <Grid item xs={6}>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={handleSubmit}
+              >
                   Add Item
-                </Button>
-              </Grid>
+              </Button>
             </Grid>
           </Grid>
         </Grid>
-      </Box>
-    </CardWrapper>
-  );
+      </Grid>
+    </Box>
+  </CardWrapper>
+  ) : <CardWrapper
+    title="New Item"
+    subtitle={
+      <Grid container justifyContent="center">
+        <Grid item xs={8}>
+          <Typography>
+            There are no locations, and in order to make an item, you need a location.
+          </ Typography>
+        </Grid>
+        <Button
+          fullWidth
+          size="large"
+          variant="text"
+          component={Link}
+          to={`/locations`}>
+          Make a Location first!
+        </Button>
+      </ Grid>}
+  />;
 };
 
 export default LotNewForm;
