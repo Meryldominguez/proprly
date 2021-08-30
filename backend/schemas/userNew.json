@@ -6,33 +6,60 @@
     "username": {
       "type": "string",
       "minLength": 6,
-      "maxLength": 25
+      "maxLength": 25,
+      "message": {
+        "required": "Username is Required",
+        "minLength": "Username must be longer than 5 characters",
+        "maxLength": "Username cannot be longer than 30 characters"
+      }
     },
     "password": {
       "type": "string",
       "minLength": 5,
-      "maxLength": 25
+      "maxLength": 20,
+      "message": {
+        "required": "Password is required",
+        "minLength": "Password must be longer than 5 characters",
+        "maxLength": "Password cannot be longer than 20 characters"
+      }
     },
     "firstName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 30
+      "maxLength": 30,
+      "message": {
+        "required": "First Name is required",
+        "maxLength": "First Name cannot be longer than 30 characters"
+      }
     },
     "lastName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 30
+      "maxLength": 30,
+      "message": {
+        "required": "Last Name is required",
+        "maxLength": "Last Name cannot be longer than 30 characters"
+      }
     },
     "email": {
       "type": "string",
       "minLength": 6,
       "maxLength": 60,
-      "format": "email"
+      "format": "email",
+      "message": {
+        "required": "Email is Required",
+        "format": "Please use a valid email address",
+        "maxLength": "Email cannot be longer than 30 characters"
+      }
     },
     "phone":{
       "anyOf": [
         {"type": "string", 
-          "pattern": "^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$"},
+          "pattern": "^\\s*(?:\\+?(\\d{1,3}))?[-. (]*(\\d{3})[-. )]*(\\d{3})[-. ]*(\\d{4})(?: *x(\\d+))?\\s*$",
+          "message": {
+            "pattern": "Please enter a valid phone number"
+          }
+        },
         {"type": "null"}
       ]
     },

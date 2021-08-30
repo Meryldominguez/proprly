@@ -6,7 +6,11 @@
     "title": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 50
+      "maxLength": 50,
+      "message":{
+        "required": "Production title is required",
+        "maxLength":"Production name cannot be over 50 characters"
+      }
     },
     "dateStart": {
       "anyOf": [
@@ -21,7 +25,8 @@
       ]
     },
     "active": {
-      "type": "boolean"
+      "type": "boolean",
+      "default":true
     },
     "notes": {
       "type": "string"
@@ -30,7 +35,6 @@
   "additionalProperties": false,
   "required": [
     "title",
-    "active",
-    "notes"
+    "active"
   ]
 }

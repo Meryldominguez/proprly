@@ -6,7 +6,10 @@
     "title": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 50
+      "maxLength": 50,
+      "message":{
+        "maxLength":"Production name cannot be over 50 characters"
+      }
     },
     "dateStart": {
       "anyOf": [

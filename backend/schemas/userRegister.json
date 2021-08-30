@@ -9,16 +9,18 @@
       "maxLength": 30,
       "message": {
         "required": "Username is Required",
-        "minLength": "Username must be longer than 5 characters"
-
-    }
+        "minLength": "Username must be longer than 5 characters",
+        "maxLength": "Username cannot be longer than 30 characters"
+      }
     },
     "password": {
       "type": "string",
       "minLength": 5,
       "maxLength": 20,
       "message": {
-        "required": "Password is required"
+        "required": "Password is required",
+        "minLength": "Password must be longer than 5 characters",
+        "maxLength": "Password cannot be longer than 20 characters"
       }
     },
     "firstName": {
@@ -26,7 +28,8 @@
       "minLength": 1,
       "maxLength": 30,
       "message": {
-        "required": "Last Name is required"
+        "required": "First Name is required",
+        "maxLength": "First Name cannot be longer than 30 characters"
       }
     },
     "phone":{
@@ -45,18 +48,20 @@
       "minLength": 1,
       "maxLength": 30,
       "message": {
-        "required": "Last Name is required"
+        "required": "Last Name is required",
+        "maxLength": "Last Name cannot be longer than 30 characters"
       }
     },
     "email": {
       "type": "string",
       "minLength": 6,
-      "maxLength": 60,
+      "maxLength": 30,
       "format": "email",
       "message": {
-        "required": "Email is Required Property",
-        "format": "Please use a valid email address"
-    }
+        "required": "Email is Required",
+        "format": "Please use a valid email address",
+        "maxLength": "Email cannot be longer than 30 characters"
+      }
     }
   },
   "additionalProperties": false,

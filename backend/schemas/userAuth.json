@@ -4,10 +4,16 @@
   "type": "object",
   "properties": {
     "username": {
-      "type": "string"
+      "type": "string",
+      "message":{
+        "required":"Username is required"
+      }
     },
     "password": {
-      "type": "string"
+      "type": "string",
+      "message":{
+        "required":"Password is required"
+      }
     }
   },
   "additionalProperties": false,

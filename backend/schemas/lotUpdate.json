@@ -5,8 +5,12 @@
   "properties": {
     "name": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 30
+      "minLength": 3,
+      "maxLength": 30,
+      "message": {
+        "minLength": "Item name should be longer than 3 charaters",
+        "maxLength": "Item name cannot be longer than 30 characters"
+      }
     },
     "description": {
       "type": "string"
@@ -17,13 +21,23 @@
     },
     "quantity": {
       "anyOf": [
-        {"type": "integer", "minimum": 0},
+        {"type": "integer", 
+          "exclusiveMinimum": 0,
+          "message": {
+            "exclusiveMinimum": "Quantity, if applicable, cannot be zero"
+          }
+        },
         {"type": "null"}
       ]
     },
     "price": {
       "anyOf": [
-        {"type": "number","exclusiveMinimum": 0},
+        {"type": "number",
+          "exclusiveMinimum": 0,
+          "message": {
+            "exclusiveMinimum": "Price, if given, cannot be zero"
+          }
+        },
         {"type": "null"}
       ]
     }

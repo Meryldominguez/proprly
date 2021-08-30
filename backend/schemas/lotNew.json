@@ -6,26 +6,47 @@
     "name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 30
+      "maxLength": 30,
+      "message": {
+        "required": "Item name is required",
+        "minLength": "Item name should be longer than 3 charaters",
+        "maxLength": "Item name cannot be longer than 30 characters"
+      }
     },
     "locId": {
       "type": "integer",
-      "exclusiveMinimum": 0
+      "exclusiveMinimum": 0,
+      "message": {
+        "required": "Location Id is required"
+      }
     },
     "quantity": {
       "anyOf": [
-        {"type": "integer", "minimum": 0},
+        {"type": "integer", 
+          "minimum": 0,
+          "message": {
+            "exclusiveMinimum": "Quantity, if applicable, cannot be zero"
+          }
+        },
         {"type": "null"}
       ]
     },
     "price": {
       "anyOf": [
-        {"type": "number","exclusiveMinimum": 0},
+        {"type": "number",
+          "exclusiveMinimum": 0,
+          "message": {
+            "exclusiveMinimum": "Price, if given, cannot be zero"
+          }
+        },
         {"type": "null"}
       ]
     },
     "description": {
-      "type": "string"
+      "type": "string",
+      "message": {
+        "required": "Item description is required"
+      }
     }
   },
   "additionalProperties": false,

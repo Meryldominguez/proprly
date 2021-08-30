@@ -4,15 +4,24 @@
   "type": "object",
   "properties": {
     "prodId": {
-      "type": "integer" 
+      "type": "integer",
+      "message":{
+        "required":"Production Id is required"
+      }
     },
     "lotId": {
-      "type": "integer" 
+      "type": "integer",
+      "message":{
+        "required":"LotId is required"
+      }
     },
     "quantity": {
       "anyOf": [
         {"type": "integer",
-        "exclusiveMinimum": 0},
+        "exclusiveMinimum": 0,
+        "message":{
+          "exclusiveMinimum":"Quantity must be more than 0"
+        }},
         {"type":"null"}
       ]      
     },
