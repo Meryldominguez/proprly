@@ -1,11 +1,12 @@
 import React, {
   useEffect,
 } from 'react';
-
 import {
   Grid,
+  Typography,
 } from '@material-ui/core';
 import LoadingSpinner from '../Spinner';
+import CardWrapper from '../CardWrapper';
 import PropList from './PropList';
 import {useFetchLots, useFetchProduction} from '../../hooks/useFetch';
 import LotList from '../LotComponents/LotList';
@@ -40,10 +41,17 @@ const PropManager = ({prodId}) => {
     justifyContent="center"
   >
     <Grid item xs={4}>
+      {lots.length > 0?
       <LotList
         lots={lots.filter((item)=>idIndexOf(item, prod.props)===-1)}
         feature={(id)=>handleAddProp(id)}
-      />
+      /> :
+      <CardWrapper>
+        <Typography spacing={3}>
+      No Locations returned!
+        </Typography>
+        <small>Make some, using the form to the right!</small>
+      </CardWrapper>}
     </Grid>
     <Grid item xs={8}>
       <PropList

@@ -26,12 +26,6 @@ const LoggedInRoutes = ({username}) => {
           <Redirect to='/productions' />
         </Route>
 
-        <Route exact path="/props">
-          <CardWrapper title="Manage Props">
-            <PropDashboard/>
-          </CardWrapper>
-        </Route>
-
         <Route exact path="/props/:featuredId">
           <CardWrapper title="Manage Props">
             <PropDashboard />

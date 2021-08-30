@@ -35,8 +35,7 @@ const ProfileForm = () => {
     try {
       if (!formData.password) {
         throw Object(
-            {
-              severity: 'info',
+            {severity: 'info',
               msg: 'Password required to confirm changes!'});
       };
       if (await authProfile(formData.password)) {

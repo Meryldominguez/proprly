@@ -1,17 +1,15 @@
 import React, {
   useState,
-  useContext,
   useEffect,
 } from 'react';
-import UserContext from '../../context/UserContext';
 import {
+  Redirect,
   useParams,
 } from 'react-router-dom';
 import TabBar from '../TabBar';
 import LoadingSpinner from '../Spinner';
 import {useFetchProductions} from '../../hooks/useFetch';
 import PropManager from './PropManager';
-// import {useFetchProps} from '../../hooks/useFetch';
 
 function idIndexOf(item, list) {
   const [res]=list.filter((i, idx)=>{
@@ -25,11 +23,10 @@ function idIndexOf(item, list) {
 }
 
 const PropDashboard = () => {
-  const {profile, isLoading} = useContext(UserContext);
   const {featuredId} = useParams();
   const [view, setView] = useState();
-  const [productions, prodsLoading, newSearch, refreshProds] = useFetchProductions('');
-  const [id, setId] = useState(Number(featuredId));
+  const [productions, prodsLoading] = useFetchProductions('');
+  const [id] = useState(Number(featuredId));
 
   useEffect(()=>{
     if (featuredId) {
@@ -42,7 +39,9 @@ const PropDashboard = () => {
     }
   }, [productions]);
 
-  return (!isLoading && !prodsLoading && view) ?
+  if (!prodsLoading && productions.length === 0) return <Redirect to='/productions' />;
+
+  return (!prodsLoading) ?
     <TabBar
       startingTab={view}
       tabsArr={productions.map((prod)=>{
