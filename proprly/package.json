@@ -29,8 +29,7 @@
     "build": "react-scripts build",
     "lint": "eslint src",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "d-backend": "git subtree push --prefix backend heroku master"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
