@@ -16,7 +16,7 @@ class ProprlyApi {
 
   static async request(endpoint, data = {}, method = 'get') {
     console.debug('API Call:', endpoint, '\nData:', data, '\nMethod:', method);
-    console.log(BASE_URL, process.env)
+    console.log(BASE_URL, process.env);
     const url = `${BASE_URL}/${endpoint}`;
     const headers = {Authorization: `Bearer ${ProprlyApi.token}`};
     const params = (method === 'get') ?
