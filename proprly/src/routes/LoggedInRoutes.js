@@ -23,7 +23,7 @@ const LoggedInRoutes = ({username}) => {
     <Container>
       <Switch>
         <Route exact path="/">
-          <Redirect to='/productions' />
+          <Redirect to='/props/0' />
         </Route>
 
         <Route exact path="/props/:featuredId">
