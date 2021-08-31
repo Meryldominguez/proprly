@@ -4,10 +4,10 @@ const ProprlyTheme = createTheme({
   palette: {
     type: 'light',
     primary: {
-      main: '#3f51b5',
+      main: '#5271ff',
     },
     secondary: {
-      main: '#f50057',
+      main: '#922d50',
     },
   },
 });
