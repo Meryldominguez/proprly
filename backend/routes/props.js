@@ -74,12 +74,11 @@ router.patch("/:prodId/:lotId",ensureLoggedIn, async function (req, res, next) {
 
 router.delete("/:prodId/:lotId", ensureAdmin, async function (req, res, next) {
   try {
-    const {id} = await Prop.remove(Number(req.params.prodId),Number(req.params.lotId));
-    return res.json({ deleted:id });
+    const resp = await Prop.remove(Number(req.params.prodId),Number(req.params.lotId));
+    return res.json({ deleted:resp });
   } catch (err) {
     return next(err);
   }
 });
-
 
 module.exports = router;

@@ -22,7 +22,6 @@ const router = new express.Router();
  *
  * prod should be {  }
  *
- * Returns { id,  }
  *
  * Authorization required: logged in
  */
@@ -46,8 +45,6 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
 /** GET /  =>
  *   { prod: [ { }, ...] }
  *
- * Can filter on provided search filters:
- * - 
  *
  * Authorization required: logged in
  */
@@ -78,7 +75,6 @@ router.get("/",ensureLoggedIn, async function (req, res, next) {
 /** GET /[id]  =>  { prod }
  *
  *  prod is {  }
- *   where props is [{}, ...]
  *
  * Authorization required: logged in
  */

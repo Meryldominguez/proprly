@@ -42,7 +42,9 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
 
 /** POST / { tag } =>  { tag }
  *
- * tag should be {  }
+ * tag should be { title }
+ * 
+ * if tag doesnt exist, it is created, then item is tagged
  *
  * Returns { id,  }
  *
@@ -107,10 +109,6 @@ router.get("/",ensureLoggedIn, async function (req, res, next) {
  *
  * Patches tag data.
  *
- * fields can be: { name, description, numEmployees, logo_url }
- *
- * Returns { id, name, description, numEmployees, logo_url }
- *
  * Authorization required: logged in
  */
 
@@ -148,7 +146,7 @@ router.delete("/:id", ensureAdmin, async function (req, res, next) {
  * Authorization: admin
  */
 
-router.delete("/lots/:tagId/:lotId", ensureAdmin, async function (req, res, next) {
+router.delete("/:tagId/:lotId", ensureAdmin, async function (req, res, next) {
   try {
     const lotTag = await Tag.removeTag(Number(req.params.lotId),Number(req.params.tagId));
     return res.json({ deleted:lotTag });

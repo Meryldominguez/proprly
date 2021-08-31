@@ -88,10 +88,6 @@ class Prop {
    * This is a "partial update" --- it's fine if data doesn't contain
    * all the fields; this only changes provided ones.
    *
-   * Data can include: { notes, quantity }
-   *
-   * Returns { id, title, salary, equity, companyHandle }
-   *
    * Throws NotFoundError if not found.
    */
 
@@ -121,7 +117,7 @@ class Prop {
     return prop;
   }
 
-  /** Delete given prop from database; returns undefined.
+  /** Delete given prop from database; returns {lotId, prodId}.
    *
    * Throws NotFoundError if prop not found.
    **/
@@ -133,11 +129,11 @@ class Prop {
           `DELETE
            FROM prop
            WHERE prod_id = $1 and lot_id=$2
-           RETURNING *`, [prodId,lotId]);
+           RETURNING lot_id AS "lotId", prod_id AS "prodId"`, [prodId,lotId]);
     const prop = result.rows[0];
 
     if (!prop) throw new NotFoundError(`No prop: ${prodId}, ${lotId}`);
-    return `DELETED: ${prop}`
+    return prop
   }
 }
 module.exports = Prop;

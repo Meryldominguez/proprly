@@ -19,9 +19,7 @@ const router = new express.Router();
 
 /** POST / { location } =>  { location }
  *
- * location should be { n }
- *
- * Returns { id, name, description, numEmployees, logoUrl }
+ * location should be { name, notes, parent_id }
  *
  * Authorization required: logged in
  */
@@ -40,13 +38,7 @@ router.post("/",ensureLoggedIn, async function (req, res, next) {
   }
 });
 
-/** GET /  =>
- *   { location: [ { id, name, description, numEmployees, logoUrl }, ...] }
- *
- * Can filter on provided search filters:
- * - minEmployees
- * - maxEmployees
- * - nameLike (will find case-insensitive, partial matches)
+/** GET /  => [{location, children: [{location}]}, {location}]
  *
  * Authorization required: logged in
  */
@@ -66,7 +58,7 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
-/** GET /list => [location, location]
+/** GET /list => [{location}, {location}]
  * 
  * authorization: Logged in
  */
@@ -80,9 +72,7 @@ router.get("/list", ensureLoggedIn, async function (req, res, next){
 })
 
 /** GET /[id]  =>  { location }
- *
- *  location is { id, name, description, numEmployees, logoUrl, jobs }
- *   where jobs is [{ id, title, salary, equity }, ...]
+ * 
  *
  * Authorization required: logged in
  */
@@ -99,10 +89,6 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
 /** PATCH /[id] { fld1, fld2, ... } => { location }
  *
  * Patches location data.
- *
- * fields can be: { name, description, numEmployees, logo_url }
- *
- * Returns { id, name, description, numEmployees, logo_url }
  *
  * Authorization required: logged in
  */

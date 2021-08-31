@@ -20,9 +20,8 @@ const router = new express.Router();
 
 /** POST / { lot } =>  { lot }
  *
- * lot should be { name, description, numEmployees, logoUrl }
+ * lot should be { name, description, locId, (quantity), (price) }
  *
- * Returns { id, name, description, numEmployees, logoUrl }
  *
  * Authorization required: logged in
  */
@@ -73,9 +72,7 @@ router.get("/",ensureLoggedIn, async function (req, res, next) {
 
 /** GET /[id]  =>  { lot }
  *
- *  lot is { id, name, description, numEmployees, logoUrl, jobs }
- *   where jobs is [{ id, title, salary, equity }, ...]
- *
+ * 
  * Authorization required: logged in
  */
 
@@ -91,10 +88,6 @@ router.get("/:id",ensureLoggedIn, async function (req, res, next) {
 /** PATCH /[id] { fld1, fld2, ... } => { lot }
  *
  * Patches lot data.
- *
- * fields can be: { name, description, numEmployees, logo_url }
- *
- * Returns { id, name, description, numEmployees, logo_url }
  *
  * Authorization required: logged in
  */
