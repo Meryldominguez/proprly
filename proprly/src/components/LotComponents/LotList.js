@@ -58,7 +58,6 @@ const SingleLot = ({
       history.push(`/lots/${item.id}`);
     }
   };
-  console.log(item, clickable, featured)
   return (
     <ListItem component="div" style={style} disablePadding>
       <ListItemButton
