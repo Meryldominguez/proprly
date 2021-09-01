@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState,
+  useState,
 } from 'react';
 import {
   Grid,
@@ -26,6 +26,7 @@ function idIndexOf(item, list) {
 
 const PropManager = ({prodId}) => {
   const [lots, lotsLoading] = useFetchLots();
+  // eslint-disable-next-line no-unused-vars
   const [prod, prodLoading, setProd, refreshProd] = useFetchProduction(prodId);
   const [propLoading, setPropLoading] = useState(false);
 
