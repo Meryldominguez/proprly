@@ -26,7 +26,7 @@ const AnonRoutes = ({signup, login}) => {
             </Grid>
             <Grid item xs={12}>
               <Button size="small" fullWidth onClick={toggleSignUp}>
-                {signUp ? 'Already have an account?' : 'Need to Sign up?'}
+                {signUp ? 'Need to Sign up?': 'Already have an account?'}
               </Button>
             </Grid>
           </Grid>
