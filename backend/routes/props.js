@@ -69,10 +69,10 @@ router.patch("/:prodId/:lotId",ensureLoggedIn, async function (req, res, next) {
 
 /** DELETE /[id]  =>  { deleted: id }
  *
- * Authorization: admin
+ * Authorization: Logged in
  */
 
-router.delete("/:prodId/:lotId", ensureAdmin, async function (req, res, next) {
+router.delete("/:prodId/:lotId", ensureLoggedIn, async function (req, res, next) {
   try {
     const resp = await Prop.remove(Number(req.params.prodId),Number(req.params.lotId));
     return res.json({ deleted:resp });
