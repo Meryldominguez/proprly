@@ -1,5 +1,5 @@
 import React, {
-  useEffect,
+  useEffect, useState,
 } from 'react';
 import {
   Grid,
@@ -26,12 +26,15 @@ function idIndexOf(item, list) {
 
 const PropManager = ({prodId}) => {
   const [lots, lotsLoading] = useFetchLots();
-  const [prod, prodLoading, refreshProd] = useFetchProduction(prodId);
+  const [prod, prodLoading, setProd, refreshProd] = useFetchProduction(prodId);
+  const [propLoading, setPropLoading] = useState(false);
+
   const handleAddProp = async (lotId)=>{
+    setPropLoading(true);
     await ProprlyApi.newProp({lotId, prodId});
-    refreshProd(prodId);
+    refreshProd();
+    setPropLoading(false);
   };
-  useEffect(()=>{}, []);
 
   return !lotsLoading && !prodLoading? (
   <Grid
@@ -43,6 +46,7 @@ const PropManager = ({prodId}) => {
     <Grid item xs={4}>
       {lots.length > 0?
       <LotList
+        clickable={propLoading}
         lots={lots.filter((item)=>idIndexOf(item, prod.props)===-1)}
         feature={(id)=>handleAddProp(id)}
       /> :

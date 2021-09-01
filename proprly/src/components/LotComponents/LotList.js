@@ -13,10 +13,11 @@ import {
 import RedeemIcon from '@material-ui/icons/Redeem';
 import {FixedSizeList} from 'react-window';
 
-const LotList = ({currentFeature, feature, lots}) => {
+const LotList = ({clickable, currentFeature, feature, lots}) => {
   const renderList = ({index, style}) => (
     <>
       <SingleLot
+        clickable={clickable}
         style={style}
         feature={feature}
         featured={currentFeature === lots[index].id}
@@ -46,7 +47,7 @@ const LotList = ({currentFeature, feature, lots}) => {
 };
 
 const SingleLot = ({
-  featured, feature, item, style,
+  featured, feature, item, style, clickable,
 }) => {
   const history = useHistory();
 
@@ -57,12 +58,13 @@ const SingleLot = ({
       history.push(`/lots/${item.id}`);
     }
   };
+  console.log(item, clickable, featured)
   return (
     <ListItem component="div" style={style} disablePadding>
       <ListItemButton
         onClick={handleFeature}
         sx={{pl: 4}}
-        disabled={featured}
+        disabled={featured || clickable}
         selected={featured}
       >
         <ListItemIcon>
