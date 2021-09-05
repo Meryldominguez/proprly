@@ -1,5 +1,6 @@
 "use strict";
 
+const { async } = require("regenerator-runtime");
 const db = require("../db.js");
 process.cwd()
 const { BadRequestError, NotFoundError } = require("../expressError");
@@ -104,25 +105,47 @@ describe("create",function () {
 /************************************** getChildren */
 
 describe("getChildren", function () {
-  test("works, parsed", async function () {
-    const {rows:[loc]} = await db.query(
-      `SELECT id, name, notes
-       FROM location
-       WHERE name = 'Parent Location'`);
-      
-    let locations = await Location.getChildren(true,loc.id);
-    
-    expect(locations).toEqual([
+  test("works, parsed", async function(){
+    const allLocations = await Location.getChildren(true);
+    expect(allLocations).toEqual([
       {
         parentId: null,
         locationName: "Parent Location",
-        locationId:expect.any(Number),
+        locationId: expect.any(Number),
         children: expect.any(Array)
+      },
+      {
+        parentId: null,
+        locationName: "Parent Location 2",
+        locationId: expect.any(Number),
       }
     ])
+    expect(allLocations.length).toEqual(2)
+    expect(allLocations[0].children.length).toEqual(2)
+  })
+  test("works with specified id, parsed", async function () {
+    const {rows:[loc]} = await db.query(
+      `SELECT id, name, notes, parent_id as "parentId"
+       FROM location
+       WHERE name = 'First Location'`);
+    let locations = await Location.getChildren(true, loc.id);
+    expect(locations).toEqual([
+      {
+        parentId: loc.parentId,
+        locationName: "First Location",
+        locationId: loc.id,
+        children: expect.any(Array)
+      },
+    ])
     expect(locations.length).toEqual(1)
+    expect(locations[0].children.length).toEqual(1)
   });
-  test("works, flat", async function () {
+  test("works, flat", async function(){
+    const locations = await Location.getChildren(false);
+    expect(locations.length).toEqual(5)
+
+  })
+  test("works, flat with id", async function () {
     const {rows:[loc]} = await db.query(
       `SELECT id, name, notes
        FROM location
@@ -136,8 +159,7 @@ describe("getChildren", function () {
         locationId:expect.any(Number),
       }
     )
-    
-    expect(locations.length).toEqual(3)
+    expect(locations.length).toEqual(4)
   });
 
   test("not found if no such lot", async function () {

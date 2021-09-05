@@ -300,7 +300,7 @@ describe("remove Prop",  function () {
 
     const {rows:locCount} = await db.query(
       "SELECT * FROM location");
-    expect(locCount.length).toBe(3)
+    expect(locCount.length).toBe(5)
 
     const {rows:tagCount} = await db.query(
       "SELECT * FROM tag");

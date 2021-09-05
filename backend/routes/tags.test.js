@@ -365,7 +365,7 @@ describe('DELETE /tags/lots/:tagId/:lotId', function () {
     const { rows: [{tag_id:tagId, lot_id:lotId}] } = await db.query(
       `SELECT * FROM lot_tag`)
     const resp = await request(app)
-      .delete(`/tags/lots/${tagId}/${lotId}`)
+      .delete(`/tags/${tagId}/${lotId}`)
       .set('authorization', `Bearer ${adminToken}`)
     expect(resp.body).toEqual({
       deleted:{
@@ -380,7 +380,7 @@ describe('DELETE /tags/lots/:tagId/:lotId', function () {
     const { rows: [{tag_id:tagId, lot_id:lotId}] } = await db.query(
       `SELECT * FROM lot_tag`) 
       const resp = await request(app)
-      .delete(`/tags/lots/${tagId}/${lotId}`)
+      .delete(`/tags/${tagId}/${lotId}`)
       .set('authorization', `Bearer ${u2Token}`)
     expect(resp.statusCode).toEqual(401)
   })
@@ -389,7 +389,7 @@ describe('DELETE /tags/lots/:tagId/:lotId', function () {
     const { rows: [{tag_id:tagId, lot_id:lotId}] } = await db.query(
       `SELECT * FROM lot_tag`) 
       const resp = await request(app)
-      .delete(`/tags/lots/${tagId}/${lotId}`)
+      .delete(`/tags/${tagId}/${lotId}`)
       
     expect(resp.statusCode).toEqual(401)
   })

@@ -18,11 +18,21 @@ async function commonBeforeAll() {
     VALUES ('Parent Location','The parent location', null)
     RETURNING id, name, notes, parent_id
            `);
+  const {rows:[testParentLoc2]} = await db.query(`
+    INSERT INTO location(name, notes, parent_id)
+    VALUES ('Parent Location 2','The second parent location', null)
+    RETURNING id, name, notes, parent_id
+           `);
   const {rows:[testFirstLoc]} = await db.query(`
     INSERT INTO location(name, notes, parent_id)
     VALUES ('First Location','The first location', $1)
     RETURNING id, name, notes, parent_id
            `,[testParentLoc.id]);
+  const {rows:[testFirstLocGrandchid]} = await db.query(`
+    INSERT INTO location(name, notes, parent_id)
+    VALUES ('First grandchild Location','The first location''s child', $1)
+    RETURNING id, name, notes, parent_id
+           `,[testFirstLoc.id]);
   const {rows:[testSecondLoc]} = await db.query(`
     INSERT INTO location(name, notes, parent_id)
     VALUES ('Second Location','The second location', $1)

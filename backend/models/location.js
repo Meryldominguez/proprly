@@ -49,7 +49,6 @@ class Location {
     if (!loc) throw new NotFoundError(`No location: ${id}`);
   };
 
-    
     const idQuery = id?`WHERE child.id=${id}`:"WHERE NOT child.id IS NULL";
     const query = `WITH RECURSIVE findchildren AS ( 
       SELECT 
@@ -70,14 +69,14 @@ class Location {
 
     SELECT * FROM findchildren
     GROUP BY "parentId", "locationId", "locationName"
-    ORDER BY "locationName" `
-
+    ORDER BY "parentId" NULLS FIRST`
     const result = await db.query(query)
     if (!nested) return result.rows
-    const recursiveLoc = (arr, targetId)=>{
+    
+    const recursiveLoc = (arr, targetId=null)=>{
       return arr.reduce((acc, next, idx)=>{
-        if (next.parentId===targetId) {
-          const children = recursiveLoc(arr, next.locationId)
+        if (targetId===next.parentId || next.locationId===id) {
+          const children = recursiveLoc(arr.slice(idx+1), next.locationId)
           if (children.length>0) next.children=children
           return acc.concat(next)
         }
@@ -85,7 +84,7 @@ class Location {
       },[])
 
     };
-    return recursiveLoc(result.rows, id)
+    return recursiveLoc(result.rows)
   }
 
   /** Given a location id, return location and items listed under it or its child locations.

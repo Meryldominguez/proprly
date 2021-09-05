@@ -223,30 +223,35 @@ describe('PATCH /props/:id', () => {
 
 describe('DELETE /props/:prodId/:lotId', function () {
 
-  test('unauth for users', async function () {
-    const { rows: [prod] } = await db.query(
-      `SELECT * FROM production
-        WHERE title = 'The magic flute'`)
-      const { rows: [lot] } = await db.query(
-        `SELECT * FROM lot
-          WHERE name = 'Lot7'`)    
-
+  test('works for admin', async function () {
+    const { rows: [{prodId, lotId}] } = await db.query(
+      `SELECT prod_id as "prodId", lot_id as "lotId"
+        from prop`)
     const resp = await request(app)
-      .delete(`/props/${prod.id}/${lot.id}`)
-      .set('authorization', `Bearer ${u2Token}`)
+      .delete(`/props/${prodId}/${lotId}`)
+      .set('authorization', `Bearer ${adminToken}`)
 
-    expect(resp.statusCode).toEqual(401)
+    expect(resp.statusCode).toEqual(200)
+  })
+
+  test('works for users', async function () {
+    const { rows: [{prodId, lotId}] } = await db.query(
+      `SELECT prod_id as "prodId", lot_id as "lotId"
+        from prop`)
+    const resp = await request(app)
+      .delete(`/props/${prodId}/${lotId}`)
+      .set('authorization', `Bearer ${u2Token}`)
+      
+    expect(resp.statusCode).toEqual(200)
   })
 
   test('unauth for anon', async function () {
-    const { rows:[prod] } = await db.query(
-      `SELECT * FROM production
-        WHERE title = 'La traviata'`)
-    const { rows: [lot] } = await db.query(
-      `SELECT * FROM lot
-        WHERE name = 'Lot6'`)  
+    const { rows: [{prodId, lotId}] } = await db.query(
+      `SELECT prod_id as "prodId", lot_id as "lotId"
+        from prop`)
+
     const resp = await request(app)
-      .delete(`/props/${prod.id}/${lot.id}`)
+      .delete(`/props/${prodId}/${lotId}`)
     expect(resp.statusCode).toEqual(401)
   })
 })

@@ -346,7 +346,7 @@ describe("remove Lot", function () {
 
     const {rows:locCount} = await db.query(
       "SELECT * FROM location");
-    expect(locCount.length).toBe(3)
+    expect(locCount.length).toBe(5)
 
     const {rows:propCount} = await db.query(
       "SELECT * FROM prop");
